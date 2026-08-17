@@ -1,0 +1,151 @@
+:root {
+  --lotdg-color-page-background: #000000;
+  --lotdg-color-page-foreground: #cccccc;
+
+  --lotdg-color-rail-background: #433828;
+  --lotdg-color-stage-background: #352d20;
+  --lotdg-color-header-background: #333399;
+
+  --lotdg-color-navigation-background: #003366;
+  --lotdg-color-navigation-border: #000000;
+  --lotdg-color-navigation-head-text: #00ccff;
+  --lotdg-color-navigation-hotkey: #00ff00;
+  --lotdg-color-anchor: #0099ff;
+
+  --lotdg-color-vitalinfo-background: #003300;
+  --lotdg-color-vitalinfo-head-background: #009900;
+  --lotdg-color-vitalinfo-head-text: #ffff00;
+  --lotdg-color-vitalinfo-row-border: #009900;
+
+  --lotdg-color-notice-text: #ff9900;
+  --lotdg-color-notice-active-background: #806b4d;
+
+  --lotdg-color-control-background: #433828;
+  --lotdg-color-control-border: #806b4d;
+  --lotdg-color-control-text: #cccccc;
+  --lotdg-color-button-background: #6b563f;
+  --lotdg-color-button-text: #f8db83;
+  --lotdg-color-button-border-light: #947356;
+  --lotdg-color-button-border-dark: #403225;
+
+  --lotdg-color-table-head-background: #990000;
+  --lotdg-color-table-head-text: #ffffff;
+  --lotdg-color-table-row-light: #330000;
+  --lotdg-color-table-row-dark: #000000;
+
+  --lotdg-color-dark-blue: #0000b0;
+  --lotdg-color-dark-green: #00b000;
+  --lotdg-color-dark-cyan: #00b0b0;
+  --lotdg-color-dark-red: #b00000;
+  --lotdg-color-dark-magenta: #b000cc;
+  --lotdg-color-dark-yellow: #b0b000;
+  --lotdg-color-dark-white: #b0b0b0;
+  --lotdg-color-light-blue: #0000ff;
+  --lotdg-color-light-green: #00ff00;
+  --lotdg-color-light-cyan: #00ffff;
+  --lotdg-color-light-red: #ff0000;
+  --lotdg-color-light-magenta: #ff00ff;
+  --lotdg-color-light-yellow: #ffff00;
+  --lotdg-color-light-white: #ffffff;
+  --lotdg-color-light-black: #999999;
+
+  --lotdg-font-family-body: '굴림체', Gulim, Dotum, Arial, Geneva, Helvetica, sans-serif;
+  --lotdg-font-family-title: 'Old English Text MT', 'Times New Roman', serif;
+  --lotdg-font-size-body-base: 12px;
+  --lotdg-font-size-title-base: 20px;
+
+  --lotdg-size-rail-width-base: 190px;
+  --lotdg-size-rail-panel-width-base: 182px;
+  --lotdg-size-navigation-item-width-base: 181px;
+  --lotdg-size-scroll-cap-height-base: 11px;
+  --lotdg-size-header-height-base: 69px;
+  --lotdg-size-title-banner-width-base: 395px;
+  --lotdg-size-title-banner-height-base: 55px;
+  --lotdg-size-login-panel-width-base: 212px;
+  --lotdg-size-login-panel-height-base: 234px;
+
+  --lotdg-scale-factor: 1;
+
+  --lotdg-size-rail-width: calc(var(--lotdg-size-rail-width-base) * var(--lotdg-scale-factor));
+  --lotdg-size-rail-panel-width: calc(
+    var(--lotdg-size-rail-panel-width-base) * var(--lotdg-scale-factor)
+  );
+  --lotdg-size-navigation-item-width: calc(
+    var(--lotdg-size-navigation-item-width-base) * var(--lotdg-scale-factor)
+  );
+  --lotdg-size-scroll-cap-height: calc(
+    var(--lotdg-size-scroll-cap-height-base) * var(--lotdg-scale-factor)
+  );
+  --lotdg-size-header-height: calc(
+    var(--lotdg-size-header-height-base) * var(--lotdg-scale-factor)
+  );
+  --lotdg-size-title-banner-width: calc(
+    var(--lotdg-size-title-banner-width-base) * var(--lotdg-scale-factor)
+  );
+  --lotdg-size-title-banner-height: calc(
+    var(--lotdg-size-title-banner-height-base) * var(--lotdg-scale-factor)
+  );
+  --lotdg-size-login-panel-width: calc(
+    var(--lotdg-size-login-panel-width-base) * var(--lotdg-scale-factor)
+  );
+  --lotdg-size-login-panel-height: calc(
+    var(--lotdg-size-login-panel-height-base) * var(--lotdg-scale-factor)
+  );
+  --lotdg-font-size-body: calc(var(--lotdg-font-size-body-base) * var(--lotdg-scale-factor));
+  --lotdg-font-size-title: calc(var(--lotdg-font-size-title-base) * var(--lotdg-scale-factor));
+
+  --lotdg-asset-header-background: url('/asset/legacy/image/header-background.gif');
+  --lotdg-asset-footer-rule: url('/asset/legacy/image/footer-rule.gif');
+  --lotdg-asset-scene-village: url('/asset/legacy/image/scene-village.gif');
+  --lotdg-asset-scene-forest: url('/asset/legacy/image/scene-forest.gif');
+  --lotdg-asset-scene-castle: url('/asset/legacy/image/scene-castle.gif');
+  --lotdg-asset-login-dragon: url('/asset/legacy/image/login-dragon.gif');
+}
+
+@media (min-width: 1280px) {
+  :root {
+    --lotdg-scale-factor: 1;
+  }
+}
+
+@media (min-width: 1920px) {
+  :root {
+    --lotdg-scale-factor: 1.5;
+  }
+}
+
+@media (min-width: 2560px) {
+  :root {
+    --lotdg-scale-factor: 2;
+  }
+}
+
+@media (min-width: 3200px) {
+  :root {
+    --lotdg-scale-factor: 2.5;
+  }
+}
+
+@media (min-width: 3840px) {
+  :root {
+    --lotdg-scale-factor: 3;
+  }
+}
+
+@media (min-width: 5120px) {
+  :root {
+    --lotdg-scale-factor: 4;
+  }
+}
+
+@media (min-width: 6016px) {
+  :root {
+    --lotdg-scale-factor: 4.5;
+  }
+}
+
+@media (min-width: 7680px) {
+  :root {
+    --lotdg-scale-factor: 6;
+  }
+}

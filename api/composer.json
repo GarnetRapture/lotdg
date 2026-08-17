@@ -1,0 +1,60 @@
+{
+  "name": "garnetrapture/lotdg-api",
+  "description": "Legend of the Green Dragon 0.9.7 (PHP4) 포렌식 재구현 백엔드 — PHP 8.5 / SQLite3.",
+  "type": "project",
+  "license": "GPL-2.0-only",
+  "keywords": [
+    "lotgd",
+    "logd",
+    "legend-of-the-green-dragon",
+    "sqlite",
+    "psr-4"
+  ],
+  "authors": [
+    {
+      "name": "Eric Stevens",
+      "role": "Original author of Legend of the Green Dragon"
+    },
+    {
+      "name": "JT (Joe Naylor)",
+      "role": "Original contributor (0.9.7+jt)"
+    },
+    {
+      "name": "xc8oa",
+      "role": "Legacy Korean localization"
+    },
+    {
+      "name": "digirave",
+      "role": "Legacy Korean localization"
+    },
+    {
+      "name": "GarnetRapture",
+      "email": "taeyeon9_3@naver.com",
+      "role": "Porter / maintainer of this reimplementation"
+    }
+  ],
+  "require": {
+    "php": ">=8.5.9",
+    "ext-pdo": "*",
+    "ext-pdo_sqlite": "*",
+    "ext-json": "*",
+    "ext-mbstring": "*"
+  },
+  "autoload": {
+    "psr-4": {
+      "Lotdg\\": "src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Lotdg\\Tests\\": "tests/"
+    }
+  },
+  "config": {
+    "sort-packages": true,
+    "optimize-autoloader": true
+  },
+  "scripts": {
+    "lint": "find src public bin config -name '*.php' -print0 | xargs -0 -n1 php -l"
+  }
+}
