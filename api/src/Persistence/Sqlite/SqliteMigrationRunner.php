@@ -26,6 +26,8 @@ final class SqliteMigrationRunner
      */
     public function migrate(): array
     {
+        $this->ensureHistoryTable();
+
         $appliedNameList = [];
 
         foreach ($this->collectMigrationFileNameList() as $migrationFileName) {
@@ -90,10 +92,6 @@ final class SqliteMigrationRunner
 
     private function isAlreadyApplied(string $migrationFileName): bool
     {
-        if (!$this->hasHistoryTable()) {
-            return false;
-        }
-
         $statement = $this->connection->prepare(
             'SELECT 1 FROM ' . self::HISTORY_TABLE_NAME . ' WHERE migration_name = :migration_name',
         );
@@ -104,10 +102,6 @@ final class SqliteMigrationRunner
 
     private function recordApplication(string $migrationFileName): void
     {
-        if (!$this->hasHistoryTable()) {
-            return;
-        }
-
         $statement = $this->connection->prepare(
             'INSERT OR IGNORE INTO ' . self::HISTORY_TABLE_NAME
             . ' (migration_name) VALUES (:migration_name)',
@@ -115,13 +109,17 @@ final class SqliteMigrationRunner
         $statement->execute(['migration_name' => $migrationFileName]);
     }
 
-    private function hasHistoryTable(): bool
+    /**
+     * 이력 테이블은 마이그레이션 파일보다 먼저 존재해야 한다. 파일 안에서 생성하면
+     * 그 파일 이전 순번의 적용 사실을 기록할 수 없어 재실행 시 중복 적용으로 실패한다.
+     */
+    private function ensureHistoryTable(): void
     {
-        $statement = $this->connection->prepare(
-            "SELECT 1 FROM sqlite_master WHERE type = 'table' AND name = :table_name",
+        $this->connection->exec(
+            'CREATE TABLE IF NOT EXISTS ' . self::HISTORY_TABLE_NAME . ' ('
+            . 'migration_name TEXT PRIMARY KEY, '
+            . "applied_at TEXT NOT NULL DEFAULT (datetime('now'))"
+            . ')',
         );
-        $statement->execute(['table_name' => self::HISTORY_TABLE_NAME]);
-
-        return $statement->fetchColumn() !== false;
     }
 }

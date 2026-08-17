@@ -22,5 +22,13 @@
   "error.email-invalid": "Enter a valid email address.",
   "error.email-already-used": "That email address is already in use.",
   "error.login-name-already-used": "That name is already taken.",
-  "error.unknown": "Something went wrong."
+  "error.unknown": "Something went wrong.",
+  "login.welcome": "Welcome to Legend of the Green Dragon.",
+  "login.game-time": "`@The time in the village is `%{gameTime}`@.`0",
+  "login.new-day-clock": "`@Every `${minute}`@ real minutes brings you `${turn}`@ turns.`0",
+  "login.next-day-remaining": "`@Time until the next day: `${hour}h, {minute}m, {second}s`0",
+  "login.prompt": "Enter your username and password.",
+  "login.introduction": "`b`&[[LoGD]] Legend of the Green Dragon is a turn-based web game set in a world of fantasy.`n`nYour foremost goal is to slay the Green Dragon that threatens the village`n`nand make your name known throughout the land.`n`nYou begin with the turns granted at the start of play.`n`nA fixed span of real time makes one game day,`n`nand each game day grants you a set number of turns.`n`nYou play one of four characters — Troll, Elf, Human, Dwarf — each of a different temper,`n`nwith one of three specialties: Dark Arts, Mystical Powers, Thievery.`n`nShould a creature defeat you,`n`nyou may earn favor and be resurrected by fighting the undead in the graveyard.`n`nTo test your strength you may also duel other players in the Player Kill arena.`n`nThe rest is for you to discover in play.`0`b",
+  "login.banner": "`b`&*BETA* This server is running in beta *BETA*`0`b",
+  "login.version": "`2Server running version: `@{version}`0"
 }

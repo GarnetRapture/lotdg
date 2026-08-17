@@ -36,12 +36,14 @@ if (!\is_dir($databaseDirectoryPath) && !\mkdir($databaseDirectoryPath, 0o775, t
 }
 
 $connection = (new SqliteConnectionFactory($databaseFilePath))->create();
-$runner = new SqliteMigrationRunner($connection, $configuration['path']['migration_directory']);
 
-$appliedNameList = $runner->migrate();
+$appliedNameList = \array_merge(
+    (new SqliteMigrationRunner($connection, $configuration['path']['migration_directory']))->migrate(),
+    (new SqliteMigrationRunner($connection, $configuration['path']['seed_directory']))->migrate(),
+);
 
 if ($appliedNameList === []) {
-    echo "적용할 마이그레이션이 없습니다.\n";
+    echo "적용할 스키마·시드가 없습니다.\n";
 
     exit(0);
 }
@@ -50,4 +52,4 @@ foreach ($appliedNameList as $appliedName) {
     echo \sprintf("적용: %s\n", $appliedName);
 }
 
-echo \sprintf("총 %d개 마이그레이션을 적용했습니다.\n", \count($appliedNameList));
+echo \sprintf("총 %d개 스키마·시드를 적용했습니다.\n", \count($appliedNameList));

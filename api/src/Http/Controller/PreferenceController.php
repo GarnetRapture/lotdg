@@ -45,6 +45,10 @@ final class PreferenceController implements ControllerInterface
                 $this->readStringField('biography'),
                 $this->readNotificationMap(),
             ),
+            'locale' => $this->preferenceService->saveLocale(
+                $characterId,
+                $this->readStringField('locale_code'),
+            ),
             'password' => $this->preferenceService->changePassword(
                 $characterId,
                 $this->readStringField('password'),

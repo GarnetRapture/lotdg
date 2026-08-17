@@ -22,5 +22,13 @@
   "error.email-invalid": "メールアドレスが正しくありません。",
   "error.email-already-used": "すでに使われているメールアドレスです。",
   "error.login-name-already-used": "すでに使われているIDです。",
-  "error.unknown": "エラーが発生しました。"
+  "error.unknown": "エラーが発生しました。",
+  "login.welcome": "「緑の竜の伝説」へようこそ。",
+  "login.game-time": "`@村の現在の時刻は `%{gameTime}`@ です。`0",
+  "login.new-day-clock": "`@現実の `${minute}`@ 分が過ぎると `${turn}`@ ターンを得られます。`0",
+  "login.next-day-remaining": "`@次の日(ターン)までの残り時間: `${hour}時間 {minute}分 {second}秒`0",
+  "login.prompt": "IDとパスワードを入力してください。",
+  "login.introduction": "`b`&[[LoGD]] Legend of the Green Dragon は想像上のファンタジーを舞台にしたターン制ウェブゲームです。`n`n最優先の目標は村を脅かす邪悪な緑の竜(Green Dragon)を倒し`n`nプレイヤーの名を世に知らしめることです。`n`nプレイヤーは開始時に与えられるターンを持って遊び始めます。`n`n現実時間の一定の長さがゲーム内の一日にあたり`n`nゲーム内の一日ごとに決められたターンが与えられます。`n`nプレイヤーはトロール・エルフ・ヒューマン・ドワーフという性格の異なる4つの種族と`n`n闇の儀式・神秘の力・盗みの3つの特技で遊ぶことになります。`n`nもし遊びの途中で魔物との戦いに敗れた場合`n`n墓地で不死者と戦い、恩寵を得て蘇ることができます。`n`nそして自分の腕を確かめるため、対人戦(Player Kill)場で他の者と戦うこともできます。`n`nそのほかの知識は皆さん自身の遊びの中で見つけてください。`0`b",
+  "login.banner": "`b`&*BETA* 現在ベータ運営中です *BETA*`0`b",
+  "login.version": "`2このサーバーが動かしている版 : `@{version}`0"
 }

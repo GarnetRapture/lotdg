@@ -79,10 +79,7 @@ export function LotdgMailScreen({ characterId }: LotdgCharacterScreenProps) {
         `/mail/${characterId}/delete-many`,
         lotdgMailMutationSchema,
         Object.fromEntries(
-          checkedIdList.map((identifier, index) => [
-            `mail_message_id_list[${index}]`,
-            identifier,
-          ]),
+          checkedIdList.map((identifier, index) => [`mail_message_id_list[${index}]`, identifier]),
         ),
       )
 
@@ -236,9 +233,7 @@ export function LotdgMailScreen({ characterId }: LotdgCharacterScreenProps) {
           type="button"
           className="lotdg-button"
           onClick={() =>
-            setCheckedIdList(
-              (inbox?.message_list ?? []).map((item) => item.mail_message_id),
-            )
+            setCheckedIdList((inbox?.message_list ?? []).map((item) => item.mail_message_id))
           }
         >
           {label('mail.action.check-all')}

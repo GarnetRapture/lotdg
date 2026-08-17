@@ -1,14 +1,14 @@
-import { useCallback, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { LotdgShellLayout } from './layout/LotdgShellLayout'
 import { LotdgLocaleProvider } from '../i18n/LotdgLocaleContext'
 import { useLotdgLocale } from '../i18n/useLotdgLocale'
+import { useLotdgLocalePersistence } from '../i18n/useLotdgLocalePersistence'
 import { LotdgSessionProvider } from './provider/LotdgSessionContext'
 import { useLotdgSession } from './provider/useLotdgSession'
 import {
   LOTDG_LOCALE_NAMESPACE,
   LOTDG_SUPPORTED_LOCALE_CODE_LIST,
   LOTDG_SUPPORTED_LOCALE_ENDONYM,
-  type LotdgSupportedLocaleCode,
 } from '../shared/constant/lotdg-supported-locale'
 import {
   LOTDG_SCREEN_CODE,
@@ -108,27 +108,41 @@ const NAVIGATION_GROUP: ReadonlyArray<{
   },
 ]
 
-function LotdgLocaleSelector() {
-  const { localeCode, setLocaleCode } = useLotdgLocale()
+function LotdgLocaleMenu({ characterId }: { readonly characterId: number | null }) {
+  const { translate } = useLotdgLocale()
+  const { localeCode, changeLocaleCode } = useLotdgLocalePersistence(characterId)
 
   return (
-    <select
-      className="lotdg-select"
-      value={localeCode}
-      onChange={(event) => setLocaleCode(event.target.value as LotdgSupportedLocaleCode)}
-    >
+    <>
+      <span className="lotdg-navigation__head">
+        {translate(LOTDG_LOCALE_NAMESPACE.NAVIGATION, 'group.language')}
+      </span>
       {LOTDG_SUPPORTED_LOCALE_CODE_LIST.map((code) => (
-        <option key={code} value={code}>
+        <a
+          key={code}
+          className="lotdg-navigation__item"
+          href={`#locale-${code}`}
+          aria-current={code === localeCode}
+          onClick={(event) => {
+            event.preventDefault()
+            changeLocaleCode(code)
+          }}
+        >
           {LOTDG_SUPPORTED_LOCALE_ENDONYM[code]}
-        </option>
+        </a>
       ))}
-    </select>
+    </>
   )
 }
 
 function LotdgAppBody() {
   const { session, signOut } = useLotdgSession()
   const { translate } = useLotdgLocale()
+  const { applyStoredLocaleCode } = useLotdgLocalePersistence(session?.characterId ?? null)
+
+  useEffect(() => {
+    applyStoredLocaleCode(session?.storedLocaleCode)
+  }, [applyStoredLocaleCode, session?.storedLocaleCode])
 
   const [screenCode, setScreenCode] = useState<LotdgScreenCode>(LOTDG_SCREEN_CODE.LOGIN)
   const [refreshToken, setRefreshToken] = useState(0)
@@ -285,9 +299,7 @@ function LotdgAppBody() {
       case LOTDG_SCREEN_CODE.WARRIOR_LIST:
         return <LotdgWarriorListScreen onBiographyOpen={openBiography} />
       case LOTDG_SCREEN_CODE.BIOGRAPHY:
-        return (
-          <LotdgBiographyScreen characterId={biographyCharacterId ?? session.characterId} />
-        )
+        return <LotdgBiographyScreen characterId={biographyCharacterId ?? session.characterId} />
       case LOTDG_SCREEN_CODE.GARDENS:
         return (
           <LotdgSocialVenueScreen
@@ -339,18 +351,11 @@ function LotdgAppBody() {
       pageTitle={pageTitle}
       navigationSlot={
         <>
-          <span className="lotdg-navigation__head">
-            &#151;{navigationLabel('group.language')}&#151;
-          </span>
-          <span className="lotdg-navigation__help">
-            <LotdgLocaleSelector />
-          </span>
-
           {session !== null &&
             NAVIGATION_GROUP.map((group) => (
               <div key={group.headLabelPath}>
                 <span className="lotdg-navigation__head">
-                  &#151;{navigationLabel(group.headLabelPath)}&#151;
+                  {navigationLabel(group.headLabelPath)}
                 </span>
                 {group.screenCodeList.map((code) => (
                   <a
@@ -381,6 +386,8 @@ function LotdgAppBody() {
               {navigationLabel('action.logout')}
             </a>
           )}
+
+          <LotdgLocaleMenu characterId={session?.characterId ?? null} />
         </>
       }
       characterStatSlot={

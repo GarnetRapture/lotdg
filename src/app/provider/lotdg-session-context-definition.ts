@@ -5,6 +5,7 @@ export interface LotdgSessionState {
   readonly characterId: number
   readonly loginName: string
   readonly superuserLevel: number
+  readonly storedLocaleCode: string | undefined
 }
 
 export interface LotdgSessionContextValue {

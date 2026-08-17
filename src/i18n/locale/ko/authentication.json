@@ -22,5 +22,13 @@
   "error.email-invalid": "이메일 주소를 잘못 입력하셨습니다.",
   "error.email-already-used": "이미 사용 중인 이메일 주소입니다.",
   "error.login-name-already-used": "이미 사용 중인 아이디입니다.",
-  "error.unknown": "오류가 발생했습니다."
+  "error.unknown": "오류가 발생했습니다.",
+  "login.welcome": "'녹색 용의 전설'에 오신걸 환영 합니다.",
+  "login.game-time": "`@마을안에 현재 시간은 `%{gameTime}`@ 입니다.`0",
+  "login.new-day-clock": "`@실제 시간 `${minute}분 `@이 지나면 `${turn}턴 `@을 얻을수 있습니다.`0",
+  "login.next-day-remaining": "`@다음 날(턴)까지 남은 시간: `${hour}시간 {minute}분 {second}초`0",
+  "login.prompt": "당신의 아이디와 패스워드를 입력하세요.",
+  "login.introduction": "`b`&[[LoGD]] Legend Of the Green Dragon 이란 상상속의 판타지를 배경으로 하는 턴제 웹 게임 입니다.`n`n게임의 최우선적인 목표는 마을을 위협하는 사악한 푸른용(Green Dragon)을 죽여`n`n플레이어들의 명예를 세상에 알리는 것입니다.`n`n플레이어들은 처음 시작시 주어지는 턴을 가지고 플레이를 시작하게 됩니다.`n`n현실시간 일정 시간이 게임상 시간 하루를 나타내며`n`n게임상 시간 하루 마다 정해진 턴이 주어집니다.`n`n플레이어는 트롤 . 엘프 . 휴먼 . 드워프 의 각각 다른 성격을 가진 4명의 캐릭터와`n`n어둠의 의식 . 신비한 힘 . 도둑 의 3가지의 특성으로 플레이 하게 됩니다.`n`n만약 플레이도중 몬스터와의 전투에 졌을경우`n`n묘지에서 언데드와의 전투를 통해 호의를 획득 . 부활 할수 있습니다.`n`n그리고 자신의 실력을 확인 하기 위해 피케이(Player Kill)장에서 다른 유저들과 전투를 해볼수 있습니다.`n`n그외의 지식은 여러분들의 플레이속에서 알아내시길 바랍니다.`0`b",
+  "login.banner": "`b`&*BETA* 지금은 베타로 운영하고 있습니다 *BETA*`0`b",
+  "login.version": "`2게임 서버 운영하는 버전 : `@{version}`0"
 }

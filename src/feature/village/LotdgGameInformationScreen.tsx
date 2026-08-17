@@ -46,11 +46,7 @@ export function LotdgGameInformationScreen({
 
   const claim = async () => {
     try {
-      const result = await postForm(
-        `/web-vote/${characterId}/claim`,
-        lotdgWebVoteClaimSchema,
-        {},
-      )
+      const result = await postForm(`/web-vote/${characterId}/claim`, lotdgWebVoteClaimSchema, {})
 
       setMessage(
         result.claimed

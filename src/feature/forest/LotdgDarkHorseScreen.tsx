@@ -99,9 +99,7 @@ export function LotdgDarkHorseScreen({
         { comment_text: etchingText },
       )
 
-      setMessage(
-        result.posted ? '' : resolveMessageKeyLabel(result.message_key, translate),
-      )
+      setMessage(result.posted ? '' : resolveMessageKeyLabel(result.message_key, translate))
       setEtchingText('')
       void act('etching')
     } catch (error) {

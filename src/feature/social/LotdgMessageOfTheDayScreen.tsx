@@ -45,11 +45,10 @@ export function LotdgMessageOfTheDayScreen({ characterId }: LotdgCharacterScreen
 
   const vote = async (motdId: number, choiceIndex: number) => {
     try {
-      const result = await postForm(
-        `/motd/${characterId}/vote`,
-        lotdgMessageOfTheDayVoteSchema,
-        { motd_id: motdId, choice_index: choiceIndex },
-      )
+      const result = await postForm(`/motd/${characterId}/vote`, lotdgMessageOfTheDayVoteSchema, {
+        motd_id: motdId,
+        choice_index: choiceIndex,
+      })
 
       setMessage(
         result.voted ? label('motd.voted') : resolveMessageKeyLabel(result.message_key, translate),

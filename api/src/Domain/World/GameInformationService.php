@@ -8,6 +8,8 @@ use Lotdg\Persistence\Repository\GameSettingRepository;
 
 final class GameInformationService
 {
+    private const string LEGACY_VERSION = '0.9.7+jt';
+
     /** @var array<string, array<int, array{key: string, default: int}>> */
     private const SETTING_GROUP = [
         'game' => [
@@ -90,8 +92,11 @@ final class GameInformationService
             'license_code' => 'GPL-2.0-only',
             'original_author' => 'Eric Stevens',
             'porter_name' => 'GarnetRapture',
+            'legacy_version' => self::LEGACY_VERSION,
             'days_per_calendar_day' => $daysPerDay,
             'day_duration_hour' => (int) \round(24 / $daysPerDay),
+            'day_duration_real_minute' => (int) \round(1440 / $daysPerDay),
+            'turns_per_day' => $this->gameSettingRepository->getInt('turns', 10),
             'server_time' => \date('Y-m-d H:i:s'),
             'game_time' => $this->gameClock->formatGameTime(),
             'game_date' => $this->gameClock->gameDateString(),

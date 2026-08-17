@@ -209,7 +209,7 @@ export function LotdgSpecialEventScreen({
       {event?.stage === 'awaiting-bet' && (
         <form onSubmit={submitBet}>
           <p>
-            {label('special.old-man-bet.rule', {
+            {label('special.oldmanbet.rule', {
               minimum: event.minimum_number ?? 1,
               maximum: event.maximum_number ?? 100,
               tryCount: event.maximum_try ?? 6,
@@ -234,12 +234,12 @@ export function LotdgSpecialEventScreen({
       {event?.stage === 'awaiting-guess' && (
         <form onSubmit={submitGuess}>
           <p>
-            {label('special.old-man-bet.progress', {
+            {label('special.oldmanbet.progress', {
               bet: event.bet ?? 0,
               tryCount: event.try_count ?? 0,
               remaining: event.remaining_try ?? 0,
             })}
-            {event.hint !== undefined && ` ${label(`special.old-man-bet.hint.${event.hint}`)}`}
+            {event.hint !== undefined && ` ${label(`special.oldmanbet.hint.${event.hint}`)}`}
           </p>
           <p>
             <input

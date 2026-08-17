@@ -381,9 +381,7 @@ export const lotdgMailReplySchema = z.object({
 
 export const lotdgMailRecipientSearchSchema = z.object({
   search_term: z.string(),
-  candidate_list: z.array(
-    z.object({ login_name: z.string(), display_name: z.string() }),
-  ),
+  candidate_list: z.array(z.object({ login_name: z.string(), display_name: z.string() })),
 })
 
 export const lotdgNewDaySchema = z.object({

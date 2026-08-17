@@ -48,6 +48,7 @@ export function LotdgRegisterScreen({ onLoginClick }: { readonly onLoginClick: (
         characterId: result.character_id,
         loginName: result.login_name ?? loginName,
         superuserLevel: 0,
+        storedLocaleCode: localeCode,
       })
     } catch (error) {
       setErrorKeyList([resolveErrorLabel(error, translate)])

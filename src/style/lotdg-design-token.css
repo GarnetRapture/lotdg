@@ -4,11 +4,16 @@
 
   --lotdg-color-rail-background: #433828;
   --lotdg-color-stage-background: #352d20;
-  --lotdg-color-header-background: #333399;
+  --lotdg-color-header-background: #333f7c;
+  --lotdg-color-header-rule: #f4d17b;
 
-  --lotdg-color-navigation-background: #003366;
+  --lotdg-color-navigation-background: #000033;
   --lotdg-color-navigation-border: #000000;
-  --lotdg-color-navigation-head-text: #00ccff;
+  --lotdg-color-navigation-head-background: #000099;
+  --lotdg-color-navigation-head-text: #ffff00;
+  --lotdg-color-navigation-hover-background: #003366;
+  --lotdg-color-navigation-hover-border-light: #0364a3;
+  --lotdg-color-navigation-hover-border-dark: #000000;
   --lotdg-color-navigation-hotkey: #00ff00;
   --lotdg-color-anchor: #0099ff;
 
@@ -51,27 +56,77 @@
 
   --lotdg-font-family-body: '굴림체', Gulim, Dotum, Arial, Geneva, Helvetica, sans-serif;
   --lotdg-font-family-title: 'Old English Text MT', 'Times New Roman', serif;
-  --lotdg-font-size-body-base: 12px;
+  --lotdg-font-size-body-base: 10px;
   --lotdg-font-size-title-base: 20px;
 
-  --lotdg-size-rail-width-base: 190px;
-  --lotdg-size-rail-panel-width-base: 182px;
-  --lotdg-size-navigation-item-width-base: 181px;
+  --lotdg-size-rail-width-base: 145px;
+  --lotdg-size-rail-panel-width-base: 142px;
+  --lotdg-size-navigation-panel-width-base: 135px;
+  --lotdg-size-navigation-item-width-base: 135px;
+  --lotdg-size-navigation-head-width-base: 137px;
+  --lotdg-size-stat-cap-width-base: 152px;
+  --lotdg-size-stat-panel-width-base: 121px;
+  --lotdg-size-stat-table-width-base: 140px;
   --lotdg-size-scroll-cap-height-base: 11px;
-  --lotdg-size-header-height-base: 69px;
+  --lotdg-size-header-height-base: 60px;
   --lotdg-size-title-banner-width-base: 395px;
   --lotdg-size-title-banner-height-base: 55px;
   --lotdg-size-login-panel-width-base: 212px;
   --lotdg-size-login-panel-height-base: 234px;
+  --lotdg-size-login-dragon-height-base: 239px;
+  --lotdg-size-login-panel-bottom-base: 52px;
+  --lotdg-size-login-field-width-base: 84px;
 
-  --lotdg-scale-factor: 1;
+  /**
+   * 레이아웃이 가로로 요구하는 최소 폭. reference/templates/yar2.htm 의 좌측 네비
+   * 열(145px)과 reference/images/title.gif 의 실측 폭(395px)의 합이다. 이 폭보다
+   * 좁으면 두 열을 나란히 세울 수 없어 세로로 쌓는다.
+   */
+  --lotdg-viewport-reference-width: calc(
+    var(--lotdg-size-rail-width-base) + var(--lotdg-size-title-banner-width-base)
+  );
+
+  /**
+   * 배율 1 — 레거시 원본 픽셀 그대로 — 이 되는 기준 폭. 최소 폭(540px)을 기준으로
+   * 삼으면 일반 데스크톱에서 3~4배로 부풀어 원본 비례가 무너지므로, 본문·네비·
+   * 스탯 세 영역이 모두 원본 크기로 들어가고도 여백이 남는 폭을 기준으로 둔다.
+   * 최소 폭 + 스탯 열(152px) + 본문이 한 줄을 담는 폭의 합에 해당한다.
+   */
+  --lotdg-viewport-design-width: 1280px;
+
+  /**
+   * 배율 상한. 레거시 에셋은 지정 픽셀 크기의 비트맵이라 무한히 키우면 계단이
+   * 드러난다. 상한에 닿은 뒤로는 본문이 남는 폭을 흡수한다.
+   */
+  --lotdg-scale-factor-maximum: 4;
+
+  --lotdg-scale-factor: clamp(
+    1,
+    100vw / var(--lotdg-viewport-design-width),
+    var(--lotdg-scale-factor-maximum)
+  );
 
   --lotdg-size-rail-width: calc(var(--lotdg-size-rail-width-base) * var(--lotdg-scale-factor));
   --lotdg-size-rail-panel-width: calc(
     var(--lotdg-size-rail-panel-width-base) * var(--lotdg-scale-factor)
   );
+  --lotdg-size-navigation-panel-width: calc(
+    var(--lotdg-size-navigation-panel-width-base) * var(--lotdg-scale-factor)
+  );
   --lotdg-size-navigation-item-width: calc(
     var(--lotdg-size-navigation-item-width-base) * var(--lotdg-scale-factor)
+  );
+  --lotdg-size-navigation-head-width: calc(
+    var(--lotdg-size-navigation-head-width-base) * var(--lotdg-scale-factor)
+  );
+  --lotdg-size-stat-cap-width: calc(
+    var(--lotdg-size-stat-cap-width-base) * var(--lotdg-scale-factor)
+  );
+  --lotdg-size-stat-panel-width: calc(
+    var(--lotdg-size-stat-panel-width-base) * var(--lotdg-scale-factor)
+  );
+  --lotdg-size-stat-table-width: calc(
+    var(--lotdg-size-stat-table-width-base) * var(--lotdg-scale-factor)
   );
   --lotdg-size-scroll-cap-height: calc(
     var(--lotdg-size-scroll-cap-height-base) * var(--lotdg-scale-factor)
@@ -91,8 +146,32 @@
   --lotdg-size-login-panel-height: calc(
     var(--lotdg-size-login-panel-height-base) * var(--lotdg-scale-factor)
   );
+  --lotdg-size-login-dragon-height: calc(
+    var(--lotdg-size-login-dragon-height-base) * var(--lotdg-scale-factor)
+  );
+  --lotdg-size-login-panel-bottom: calc(
+    var(--lotdg-size-login-panel-bottom-base) * var(--lotdg-scale-factor)
+  );
+  --lotdg-size-login-field-width: calc(
+    var(--lotdg-size-login-field-width-base) * var(--lotdg-scale-factor)
+  );
   --lotdg-font-size-body: calc(var(--lotdg-font-size-body-base) * var(--lotdg-scale-factor));
   --lotdg-font-size-title: calc(var(--lotdg-font-size-title-base) * var(--lotdg-scale-factor));
+
+  /**
+   * 레거시 컨셉(금박 장식 · 짙은 가죽 갈색 · 밤빛 남색)을 유지한 채 당대에 없던
+   * 표현만 얹는다. 색은 새로 만들지 않고 위에서 실측·정의한 토큰에서 파생한다.
+   */
+  --lotdg-edge-gold: color-mix(in srgb, var(--lotdg-color-header-rule) 55%, transparent);
+  --lotdg-edge-gold-strong: var(--lotdg-color-header-rule);
+  --lotdg-shadow-panel: 0 calc(1px * var(--lotdg-scale-factor))
+    calc(4px * var(--lotdg-scale-factor)) rgb(0 0 0 / 0.55);
+  --lotdg-shadow-inset-parchment: inset 0 0 calc(18px * var(--lotdg-scale-factor)) rgb(0 0 0 / 0.45);
+  --lotdg-shadow-banner: drop-shadow(0 calc(1px * var(--lotdg-scale-factor))
+    calc(2px * var(--lotdg-scale-factor)) rgb(0 0 0 / 0.75));
+  --lotdg-glow-vital: 0 0 calc(6px * var(--lotdg-scale-factor))
+    color-mix(in srgb, var(--lotdg-color-vitalinfo-head-background) 45%, transparent);
+  --lotdg-transition-interactive: 120ms ease-out;
 
   --lotdg-asset-header-background: url('/asset/legacy/image/header-background.gif');
   --lotdg-asset-footer-rule: url('/asset/legacy/image/footer-rule.gif');
@@ -102,50 +181,3 @@
   --lotdg-asset-login-dragon: url('/asset/legacy/image/login-dragon.gif');
 }
 
-@media (min-width: 1280px) {
-  :root {
-    --lotdg-scale-factor: 1;
-  }
-}
-
-@media (min-width: 1920px) {
-  :root {
-    --lotdg-scale-factor: 1.5;
-  }
-}
-
-@media (min-width: 2560px) {
-  :root {
-    --lotdg-scale-factor: 2;
-  }
-}
-
-@media (min-width: 3200px) {
-  :root {
-    --lotdg-scale-factor: 2.5;
-  }
-}
-
-@media (min-width: 3840px) {
-  :root {
-    --lotdg-scale-factor: 3;
-  }
-}
-
-@media (min-width: 5120px) {
-  :root {
-    --lotdg-scale-factor: 4;
-  }
-}
-
-@media (min-width: 6016px) {
-  :root {
-    --lotdg-scale-factor: 4.5;
-  }
-}
-
-@media (min-width: 7680px) {
-  :root {
-    --lotdg-scale-factor: 6;
-  }
-}

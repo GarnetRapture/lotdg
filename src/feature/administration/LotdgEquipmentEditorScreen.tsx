@@ -180,9 +180,7 @@ export function LotdgEquipmentEditorScreen({
               </button>
             </p>
             <p>
-              <label htmlFor="lotdg-equipment-name">
-                {label('equipment-editor.column.name')}
-              </label>{' '}
+              <label htmlFor="lotdg-equipment-name">{label('equipment-editor.column.name')}</label>{' '}
               <input
                 id="lotdg-equipment-name"
                 className="lotdg-input"

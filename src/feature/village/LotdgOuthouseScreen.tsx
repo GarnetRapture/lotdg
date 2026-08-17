@@ -33,7 +33,7 @@ export function LotdgOuthouseScreen({ characterId, onStateChange }: LotdgMutable
   const label = (path: string, valueMap?: Record<string, string | number>) =>
     translate(LOTDG_LOCALE_NAMESPACE.VILLAGE, path, valueMap)
 
-  const useToilet = async (toiletType: LotdgToiletType) => {
+  const enterStall = async (toiletType: LotdgToiletType) => {
     try {
       const result = await postForm(`/outhouse/${characterId}/use`, lotdgOuthouseActionSchema, {
         toilet_type: toiletType,

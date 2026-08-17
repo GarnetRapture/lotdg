@@ -39,6 +39,11 @@ export const lotdgAccountPreferenceSchema = z.object({
   preference_json: lotdgJsonObjectSchema,
 })
 
+export const lotdgPreferenceLocaleSchema = z.object({
+  saved: z.boolean(),
+  locale_code: lotdgLocaleCodeSchema,
+})
+
 export const lotdgAccountDonationSchema = z.object({
   account_id: lotdgIdentifierSchema,
   donation_point: lotdgNonNegativeIntegerSchema,

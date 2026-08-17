@@ -134,6 +134,28 @@ final class PreferenceService
     }
 
     /**
+     * 언어만 바꾸는 경로. 좌측 언어 메뉴가 다른 설정을 건드리지 않고 호출한다.
+     *
+     * @return array<string, mixed>
+     */
+    public function saveLocale(int $characterId, string $localeCode): array
+    {
+        $row = $this->fetchPreferenceRow($characterId);
+
+        $this->saveLocaleAndTemplate($row, $localeCode, '');
+
+        return [
+            'saved' => true,
+            'locale_code' => (string) $this->connection
+                ->query(
+                    'SELECT locale_code FROM account_preference WHERE account_id = '
+                    . (int) $row['account_id'],
+                )
+                ?->fetchColumn(),
+        ];
+    }
+
+    /**
      * @param array<string, mixed> $row
      */
     private function saveLocaleAndTemplate(array $row, string $localeCode, string $templateName): void

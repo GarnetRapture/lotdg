@@ -210,9 +210,9 @@ final class LegacyCatalogImporter
                 'new_day_message' => (string) ($row[10] ?? ''),
                 'recharge_message' => (string) ($row[11] ?? ''),
                 'partial_recharge_message' => (string) ($row[12] ?? ''),
-                'mine_can_enter' => (int) ($row[13] ?? 0) === 0 ? 0 : 1,
-                'mine_can_die' => (int) ($row[14] ?? 0) === 0 ? 0 : 1,
-                'mine_can_save' => (int) ($row[15] ?? 0) === 0 ? 0 : 1,
+                'mine_can_enter' => $this->clampPercent((int) ($row[13] ?? 0)),
+                'mine_can_die' => $this->clampPercent((int) ($row[14] ?? 0)),
+                'mine_can_save' => $this->clampPercent((int) ($row[15] ?? 0)),
                 'mine_tether_message' => (string) ($row[16] ?? ''),
                 'mine_death_message' => (string) ($row[17] ?? ''),
                 'mine_save_message' => (string) ($row[18] ?? ''),
@@ -310,6 +310,11 @@ final class LegacyCatalogImporter
         }
 
         return $survivingRowList;
+    }
+
+    private function clampPercent(int $value): int
+    {
+        return \max(0, \min(100, $value));
     }
 
     private function serializedToJson(string $serializedValue): string
