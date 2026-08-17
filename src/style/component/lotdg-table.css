@@ -1,0 +1,47 @@
+/**
+ * 6계층 — 목록 표. LotdgDataTable 이 쓴다. 좁은 폭에서는 표만 가로로 흐른다.
+ */
+.lotdg-table-scroll {
+  overflow-x: auto;
+  max-width: 100%;
+}
+
+.lotdg-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.lotdg-table th {
+  position: sticky;
+  top: 0;
+  padding: var(--lotdg-scale-space-tight) var(--lotdg-scale-space-normal);
+  text-align: left;
+  font-weight: var(--lotdg-typography-weight-bold);
+  white-space: nowrap;
+  color: var(--lotdg-text-table-head);
+  background-color: var(--lotdg-surface-table-head);
+  background-image: var(--lotdg-effect-sheen-head);
+  border-bottom: var(--lotdg-scale-hairline) solid var(--lotdg-edge-accent);
+}
+
+.lotdg-table td {
+  padding: var(--lotdg-scale-space-tight) var(--lotdg-scale-space-normal);
+  vertical-align: top;
+}
+
+.lotdg-table tbody tr {
+  animation: var(--lotdg-effect-animation-row-enter);
+  transition: background-color var(--lotdg-effect-transition-interactive);
+}
+
+.lotdg-table tbody tr:nth-child(odd) {
+  background-color: var(--lotdg-surface-table-row-odd);
+}
+
+.lotdg-table tbody tr:nth-child(even) {
+  background-color: var(--lotdg-surface-table-row-even);
+}
+
+.lotdg-table tbody tr:hover {
+  background-color: var(--lotdg-surface-navigation-hover);
+}

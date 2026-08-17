@@ -1,0 +1,46 @@
+/**
+ * 6계층 — 화면 구획. LotdgScreen / LotdgSection / LotdgText 가 쓴다. 모든 화면은
+ * 이 세 컴포넌트 위에 서므로 제목 크기와 문단 간격이 화면마다 갈리지 않는다.
+ */
+.lotdg-screen {
+  display: flex;
+  flex-direction: column;
+  gap: var(--lotdg-scale-space-loose);
+}
+
+.lotdg-screen__title {
+  margin: 0;
+  font-family: var(--lotdg-typography-family-title);
+  font-size: var(--lotdg-scale-font-size-title);
+  font-weight: var(--lotdg-typography-weight-normal);
+  line-height: var(--lotdg-typography-line-height-tight);
+  color: var(--lotdg-text-title);
+}
+
+.lotdg-section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--lotdg-scale-space-snug);
+}
+
+.lotdg-section__title {
+  margin: 0;
+  font-size: var(--lotdg-scale-font-size-control);
+  font-weight: var(--lotdg-typography-weight-bold);
+  letter-spacing: var(--lotdg-typography-letter-spacing-head);
+  color: var(--lotdg-text-navigation-head);
+}
+
+.lotdg-section__body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--lotdg-scale-space-snug);
+}
+
+.lotdg-text {
+  margin: 0;
+}
+
+.lotdg-align-center {
+  text-align: center;
+}

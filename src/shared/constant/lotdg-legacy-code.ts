@@ -56,6 +56,10 @@ export const LOTDG_SOCIAL_VENUE_CODE = { GARDENS: 'gardens', VETERANS: 'veterans
 export type LotdgSocialVenueCode =
   (typeof LOTDG_SOCIAL_VENUE_CODE)[keyof typeof LOTDG_SOCIAL_VENUE_CODE]
 
+export const LOTDG_SHOP_TYPE_CODE = { WEAPON: 'weapon', ARMOR: 'armor' } as const
+
+export type LotdgShopTypeCode = (typeof LOTDG_SHOP_TYPE_CODE)[keyof typeof LOTDG_SHOP_TYPE_CODE]
+
 export const LOTDG_MOTD_TYPE = { NOTICE: 0, POLL: 1 } as const
 
 export type LotdgMotdType = (typeof LOTDG_MOTD_TYPE)[keyof typeof LOTDG_MOTD_TYPE]

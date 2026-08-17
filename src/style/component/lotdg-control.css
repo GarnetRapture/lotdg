@@ -1,0 +1,126 @@
+/**
+ * 6계층 — 입력 컨트롤. LotdgButton / LotdgTextField / LotdgTextAreaField /
+ * LotdgSelectField / LotdgCheckboxField / LotdgFieldRow / LotdgActionRow 가 쓴다.
+ */
+.lotdg-input,
+.lotdg-textarea,
+.lotdg-select {
+  padding: var(--lotdg-scale-hairline);
+  font-family: var(--lotdg-typography-family-control);
+  font-size: var(--lotdg-scale-font-size-control);
+  color: var(--lotdg-text-control);
+  background-color: var(--lotdg-surface-control);
+  border: var(--lotdg-scale-hairline) solid var(--lotdg-edge-control);
+  border-radius: var(--lotdg-effect-radius-control);
+  box-shadow: var(--lotdg-effect-shadow-control-inset);
+  transition:
+    border-color var(--lotdg-effect-transition-interactive),
+    box-shadow var(--lotdg-effect-transition-interactive);
+}
+
+.lotdg-textarea {
+  width: 100%;
+  resize: vertical;
+  font-family: var(--lotdg-typography-family-body);
+  line-height: var(--lotdg-typography-line-height-body);
+}
+
+.lotdg-input:focus,
+.lotdg-textarea:focus,
+.lotdg-select:focus {
+  border-color: var(--lotdg-edge-accent-strong);
+}
+
+.lotdg-input:disabled,
+.lotdg-textarea:disabled,
+.lotdg-select:disabled {
+  filter: grayscale(0.5) brightness(0.75);
+}
+
+.lotdg-checkbox {
+  accent-color: var(--lotdg-edge-accent-strong);
+  cursor: pointer;
+}
+
+.lotdg-button {
+  padding: var(--lotdg-scale-space-tight) var(--lotdg-scale-space-normal);
+  font-family: var(--lotdg-typography-family-control);
+  font-size: var(--lotdg-scale-font-size-control);
+  color: var(--lotdg-text-button);
+  background-color: var(--lotdg-surface-button);
+  background-image: var(--lotdg-effect-sheen-raised);
+  border-top: var(--lotdg-scale-hairline) solid var(--lotdg-edge-button-light);
+  border-left: var(--lotdg-scale-hairline) solid var(--lotdg-edge-button-light);
+  border-right: var(--lotdg-scale-hairline) solid var(--lotdg-edge-button-dark);
+  border-bottom: var(--lotdg-scale-hairline) solid var(--lotdg-edge-button-dark);
+  border-radius: var(--lotdg-effect-radius-control);
+  cursor: pointer;
+  transition:
+    background-color var(--lotdg-effect-transition-interactive),
+    box-shadow var(--lotdg-effect-transition-interactive),
+    filter var(--lotdg-effect-transition-interactive);
+}
+
+.lotdg-button--primary {
+  color: var(--lotdg-text-navigation-head);
+  border-color: var(--lotdg-edge-accent-strong);
+  box-shadow: var(--lotdg-effect-glow-focus);
+}
+
+.lotdg-button--danger {
+  color: var(--lotdg-text-console-light-red);
+}
+
+.lotdg-button:hover:not(:disabled) {
+  filter: brightness(1.15);
+}
+
+.lotdg-button:active:not(:disabled) {
+  background-image: var(--lotdg-effect-sheen-pressed);
+  border-top-color: var(--lotdg-edge-button-dark);
+  border-left-color: var(--lotdg-edge-button-dark);
+  border-right-color: var(--lotdg-edge-button-light);
+  border-bottom-color: var(--lotdg-edge-button-light);
+}
+
+.lotdg-button:disabled {
+  filter: grayscale(0.5) brightness(0.75);
+  cursor: default;
+}
+
+.lotdg-field__row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--lotdg-scale-space-normal);
+  margin: var(--lotdg-scale-space-normal) 0;
+}
+
+.lotdg-field__row--stacked {
+  flex-direction: column;
+  align-items: stretch;
+  gap: var(--lotdg-scale-space-tight);
+}
+
+.lotdg-field__label {
+  font-weight: var(--lotdg-typography-weight-bold);
+}
+
+.lotdg-action-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--lotdg-scale-space-normal);
+  margin: var(--lotdg-scale-space-normal) 0;
+}
+
+.lotdg-action-row--centered {
+  justify-content: center;
+}
+
+.lotdg-pagination {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--lotdg-scale-space-tight);
+  margin: var(--lotdg-scale-space-normal) 0;
+}

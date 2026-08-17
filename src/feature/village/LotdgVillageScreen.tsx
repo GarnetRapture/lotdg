@@ -4,14 +4,17 @@ import {
   lotdgVillageResponseSchema,
   type LotdgVillageResponse,
 } from '../../shared/schema/system/lotdg-api-response-schema'
-import { parseLegacyMarkup } from '../../shared/lib/lotdg-legacy-markup-parser'
 import { resolveNewsText } from '../../shared/lib/lotdg-news-label-resolver'
 import { resolveErrorLabel } from '../../shared/lib/lotdg-error-label'
 import { useLotdgLocale } from '../../i18n/useLotdgLocale'
 import { LOTDG_LOCALE_NAMESPACE } from '../../shared/constant/lotdg-supported-locale'
+import { LOTDG_TEXT_COLOR_CLASS_NAME } from '../../shared/constant/lotdg-legacy-color-code'
+import { LOTDG_COMMENTARY_SECTION_CODE } from '../../shared/constant/lotdg-commentary-section-code'
+import type { LotdgCharacterScreenProps } from '../../shared/type/lotdg-screen-contract'
+import { LotdgMarkupText, LotdgScreen, LotdgSection, LotdgText } from '../../shared/ui'
 import { LotdgCommentaryBoard } from '../social/LotdgCommentaryBoard'
 
-export function LotdgVillageScreen({ characterId }: { readonly characterId: number }) {
+export function LotdgVillageScreen({ characterId }: LotdgCharacterScreenProps) {
   const { translate } = useLotdgLocale()
   const [village, setVillage] = useState<LotdgVillageResponse | null>(null)
   const [errorMessage, setErrorMessage] = useState('')
@@ -37,7 +40,9 @@ export function LotdgVillageScreen({ characterId }: { readonly characterId: numb
   }, [characterId, translate])
 
   if (errorMessage !== '') {
-    return <p className="colLtRed">{errorMessage}</p>
+    return (
+      <LotdgText colorClassName={LOTDG_TEXT_COLOR_CLASS_NAME.LIGHT_RED}>{errorMessage}</LotdgText>
+    )
   }
 
   if (village === null) {
@@ -46,39 +51,40 @@ export function LotdgVillageScreen({ characterId }: { readonly characterId: numb
 
   if (!village.entered) {
     return (
-      <p className="colLtRed">
+      <LotdgText colorClassName={LOTDG_TEXT_COLOR_CLASS_NAME.LIGHT_RED}>
         {translate(LOTDG_LOCALE_NAMESPACE.VILLAGE, 'error.character-dead')}
-      </p>
+      </LotdgText>
     )
   }
 
   return (
-    <section>
-      <h2>{translate(LOTDG_LOCALE_NAMESPACE.VILLAGE, 'title')}</h2>
-
-      <p>{translate(LOTDG_LOCALE_NAMESPACE.VILLAGE, 'description')}</p>
+    <LotdgScreen titleText={translate(LOTDG_LOCALE_NAMESPACE.VILLAGE, 'title')}>
+      <LotdgText>{translate(LOTDG_LOCALE_NAMESPACE.VILLAGE, 'description')}</LotdgText>
 
       {village.latest_news !== null && village.latest_news !== undefined && (
-        <p>
-          <b>{translate(LOTDG_LOCALE_NAMESPACE.VILLAGE, 'latest-news')}</b>
-          <br />
-          {parseLegacyMarkup(resolveNewsText(village.latest_news.news_text, translate))}
-        </p>
+        <LotdgSection titleSlot={translate(LOTDG_LOCALE_NAMESPACE.VILLAGE, 'latest-news')}>
+          <LotdgMarkupText
+            sourceText={resolveNewsText(village.latest_news.news_text, translate)}
+          />
+        </LotdgSection>
       )}
 
-      <p>
+      <LotdgText>
         {translate(LOTDG_LOCALE_NAMESPACE.VILLAGE, 'clock', {
           time: village.game_time ?? '',
         })}
-      </p>
+      </LotdgText>
 
       {village.auto_master_challenge?.triggered === true && (
-        <p className="colLtYellow">
+        <LotdgText colorClassName={LOTDG_TEXT_COLOR_CLASS_NAME.LIGHT_YELLOW}>
           {translate(LOTDG_LOCALE_NAMESPACE.VILLAGE, 'auto-master.truant')}
-        </p>
+        </LotdgText>
       )}
 
-      <LotdgCommentaryBoard characterId={characterId} sectionCode="village" />
-    </section>
+      <LotdgCommentaryBoard
+        characterId={characterId}
+        sectionCode={LOTDG_COMMENTARY_SECTION_CODE.VILLAGE}
+      />
+    </LotdgScreen>
   )
 }

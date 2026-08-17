@@ -77,7 +77,19 @@ export const lotdgCharacterPanelSchema = z.object({
     soul_point: z.int(),
     grave_fight: z.int(),
   }),
-  combat_stat: z.object({ attack_point: z.int(), defence_point: z.int() }),
+  combat_stat: z.object({
+    attack_point: z.int(),
+    defence_point: z.int(),
+    buff_list_json: z
+      .record(
+        z.string(),
+        z.object({
+          name: z.string().optional(),
+          rounds: z.int().optional(),
+        }),
+      )
+      .optional(),
+  }),
   progression: z.object({ experience: z.int(), dragon_kill_count: z.int() }),
   equipment: z.object({ weapon_name: z.string(), armor_name: z.string() }),
   wealth: z.object({ gold: z.int(), gold_in_bank: z.int(), gem: z.int() }),

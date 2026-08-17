@@ -1,0 +1,26 @@
+/**
+ * 1계층 — 글자 원시값.
+ * 레거시는 굴림체 고정이었다. 그 폭·자간 인상을 유지하되 없는 환경에서 두부 문자로
+ * 떨어지지 않도록 언어별 시스템 글꼴까지 폴백을 잇는다.
+ */
+:root {
+  --lotdg-primitive-font-family-body:
+    'Gulim', '굴림', 'Malgun Gothic', 'Meiryo', 'Microsoft YaHei', 'Segoe UI', system-ui, sans-serif;
+
+  --lotdg-primitive-font-family-title: 'Old English Text MT', 'UnifrakturCook', 'Times New Roman',
+    serif;
+
+  /** 레거시 .button 은 verdana 계열을 따로 지정했다(reference/templates/yar2.css). */
+  --lotdg-primitive-font-family-control: Verdana, Arial, Helvetica, sans-serif;
+
+  --lotdg-primitive-font-weight-normal: 400;
+  --lotdg-primitive-font-weight-bold: 700;
+
+  /** reference/templates/yar2.css 의 .navhead line-height 18px ÷ td 10px. */
+  --lotdg-primitive-line-height-navigation-head: 1.8;
+  --lotdg-primitive-line-height-body: 1.5;
+  --lotdg-primitive-line-height-tight: 1.2;
+
+  --lotdg-primitive-letter-spacing-head: 0.02em;
+  --lotdg-primitive-letter-spacing-normal: 0;
+}

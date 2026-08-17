@@ -1,75 +1,55 @@
-import type { ReactNode } from 'react'
-import type { LotdgStageSceneCode } from './lotdg-stage-scene-code'
-
-const LOTDG_SCROLL_CAP_UPPER_SOURCE = '/asset/legacy/image/scroll-upper.gif'
-const LOTDG_SCROLL_CAP_LOWER_SOURCE = '/asset/legacy/image/scroll-lower.gif'
-const LOTDG_TITLE_BANNER_SOURCE = '/asset/legacy/image/title-banner.gif'
-
-interface LotdgShellLayoutProps {
-  readonly pageTitle: string
-  readonly headerLinkSlot: ReactNode
-  readonly navigationSlot: ReactNode
-  readonly localeSlot: ReactNode
-  readonly characterStatSlot: ReactNode
-  readonly stageSlot: ReactNode
-  readonly stageSceneCode: LotdgStageSceneCode
-  readonly footerSlot: ReactNode
-}
-
-function LotdgScrollPanel({
-  modifierClassName,
-  children,
-}: {
-  readonly modifierClassName: string
-  readonly children: ReactNode
-}) {
-  return (
-    <div className={`lotdg-panel lotdg-panel--${modifierClassName}`}>
-      <img className="lotdg-panel__cap" src={LOTDG_SCROLL_CAP_UPPER_SOURCE} alt="" />
-      <div className={`lotdg-panel__body lotdg-panel__body--${modifierClassName}`}>
-        {children}
-      </div>
-      <img className="lotdg-panel__cap" src={LOTDG_SCROLL_CAP_LOWER_SOURCE} alt="" />
-    </div>
-  )
-}
+import { LOTDG_LEGACY_ASSET_SOURCE } from '../../shared/constant/lotdg-legacy-asset-source'
+import {
+  LOTDG_PANEL_VARIANT_CODE,
+  LOTDG_STAGE_CLASS_NAME,
+  LOTDG_UI_CLASS_NAME,
+} from '../../shared/constant/lotdg-ui-class-name'
+import type { LotdgShellLayoutProps } from '../../shared/type/lotdg-ui-component-contract'
+import { LotdgScrollPanel } from '../../shared/ui/LotdgScrollPanel'
 
 export function LotdgShellLayout({
   pageTitle,
+  bannerAlternativeText,
   headerLinkSlot,
   navigationSlot,
-  localeSlot,
+  preferenceSlot,
   characterStatSlot,
   stageSlot,
   stageSceneCode,
   footerSlot,
 }: LotdgShellLayoutProps) {
   return (
-    <div className="lotdg-shell">
-      <header className="lotdg-shell__header">
+    <div className={LOTDG_UI_CLASS_NAME.SHELL_ROOT}>
+      <header className={LOTDG_UI_CLASS_NAME.SHELL_HEADER}>
         <img
-          className="lotdg-shell__title-banner"
-          src={LOTDG_TITLE_BANNER_SOURCE}
-          alt="Legend of the Green Dragon"
+          className={LOTDG_UI_CLASS_NAME.SHELL_TITLE_BANNER}
+          src={LOTDG_LEGACY_ASSET_SOURCE.TITLE_BANNER}
+          alt={bannerAlternativeText}
         />
-        <h1 className="lotdg-shell__page-title">{pageTitle}</h1>
-        <p className="lotdg-shell__header-link">{headerLinkSlot}</p>
+        <h1 className={LOTDG_UI_CLASS_NAME.SHELL_PAGE_TITLE}>{pageTitle}</h1>
+        <p className={LOTDG_UI_CLASS_NAME.SHELL_HEADER_LINK}>{headerLinkSlot}</p>
       </header>
 
-      <nav className="lotdg-shell__rail">
-        <LotdgScrollPanel modifierClassName="navigation">{navigationSlot}</LotdgScrollPanel>
-        <LotdgScrollPanel modifierClassName="locale">{localeSlot}</LotdgScrollPanel>
+      <nav className={LOTDG_UI_CLASS_NAME.SHELL_RAIL}>
+        <LotdgScrollPanel variantCode={LOTDG_PANEL_VARIANT_CODE.NAVIGATION}>
+          {navigationSlot}
+        </LotdgScrollPanel>
+        <LotdgScrollPanel variantCode={LOTDG_PANEL_VARIANT_CODE.LOCALE}>
+          {preferenceSlot}
+        </LotdgScrollPanel>
       </nav>
 
-      <main className={`lotdg-shell__stage lotdg-shell__stage--scene-${stageSceneCode}`}>
-        <aside className="lotdg-shell__stat">
-          <LotdgScrollPanel modifierClassName="vital-info">{characterStatSlot}</LotdgScrollPanel>
+      <main className={LOTDG_STAGE_CLASS_NAME[stageSceneCode]}>
+        <aside className={LOTDG_UI_CLASS_NAME.SHELL_STAT}>
+          <LotdgScrollPanel variantCode={LOTDG_PANEL_VARIANT_CODE.VITAL_INFO}>
+            {characterStatSlot}
+          </LotdgScrollPanel>
         </aside>
 
         {stageSlot}
       </main>
 
-      <footer className="lotdg-shell__footer">{footerSlot}</footer>
+      <footer className={LOTDG_UI_CLASS_NAME.SHELL_FOOTER}>{footerSlot}</footer>
     </div>
   )
 }

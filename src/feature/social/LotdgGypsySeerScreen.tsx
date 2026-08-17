@@ -6,12 +6,20 @@ import {
   type LotdgGypsyInspect,
 } from '../../shared/schema/social/lotdg-social-response-schema'
 import type { LotdgCommentaryEntry } from '../../shared/schema/social/lotdg-commentary-schema'
-import { parseLegacyMarkup } from '../../shared/lib/lotdg-legacy-markup-parser'
 import { resolveErrorLabel, resolveMessageKeyLabel } from '../../shared/lib/lotdg-error-label'
 import { useLotdgLocale } from '../../i18n/useLotdgLocale'
 import { LOTDG_LOCALE_NAMESPACE } from '../../shared/constant/lotdg-supported-locale'
-import { LotdgNoticeLine } from '../../shared/ui/LotdgNoticeLine'
+import { LOTDG_TEXT_COLOR_CLASS_NAME } from '../../shared/constant/lotdg-legacy-color-code'
 import type { LotdgMutableScreenProps } from '../../shared/type/lotdg-screen-contract'
+import {
+  LotdgActionRow,
+  LotdgButton,
+  LotdgCommentLine,
+  LotdgNoticeLine,
+  LotdgScreen,
+  LotdgSection,
+  LotdgText,
+} from '../../shared/ui'
 
 export function LotdgGypsySeerScreen({ characterId, onStateChange }: LotdgMutableScreenProps) {
   const { translate } = useLotdgLocale()
@@ -54,42 +62,39 @@ export function LotdgGypsySeerScreen({ characterId, onStateChange }: LotdgMutabl
   }
 
   return (
-    <section>
-      <h2>{label('gypsy.title')}</h2>
-
-      <p>{label('gypsy.description')}</p>
+    <LotdgScreen titleText={label('gypsy.title')}>
+      <LotdgText>{label('gypsy.description')}</LotdgText>
 
       {seer !== null && (
-        <p>
-          {label('gypsy.price', { cost: seer.cost, gold: seer.gold })}{' '}
-          <button
-            type="button"
-            className="lotdg-button"
-            disabled={!seer.affordable}
-            onClick={() => void payAndListen()}
-          >
-            {label('gypsy.action.listen')}
-          </button>
-        </p>
+        <LotdgActionRow>
+          <LotdgText>{label('gypsy.price', { cost: seer.cost, gold: seer.gold })}</LotdgText>
+          <LotdgButton
+            labelSlot={label('gypsy.action.listen')}
+            isDisabled={!seer.affordable}
+            onSelect={() => void payAndListen()}
+          />
+        </LotdgActionRow>
       )}
 
       {shadeList !== null && (
-        <>
-          <h3>{label('gypsy.shade-title')}</h3>
+        <LotdgSection titleSlot={label('gypsy.shade-title')}>
           {shadeList.length === 0 ? (
-            <p className="colDkWhite">{label('gypsy.shade-empty')}</p>
+            <LotdgText colorClassName={LOTDG_TEXT_COLOR_CLASS_NAME.DARK_WHITE}>
+              {label('gypsy.shade-empty')}
+            </LotdgText>
           ) : (
             shadeList.map((entry) => (
-              <p key={entry.commentary_id}>
-                <span className="colLtWhite">{entry.display_name}</span>{' '}
-                {parseLegacyMarkup(entry.comment_text)}
-              </p>
+              <LotdgCommentLine
+                key={entry.commentary_id}
+                authorName={entry.display_name}
+                commentText={entry.comment_text}
+              />
             ))
           )}
-        </>
+        </LotdgSection>
       )}
 
       <LotdgNoticeLine messageText={message} />
-    </section>
+    </LotdgScreen>
   )
 }

@@ -1,0 +1,53 @@
+/**
+ * 6계층 — 두루마리 패널. LotdgScrollPanel 이 그리는 위·아래 장식과 본문 상자다.
+ */
+.lotdg-panel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  max-width: 100%;
+  animation: var(--lotdg-effect-animation-panel-enter);
+}
+
+.lotdg-panel--navigation,
+.lotdg-panel--locale {
+  width: var(--lotdg-scale-rail-panel-width);
+}
+
+.lotdg-panel--vital-info {
+  width: var(--lotdg-scale-stat-cap-width);
+}
+
+/**
+ * 스크롤 장식. 원본은 182x11 비트맵이라 가로로 늘이면 문양이 뭉개진다. 폭을 늘리는
+ * 대신 원본 비율대로 반복해 어떤 폭에서도 문양이 유지되게 한다.
+ */
+.lotdg-panel__cap {
+  display: block;
+  width: 100%;
+  height: var(--lotdg-scale-scroll-cap-height);
+  object-fit: none;
+  object-position: center;
+  image-rendering: var(--lotdg-effect-image-rendering);
+}
+
+.lotdg-panel__body {
+  border: var(--lotdg-scale-hairline) solid var(--lotdg-edge-navigation);
+  border-radius: var(--lotdg-effect-radius-panel);
+  box-shadow: var(--lotdg-effect-shadow-panel);
+}
+
+.lotdg-panel__body--navigation,
+.lotdg-panel__body--locale {
+  width: var(--lotdg-scale-navigation-panel-width);
+  max-width: 100%;
+  background-color: var(--lotdg-surface-navigation);
+}
+
+.lotdg-panel__body--vital-info {
+  width: var(--lotdg-scale-stat-panel-width);
+  max-width: 100%;
+  background-color: var(--lotdg-surface-vital);
+  box-shadow: var(--lotdg-effect-shadow-panel), var(--lotdg-effect-glow-vital);
+  animation: var(--lotdg-effect-animation-accent-pulse);
+}

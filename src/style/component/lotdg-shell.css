@@ -1,0 +1,180 @@
+/**
+ * 6계층 — 셸 골격. LotdgShellLayout 이 그리는 머리·좌측 열·본문·바닥의 배치다.
+ */
+.lotdg-shell {
+  display: grid;
+  grid-template-columns: var(--lotdg-scale-rail-width) minmax(0, 1fr);
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  grid-template-areas:
+    'header header'
+    'rail   stage'
+    'footer footer';
+  min-height: 100vh;
+  min-height: 100dvh;
+}
+
+.lotdg-shell__header {
+  grid-area: header;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  min-height: var(--lotdg-scale-header-height);
+  padding: var(--lotdg-scale-space-snug);
+  background-color: var(--lotdg-surface-header);
+  background-image: var(--lotdg-asset-header-background);
+  background-repeat: repeat-x;
+  box-shadow: var(--lotdg-effect-shadow-panel);
+}
+
+.lotdg-shell__title-banner {
+  float: right;
+  width: var(--lotdg-scale-title-banner-width);
+  height: var(--lotdg-scale-title-banner-height);
+  max-width: 100%;
+  object-fit: contain;
+  image-rendering: var(--lotdg-effect-image-rendering);
+  filter: var(--lotdg-effect-shadow-banner);
+}
+
+.lotdg-shell__page-title {
+  margin: 0;
+  font-family: var(--lotdg-typography-family-title);
+  font-size: var(--lotdg-scale-font-size-title);
+  font-weight: var(--lotdg-typography-weight-normal);
+  line-height: var(--lotdg-typography-line-height-tight);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: var(--lotdg-text-title);
+}
+
+.lotdg-shell__header-link {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--lotdg-scale-space-wide);
+  margin: 0;
+  padding-top: var(--lotdg-scale-space-tight);
+}
+
+.lotdg-shell__header-link:empty {
+  display: none;
+}
+
+.lotdg-shell__rail {
+  grid-area: rail;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--lotdg-scale-space-loose);
+  padding: var(--lotdg-scale-space-snug);
+  background-color: var(--lotdg-surface-rail);
+  border-right: var(--lotdg-scale-hairline) solid var(--lotdg-edge-accent);
+  box-shadow: var(--lotdg-effect-shadow-rail-inset);
+}
+
+.lotdg-shell__rail > .lotdg-panel--locale {
+  margin-top: auto;
+}
+
+.lotdg-shell__stage {
+  grid-area: stage;
+  position: relative;
+  isolation: isolate;
+  padding: var(--lotdg-scale-space-snug);
+  background-color: var(--lotdg-surface-stage);
+  background-image: var(--lotdg-effect-vignette-stage);
+  overflow-wrap: anywhere;
+  animation: var(--lotdg-effect-animation-stage-enter);
+}
+
+/**
+ * 장면 그림. 레거시(td.village / td.forest / td.dragon)는 배경을 그대로 깔아 본문
+ * 글자와 겹쳤다. 같은 그림·같은 정렬을 유지하되 별도 레이어로 분리해 글자 뒤로
+ * 내리고 밝기를 테마 토큰으로 낮춰 가독성을 확보한다.
+ */
+.lotdg-shell__stage::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background-repeat: no-repeat;
+  opacity: var(--lotdg-effect-scene-opacity);
+  pointer-events: none;
+}
+
+.lotdg-shell__stage--scene-none::after {
+  content: none;
+}
+
+.lotdg-shell__stage--scene-village::after {
+  background-image: var(--lotdg-asset-scene-village);
+  background-position: right bottom;
+}
+
+.lotdg-shell__stage--scene-forest::after {
+  background-image: var(--lotdg-asset-scene-forest);
+  background-position: center bottom;
+}
+
+.lotdg-shell__stage--scene-castle::after {
+  background-image: var(--lotdg-asset-scene-castle);
+  background-position: center center;
+  background-attachment: fixed;
+}
+
+.lotdg-shell__stat {
+  float: right;
+  margin-left: var(--lotdg-scale-space-snug);
+}
+
+.lotdg-shell__footer {
+  grid-area: footer;
+  padding: var(--lotdg-scale-space-snug);
+  padding-top: var(--lotdg-scale-space-normal);
+  background-image: var(--lotdg-asset-footer-rule);
+  background-repeat: repeat-x;
+  background-position: top;
+  color: var(--lotdg-text-footer);
+}
+
+/**
+ * 좌측 네비와 본문이 나란히 설 수 없는 폭에서는 세로로 쌓는다. 임의의 기기 폭이
+ * 아니라 --lotdg-metric-viewport-reference-width — 네비 열 145px 과 제목 띠 395px 의
+ * 합 — 과 같은 근거이며, 미디어 쿼리는 사용자 정의 속성을 평가하지 못해 그 합을
+ * 그대로 적는다.
+ */
+@media (max-width: 540px) {
+  .lotdg-shell {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas:
+      'header'
+      'rail'
+      'stage'
+      'footer';
+  }
+
+  .lotdg-shell__rail {
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    justify-content: center;
+    border-right: none;
+    border-bottom: var(--lotdg-scale-hairline) solid var(--lotdg-edge-accent);
+  }
+
+  .lotdg-shell__stat {
+    float: none;
+    display: flex;
+    justify-content: center;
+    margin-left: 0;
+  }
+}
+
+@media (min-width: 2560px) {
+  .lotdg-shell__stage > * {
+    max-width: var(--lotdg-scale-stage-reading-width);
+    margin-inline: auto;
+  }
+}

@@ -11,8 +11,18 @@ import { resolveErrorLabel, resolveMessageKeyLabel } from '../../shared/lib/lotd
 import { useLotdgLocale } from '../../i18n/useLotdgLocale'
 import { LOTDG_LOCALE_NAMESPACE } from '../../shared/constant/lotdg-supported-locale'
 import { LOTDG_MOTD_TYPE } from '../../shared/constant/lotdg-legacy-code'
-import { LotdgNoticeLine } from '../../shared/ui/LotdgNoticeLine'
+import { LOTDG_TEXT_COLOR_CLASS_NAME } from '../../shared/constant/lotdg-legacy-color-code'
 import type { LotdgCharacterScreenProps } from '../../shared/type/lotdg-screen-contract'
+import {
+  LotdgActionRow,
+  LotdgButton,
+  LotdgInlineText,
+  LotdgMarkupText,
+  LotdgNoticeLine,
+  LotdgScreen,
+  LotdgSection,
+  LotdgText,
+} from '../../shared/ui'
 
 export function LotdgMessageOfTheDayScreen({ characterId }: LotdgCharacterScreenProps) {
   const { translate } = useLotdgLocale()
@@ -61,55 +71,70 @@ export function LotdgMessageOfTheDayScreen({ characterId }: LotdgCharacterScreen
   }
 
   return (
-    <section>
-      <h2>{label('motd.title')}</h2>
-
+    <LotdgScreen titleText={label('motd.title')}>
       {notice !== null && (
         <>
           {notice.has_unseen && (
-            <p>
-              <button type="button" className="lotdg-button" onClick={() => void markSeen()}>
-                {label('motd.action.mark-seen')}
-              </button>
-            </p>
+            <LotdgActionRow>
+              <LotdgButton
+                labelSlot={label('motd.action.mark-seen')}
+                onSelect={() => void markSeen()}
+              />
+            </LotdgActionRow>
           )}
 
           {notice.notice_list.length === 0 ? (
-            <p className="colDkWhite">{label('motd.empty')}</p>
+            <LotdgText colorClassName={LOTDG_TEXT_COLOR_CLASS_NAME.DARK_WHITE}>
+              {label('motd.empty')}
+            </LotdgText>
           ) : (
             notice.notice_list.map((entry) => (
-              <article key={entry.motd_id}>
-                <h3>
-                  {parseLegacyMarkup(entry.title)}
-                  {entry.is_unseen && <span className="colLtGreen"> {label('motd.unseen')}</span>}
-                </h3>
-                <p className="colDkWhite">{entry.posted_at}</p>
-                <p>{parseLegacyMarkup(entry.body)}</p>
+              <LotdgSection
+                key={entry.motd_id}
+                titleSlot={
+                  <>
+                    {parseLegacyMarkup(entry.title)}
+                    {entry.is_unseen && (
+                      <LotdgInlineText colorClassName={LOTDG_TEXT_COLOR_CLASS_NAME.LIGHT_GREEN}>
+                        {' '}
+                        {label('motd.unseen')}
+                      </LotdgInlineText>
+                    )}
+                  </>
+                }
+              >
+                <LotdgText colorClassName={LOTDG_TEXT_COLOR_CLASS_NAME.DARK_WHITE}>
+                  {entry.posted_at}
+                </LotdgText>
+                <LotdgMarkupText sourceText={entry.body} />
 
                 {entry.motd_type === LOTDG_MOTD_TYPE.POLL && entry.poll_result !== null && (
-                  <p>
+                  <LotdgActionRow>
                     {entry.choice_list.map((choiceText, choiceIndex) => (
-                      <button
+                      <LotdgButton
                         key={choiceText}
-                        type="button"
-                        className="lotdg-button"
-                        disabled={entry.poll_result?.own_choice === choiceIndex}
-                        onClick={() => void vote(entry.motd_id, choiceIndex)}
-                      >
-                        {parseLegacyMarkup(choiceText)} (
-                        {entry.poll_result?.count_by_choice[String(choiceIndex)] ?? 0})
-                      </button>
-                    ))}{' '}
-                    {label('motd.total-vote', { total: entry.poll_result.total_vote })}
-                  </p>
+                        labelSlot={
+                          <>
+                            {parseLegacyMarkup(choiceText)} (
+                            {entry.poll_result?.count_by_choice[String(choiceIndex)] ?? 0})
+                          </>
+                        }
+                        isDisabled={entry.poll_result?.own_choice === choiceIndex}
+                        onSelect={() => void vote(entry.motd_id, choiceIndex)}
+                      />
+                    ))}
+                    <LotdgText>
+                      {label('motd.total-vote', { total: entry.poll_result.total_vote })}
+                    </LotdgText>
+                  </LotdgActionRow>
                 )}
-              </article>
+              </LotdgSection>
             ))
           )}
         </>
       )}
 
       <LotdgNoticeLine messageText={message} />
-    </section>
+    </LotdgScreen>
   )
 }

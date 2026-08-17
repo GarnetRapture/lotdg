@@ -1,0 +1,40 @@
+/**
+ * 6계층 — 알림. LotdgNoticeLine 의 한 줄 알림과 머리띠의 알림 링크다.
+ */
+.lotdg-notice-line {
+  margin: var(--lotdg-scale-space-normal) 0;
+  animation: var(--lotdg-effect-animation-notice-enter);
+}
+
+.lotdg-notice-link {
+  display: block;
+  width: var(--lotdg-scale-navigation-item-width);
+  max-width: 100%;
+  padding: var(--lotdg-scale-hairline);
+  font-weight: var(--lotdg-typography-weight-bold);
+  text-align: center;
+  color: var(--lotdg-text-notice);
+  border: var(--lotdg-scale-hairline) solid transparent;
+  border-radius: var(--lotdg-effect-radius-control);
+}
+
+.lotdg-notice-link:hover {
+  background-color: var(--lotdg-surface-notice-active);
+  border-color: var(--lotdg-text-notice);
+}
+
+.lotdg-shell__header-link > .lotdg-notice-link {
+  width: auto;
+}
+
+.lotdg-shell__header-link > .lotdg-notice-link + .lotdg-notice-link::before {
+  content: '';
+  display: inline-block;
+  width: calc(var(--lotdg-scale-hairline) * 3);
+  height: calc(var(--lotdg-scale-hairline) * 3);
+  margin-right: var(--lotdg-scale-space-wide);
+  margin-bottom: var(--lotdg-scale-space-tight);
+  background-color: var(--lotdg-edge-accent-strong);
+  border-radius: 50%;
+  vertical-align: middle;
+}

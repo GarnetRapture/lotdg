@@ -1,5 +1,8 @@
 {
   "group.language": "Language",
+  "group.theme": "Theme",
+  "theme.legacy": "Classic",
+  "theme.modern": "Modern",
   "group.combat": "Combat",
   "group.commerce": "Commerce",
   "group.village": "Village",

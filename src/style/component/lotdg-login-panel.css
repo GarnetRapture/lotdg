@@ -1,0 +1,27 @@
+/**
+ * 6계층 — 로그인 패널. reference/images/dragon.gif 를 배경으로 깔고 그 아래쪽 빈
+ * 자리에 입력칸을 앉히던 레거시 배치를 그대로 재현한다.
+ */
+.lotdg-login-panel {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--lotdg-scale-space-tight);
+  width: var(--lotdg-scale-login-panel-width);
+  height: var(--lotdg-scale-login-panel-height);
+  max-width: 100%;
+  padding-bottom: var(--lotdg-scale-login-panel-bottom);
+  background-image: var(--lotdg-asset-login-dragon);
+  background-repeat: no-repeat;
+  background-position: left top;
+  background-size: var(--lotdg-scale-login-panel-width) var(--lotdg-scale-login-dragon-height);
+  line-height: var(--lotdg-typography-line-height-tight);
+  text-align: center;
+  animation: var(--lotdg-effect-animation-panel-enter);
+}
+
+.lotdg-login-panel__field {
+  width: var(--lotdg-scale-login-field-width);
+  max-width: 100%;
+}

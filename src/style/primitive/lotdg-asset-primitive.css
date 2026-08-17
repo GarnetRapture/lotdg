@@ -1,0 +1,13 @@
+/**
+ * 1계층 — 에셋 원시값.
+ * public/asset/legacy/image 에 실재하는 파일만 가리킨다. 컴포넌트는 이 층을 직접
+ * 쓰지 않고 3계층(semantic)이 역할 이름으로 다시 묶는다.
+ */
+:root {
+  --lotdg-primitive-image-header-background: url('/asset/legacy/image/header-background.gif');
+  --lotdg-primitive-image-footer-rule: url('/asset/legacy/image/footer-rule.gif');
+  --lotdg-primitive-image-scene-village: url('/asset/legacy/image/scene-village.gif');
+  --lotdg-primitive-image-scene-forest: url('/asset/legacy/image/scene-forest.gif');
+  --lotdg-primitive-image-scene-castle: url('/asset/legacy/image/scene-castle.gif');
+  --lotdg-primitive-image-login-dragon: url('/asset/legacy/image/login-dragon.gif');
+}

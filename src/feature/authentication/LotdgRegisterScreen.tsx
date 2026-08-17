@@ -1,12 +1,29 @@
-import { useState, type FormEvent } from 'react'
+import { useState } from 'react'
 import { postForm } from '../../shared/lib/lotdg-api-client'
 import { lotdgRegisterResponseSchema } from '../../shared/schema/system/lotdg-api-response-schema'
 import { useLotdgSession } from '../../app/provider/useLotdgSession'
 import { resolveErrorLabel } from '../../shared/lib/lotdg-error-label'
 import { useLotdgLocale } from '../../i18n/useLotdgLocale'
 import { LOTDG_LOCALE_NAMESPACE } from '../../shared/constant/lotdg-supported-locale'
+import { LOTDG_SEX_CODE } from '../../shared/constant/lotdg-legacy-code'
+import { LOTDG_TEXT_COLOR_CLASS_NAME } from '../../shared/constant/lotdg-legacy-color-code'
+import { LOTDG_AUTOCOMPLETE_TOKEN } from '../../shared/constant/lotdg-form-token'
+import type { LotdgRegisterScreenProps } from '../../shared/type/lotdg-screen-contract'
+import {
+  LotdgActionRow,
+  LotdgButton,
+  LotdgFieldRow,
+  LotdgForm,
+  LotdgMessageList,
+  LotdgScreen,
+  LotdgSelectField,
+  LotdgSubmitButton,
+  LotdgTextField,
+} from '../../shared/ui'
 
-export function LotdgRegisterScreen({ onLoginClick }: { readonly onLoginClick: () => void }) {
+const LOTDG_AUTHENTICATION_LABEL_PREFIX = /^authentication\./
+
+export function LotdgRegisterScreen({ onLoginClick }: LotdgRegisterScreenProps) {
   const { signIn } = useLotdgSession()
   const { translate, localeCode } = useLotdgLocale()
 
@@ -14,12 +31,11 @@ export function LotdgRegisterScreen({ onLoginClick }: { readonly onLoginClick: (
   const [password, setPassword] = useState('')
   const [passwordConfirmation, setPasswordConfirmation] = useState('')
   const [emailAddress, setEmailAddress] = useState('')
-  const [sexCode, setSexCode] = useState(0)
+  const [sexCode, setSexCode] = useState<number>(LOTDG_SEX_CODE.MALE)
   const [errorKeyList, setErrorKeyList] = useState<string[]>([])
   const [isSubmitting, setIsSubmitting] = useState(false)
 
-  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault()
+  const handleSubmit = async () => {
     setErrorKeyList([])
     setIsSubmitting(true)
 

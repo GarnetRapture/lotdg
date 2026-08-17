@@ -1,5 +1,8 @@
 {
   "group.language": "语言",
+  "group.theme": "主题",
+  "theme.legacy": "经典",
+  "theme.modern": "现代",
   "group.combat": "战斗",
   "group.commerce": "商店",
   "group.village": "村庄",

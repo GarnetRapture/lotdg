@@ -1,5 +1,8 @@
 {
   "group.language": "Язык",
+  "group.theme": "Тема",
+  "theme.legacy": "Классическая",
+  "theme.modern": "Современная",
   "group.combat": "Бой",
   "group.commerce": "Торговля",
   "group.village": "Деревня",

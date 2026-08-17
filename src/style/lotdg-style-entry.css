@@ -1,3 +1,42 @@
-@import './lotdg-design-token.css';
-@import './lotdg-legacy-color-class.css';
-@import './lotdg-layout.css';
+/**
+ * 스타일 진입점. 아래 순서는 계층 순서 그 자체이며 뒤바꿀 수 없다 — 각 층은 자기
+ * 위층의 이름만 참조하고, 같은 이름을 다시 정의하는 쪽(theme)이 나중에 와야 한다.
+ *
+ *   1 primitive  실측 원시값(색·치수·글꼴·에셋). 아무것도 참조하지 않는다.
+ *   2 scale      1층 치수 × 뷰포트 배율. 최종 길이는 전부 여기서 나온다.
+ *   3 semantic   역할 이름(surface/text/edge/asset). 값은 1층에서 가져온다.
+ *   4 theme      3층 역할과 효과 토큰을 테마별로 다시 정의한다.
+ *   5 base       문서·태그 기본값. 3·4층만 참조한다.
+ *   6 component  클래스 규칙. 3·4층 이름만 쓰고 1층을 직접 만지지 않는다.
+ */
+
+/* 1 primitive */
+@import './primitive/lotdg-color-primitive.css';
+@import './primitive/lotdg-metric-primitive.css';
+@import './primitive/lotdg-typography-primitive.css';
+@import './primitive/lotdg-asset-primitive.css';
+
+/* 2 scale */
+@import './scale/lotdg-scale-token.css';
+
+/* 3 semantic */
+@import './semantic/lotdg-semantic-token.css';
+
+/* 4 theme */
+@import './theme/lotdg-theme-legacy.css';
+@import './theme/lotdg-theme-modern.css';
+
+/* 5 base */
+@import './base/lotdg-base-element.css';
+
+/* 6 component */
+@import './component/lotdg-text-color.css';
+@import './component/lotdg-shell.css';
+@import './component/lotdg-panel.css';
+@import './component/lotdg-navigation.css';
+@import './component/lotdg-stat.css';
+@import './component/lotdg-table.css';
+@import './component/lotdg-control.css';
+@import './component/lotdg-notice.css';
+@import './component/lotdg-section.css';
+@import './component/lotdg-login-panel.css';

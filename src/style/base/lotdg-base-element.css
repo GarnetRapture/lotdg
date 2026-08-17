@@ -1,0 +1,56 @@
+/**
+ * 5계층 — 기본 요소.
+ * 문서 뼈대와 태그 기본값만 다룬다. 컴포넌트 클래스는 하나도 정의하지 않으며,
+ * 값은 전부 3·4계층 토큰에서 온다.
+ */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  min-height: 100%;
+}
+
+body {
+  background-color: var(--lotdg-surface-page);
+  color: var(--lotdg-text-page);
+  font-family: var(--lotdg-typography-family-body);
+  font-size: var(--lotdg-scale-font-size-body);
+  line-height: var(--lotdg-typography-line-height-body);
+  text-rendering: var(--lotdg-effect-text-rendering);
+  -webkit-font-smoothing: var(--lotdg-effect-font-smoothing);
+}
+
+a {
+  color: var(--lotdg-text-anchor);
+  text-decoration: none;
+  transition:
+    background-color var(--lotdg-effect-transition-interactive),
+    border-color var(--lotdg-effect-transition-interactive),
+    color var(--lotdg-effect-transition-interactive);
+}
+
+:focus-visible {
+  outline: var(--lotdg-scale-hairline) solid var(--lotdg-edge-accent-strong);
+  outline-offset: var(--lotdg-scale-hairline);
+  box-shadow: var(--lotdg-effect-glow-focus);
+}
+
+img {
+  max-width: 100%;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}

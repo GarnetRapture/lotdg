@@ -8,16 +8,15 @@ import {
 import { resolveErrorLabel, resolveMessageKeyLabel } from '../../shared/lib/lotdg-error-label'
 import { useLotdgLocale } from '../../i18n/useLotdgLocale'
 import { LOTDG_LOCALE_NAMESPACE } from '../../shared/constant/lotdg-supported-locale'
+import { LOTDG_SHOP_TYPE_CODE } from '../../shared/constant/lotdg-legacy-code'
+import type { LotdgEquipmentShopScreenProps } from '../../shared/type/lotdg-screen-contract'
+import { LotdgButton, LotdgDataTable, LotdgNoticeLine, LotdgScreen, LotdgText } from '../../shared/ui'
 
 export function LotdgEquipmentShopScreen({
   characterId,
   shopType,
   onStateChange,
-}: {
-  readonly characterId: number
-  readonly shopType: 'weapon' | 'armor'
-  readonly onStateChange: () => void
-}) {
+}: LotdgEquipmentShopScreenProps) {
   const { translate } = useLotdgLocale()
   const [browse, setBrowse] = useState<LotdgShopBrowse | null>(null)
   const [message, setMessage] = useState('')
@@ -56,52 +55,55 @@ export function LotdgEquipmentShopScreen({
     }
   }
 
-  return (
-    <section>
-      <h2>{label(shopType === 'weapon' ? 'shop.weapon.title' : 'shop.armor.title')}</h2>
+  const isWeaponShop = shopType === LOTDG_SHOP_TYPE_CODE.WEAPON
 
+  return (
+    <LotdgScreen titleText={label(isWeaponShop ? 'shop.weapon.title' : 'shop.armor.title')}>
       {browse !== null && (
         <>
-          <p>
+          <LotdgText>
             {label('shop.trade-in', {
               value: browse.trade_in_value,
               gold: browse.gold,
             })}
-          </p>
+          </LotdgText>
 
-          <table className="lotdg-stat">
-            <tbody>
-              <tr>
-                <th className="lotdg-stat__head">{label('shop.column.name')}</th>
-                <th className="lotdg-stat__head">
-                  {label(shopType === 'weapon' ? 'shop.column.damage' : 'shop.column.defense')}
-                </th>
-                <th className="lotdg-stat__head">{label('shop.column.price')}</th>
-                <th className="lotdg-stat__head">{label('shop.column.action')}</th>
-              </tr>
-              {browse.item_list.map((item) => (
-                <tr key={item.item_id}>
-                  <td className="lotdg-stat__value">{item.item_name}</td>
-                  <td className="lotdg-stat__value">{item.power}</td>
-                  <td className="lotdg-stat__value">{item.price}</td>
-                  <td className="lotdg-stat__value">
-                    <button
-                      type="button"
-                      className="lotdg-button"
-                      onClick={() => void buy(item.item_id)}
-                      disabled={!item.affordable}
-                    >
-                      {label('shop.action.buy')}
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+          <LotdgDataTable
+            rowList={browse.item_list}
+            rowKey={(item) => item.item_id}
+            columnList={[
+              {
+                columnKey: 'name',
+                headText: label('shop.column.name'),
+                render: (item) => item.item_name,
+              },
+              {
+                columnKey: 'power',
+                headText: label(isWeaponShop ? 'shop.column.damage' : 'shop.column.defense'),
+                render: (item) => item.power,
+              },
+              {
+                columnKey: 'price',
+                headText: label('shop.column.price'),
+                render: (item) => item.price,
+              },
+              {
+                columnKey: 'action',
+                headText: label('shop.column.action'),
+                render: (item) => (
+                  <LotdgButton
+                    labelSlot={label('shop.action.buy')}
+                    isDisabled={!item.affordable}
+                    onSelect={() => void buy(item.item_id)}
+                  />
+                ),
+              },
+            ]}
+          />
         </>
       )}
 
-      {message !== '' && <p className="colLtYellow">{message}</p>}
-    </section>
+      <LotdgNoticeLine messageText={message} />
+    </LotdgScreen>
   )
 }

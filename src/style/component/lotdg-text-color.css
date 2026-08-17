@@ -1,0 +1,70 @@
+/**
+ * 6계층 — 콘솔 글자색.
+ * 클래스 이름은 레거시 마크업 파서(src/shared/lib/lotdg-legacy-markup-parser.tsx)가
+ * LOTDG_LEGACY_COLOR_CODE_TO_CLASS_NAME 으로 생성하는 이름이라 바꿀 수 없다. 값만
+ * 3계층 역할 토큰에서 가져온다.
+ */
+.colDkBlue {
+  color: var(--lotdg-text-console-dark-blue);
+}
+
+.colDkGreen {
+  color: var(--lotdg-text-console-dark-green);
+}
+
+.colDkCyan {
+  color: var(--lotdg-text-console-dark-cyan);
+}
+
+.colDkRed {
+  color: var(--lotdg-text-console-dark-red);
+}
+
+.colDkMagenta {
+  color: var(--lotdg-text-console-dark-magenta);
+}
+
+.colDkYellow {
+  color: var(--lotdg-text-console-dark-yellow);
+}
+
+.colDkWhite {
+  color: var(--lotdg-text-console-dark-white);
+}
+
+.colLtBlue {
+  color: var(--lotdg-text-console-light-blue);
+}
+
+.colLtGreen {
+  color: var(--lotdg-text-console-light-green);
+}
+
+.colLtCyan {
+  color: var(--lotdg-text-console-light-cyan);
+}
+
+.colLtRed {
+  color: var(--lotdg-text-console-light-red);
+}
+
+.colLtMagenta {
+  color: var(--lotdg-text-console-light-magenta);
+}
+
+.colLtYellow {
+  color: var(--lotdg-text-console-light-yellow);
+}
+
+.colLtWhite {
+  color: var(--lotdg-text-console-light-white);
+}
+
+.colLtBlack {
+  color: var(--lotdg-text-console-light-black);
+}
+
+.navhi {
+  color: var(--lotdg-text-navigation-hotkey);
+  text-decoration: underline;
+}

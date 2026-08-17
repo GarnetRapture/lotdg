@@ -1,7 +1,9 @@
+import { LOTDG_TEXT_COLOR_CLASS_NAME } from './lotdg-legacy-color-code'
+
 export const LOTDG_NOTICE_TONE = {
-  INFORMATION: 'colLtYellow',
-  SUCCESS: 'colLtGreen',
-  FAILURE: 'colLtRed',
+  INFORMATION: LOTDG_TEXT_COLOR_CLASS_NAME.LIGHT_YELLOW,
+  SUCCESS: LOTDG_TEXT_COLOR_CLASS_NAME.LIGHT_GREEN,
+  FAILURE: LOTDG_TEXT_COLOR_CLASS_NAME.LIGHT_RED,
 } as const
 
 export type LotdgNoticeTone = (typeof LOTDG_NOTICE_TONE)[keyof typeof LOTDG_NOTICE_TONE]

@@ -8,14 +8,13 @@ import {
 import { resolveErrorLabel, resolveMessageKeyLabel } from '../../shared/lib/lotdg-error-label'
 import { useLotdgLocale } from '../../i18n/useLotdgLocale'
 import { LOTDG_LOCALE_NAMESPACE } from '../../shared/constant/lotdg-supported-locale'
+import type { LotdgMutableScreenProps } from '../../shared/type/lotdg-screen-contract'
+import { LotdgButton, LotdgDataTable, LotdgNoticeLine, LotdgScreen, LotdgText } from '../../shared/ui'
 
 export function LotdgPlayerVersusPlayerScreen({
   characterId,
   onStateChange,
-}: {
-  readonly characterId: number
-  readonly onStateChange: () => void
-}) {
+}: LotdgMutableScreenProps) {
   const { translate } = useLotdgLocale()
   const [targetList, setTargetList] = useState<LotdgPvpList | null>(null)
   const [message, setMessage] = useState('')
@@ -63,42 +62,42 @@ export function LotdgPlayerVersusPlayerScreen({
   }
 
   return (
-    <section>
-      <h2>{label('pvp.title')}</h2>
-
+    <LotdgScreen titleText={label('pvp.title')}>
       {targetList !== null && (
         <>
-          <p>{label('pvp.remaining', { count: targetList.player_fight })}</p>
+          <LotdgText>{label('pvp.remaining', { count: targetList.player_fight })}</LotdgText>
 
-          <table className="lotdg-stat">
-            <tbody>
-              <tr>
-                <th className="lotdg-stat__head">{label('pvp.column.name')}</th>
-                <th className="lotdg-stat__head">{label('pvp.column.level')}</th>
-                <th className="lotdg-stat__head">{label('pvp.column.action')}</th>
-              </tr>
-              {targetList.target_list.map((target) => (
-                <tr key={target.character_id}>
-                  <td className="lotdg-stat__value">{target.display_name}</td>
-                  <td className="lotdg-stat__value">{target.level}</td>
-                  <td className="lotdg-stat__value">
-                    <button
-                      type="button"
-                      className="lotdg-button"
-                      onClick={() => void attack(target.character_id)}
-                      disabled={!target.attackable}
-                    >
-                      {label('pvp.action.attack')}
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+          <LotdgDataTable
+            rowList={targetList.target_list}
+            rowKey={(target) => target.character_id}
+            columnList={[
+              {
+                columnKey: 'name',
+                headText: label('pvp.column.name'),
+                render: (target) => target.display_name,
+              },
+              {
+                columnKey: 'level',
+                headText: label('pvp.column.level'),
+                render: (target) => target.level,
+              },
+              {
+                columnKey: 'action',
+                headText: label('pvp.column.action'),
+                render: (target) => (
+                  <LotdgButton
+                    labelSlot={label('pvp.action.attack')}
+                    isDisabled={!target.attackable}
+                    onSelect={() => void attack(target.character_id)}
+                  />
+                ),
+              },
+            ]}
+          />
         </>
       )}
 
-      {message !== '' && <p className="colLtYellow">{message}</p>}
-    </section>
+      <LotdgNoticeLine messageText={message} />
+    </LotdgScreen>
   )
 }

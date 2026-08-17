@@ -1,0 +1,72 @@
+/**
+ * 6계층 — 좌측 네비게이션. LotdgNavigationGroup / LotdgNavigationItem 이 쓴다.
+ */
+
+/**
+ * 레거시는 제목 양옆을 &#151; 문자로 감쌌다. 글꼴에 따라 두부 문자로 떨어지므로
+ * 같은 모양을 문자가 아닌 선으로 그린다.
+ */
+.lotdg-navigation__head {
+  display: flex;
+  align-items: center;
+  gap: var(--lotdg-scale-space-snug);
+  width: var(--lotdg-scale-navigation-head-width);
+  max-width: 100%;
+  padding: var(--lotdg-scale-hairline) var(--lotdg-scale-space-snug);
+  line-height: var(--lotdg-typography-line-height-navigation-head);
+  font-weight: var(--lotdg-typography-weight-bold);
+  letter-spacing: var(--lotdg-typography-letter-spacing-head);
+  text-align: center;
+  color: var(--lotdg-text-navigation-head);
+  background-color: var(--lotdg-surface-navigation-head);
+  background-image: var(--lotdg-effect-sheen-head);
+  border-top: var(--lotdg-scale-hairline) solid var(--lotdg-edge-accent);
+  border-bottom: var(--lotdg-scale-hairline) solid var(--lotdg-edge-accent);
+  cursor: default;
+}
+
+.lotdg-navigation__head::before,
+.lotdg-navigation__head::after {
+  content: '';
+  flex: 1;
+  height: var(--lotdg-scale-hairline);
+  background-color: currentColor;
+  opacity: 0.6;
+}
+
+.lotdg-navigation__item {
+  display: block;
+  width: var(--lotdg-scale-navigation-item-width);
+  max-width: 100%;
+  padding: var(--lotdg-scale-hairline);
+  border: var(--lotdg-scale-hairline) solid transparent;
+}
+
+.lotdg-navigation__item:hover {
+  background-color: var(--lotdg-surface-navigation-hover);
+  border-top-color: var(--lotdg-edge-navigation-hover-light);
+  border-left-color: var(--lotdg-edge-navigation-hover-light);
+  border-bottom-color: var(--lotdg-edge-navigation-hover-dark);
+  border-right-color: var(--lotdg-edge-navigation-hover-dark);
+}
+
+/**
+ * 선택 상태. 레거시는 &#149; 문자를 앞에 붙였으나 글꼴 의존이 커서, 왼쪽 금색 표식과
+ * 글자색으로 대체한다.
+ */
+.lotdg-navigation__item[aria-current='true'] {
+  color: var(--lotdg-text-navigation-head);
+  border-color: var(--lotdg-edge-accent);
+  border-left-width: calc(var(--lotdg-scale-hairline) * 3);
+  border-left-color: var(--lotdg-edge-accent-strong);
+  padding-left: var(--lotdg-scale-space-tight);
+}
+
+.lotdg-navigation__help {
+  display: block;
+  width: var(--lotdg-scale-navigation-item-width);
+  max-width: 100%;
+  padding: var(--lotdg-scale-hairline);
+  border: var(--lotdg-scale-hairline) solid transparent;
+  cursor: default;
+}

@@ -8,17 +8,26 @@ import {
 import { resolveErrorLabel, resolveMessageKeyLabel } from '../../shared/lib/lotdg-error-label'
 import { useLotdgLocale } from '../../i18n/useLotdgLocale'
 import { LOTDG_LOCALE_NAMESPACE } from '../../shared/constant/lotdg-supported-locale'
+import { LOTDG_TEXT_COLOR_CLASS_NAME } from '../../shared/constant/lotdg-legacy-color-code'
+import type { LotdgMutableScreenProps } from '../../shared/type/lotdg-screen-contract'
+import {
+  LotdgActionRow,
+  LotdgButton,
+  LotdgNoticeLine,
+  LotdgScreen,
+  LotdgText,
+} from '../../shared/ui'
 import type { z } from 'zod'
 
 type GraveyardAction = z.infer<typeof lotdgGraveyardActionSchema>
 
-export function LotdgGraveyardScreen({
-  characterId,
-  onStateChange,
-}: {
-  readonly characterId: number
-  readonly onStateChange: () => void
-}) {
+const LOTDG_GRAVEYARD_ACTION_CODE = {
+  SEARCH: 'search',
+  FIGHT: 'fight',
+  RESTORE: 'restore',
+} as const
+
+export function LotdgGraveyardScreen({ characterId, onStateChange }: LotdgMutableScreenProps) {
   const { translate } = useLotdgLocale()
   const [inspect, setInspect] = useState<LotdgGraveyardInspect | null>(null)
   const [lastAction, setLastAction] = useState<GraveyardAction | null>(null)
@@ -62,57 +71,58 @@ export function LotdgGraveyardScreen({
   }
 
   return (
-    <section>
-      <h2>{label('graveyard.title')}</h2>
-
+    <LotdgScreen titleText={label('graveyard.title')}>
       {inspect !== null && (
         <>
-          <p>
+          <LotdgText>
             {label('graveyard.status', {
               soulPoint: inspect.soul_point,
               maximumSoulPoint: inspect.maximum_soul_point,
               graveFight: inspect.grave_fight,
               deathPower: inspect.death_power,
             })}
-          </p>
+          </LotdgText>
 
-          <p>
-            <button type="button" className="lotdg-button" onClick={() => void act('search')}>
-              {label('graveyard.action.search')}
-            </button>{' '}
-            <button type="button" className="lotdg-button" onClick={() => void act('fight')}>
-              {label('graveyard.action.fight')}
-            </button>{' '}
-            <button
-              type="button"
-              className="lotdg-button"
-              onClick={() => void act('restore')}
-              disabled={inspect.death_power < inspect.restore_favor_cost}
-            >
-              {label('graveyard.action.restore', { cost: inspect.restore_favor_cost })}
-            </button>
-          </p>
+          <LotdgActionRow>
+            <LotdgButton
+              labelSlot={label('graveyard.action.search')}
+              onSelect={() => void act(LOTDG_GRAVEYARD_ACTION_CODE.SEARCH)}
+            />
+            <LotdgButton
+              labelSlot={label('graveyard.action.fight')}
+              onSelect={() => void act(LOTDG_GRAVEYARD_ACTION_CODE.FIGHT)}
+            />
+            <LotdgButton
+              labelSlot={label('graveyard.action.restore', { cost: inspect.restore_favor_cost })}
+              isDisabled={inspect.death_power < inspect.restore_favor_cost}
+              onSelect={() => void act(LOTDG_GRAVEYARD_ACTION_CODE.RESTORE)}
+            />
+          </LotdgActionRow>
         </>
       )}
 
       {lastAction?.enemy !== undefined && (
-        <p className="colLtYellow">
+        <LotdgText colorClassName={LOTDG_TEXT_COLOR_CLASS_NAME.LIGHT_YELLOW}>
           {label('graveyard.encounter', {
             name: lastAction.enemy.creature_name,
             health: lastAction.enemy.health,
           })}
-        </p>
+        </LotdgText>
       )}
 
       {lastAction?.victory === true && (
-        <p className="colLtGreen">
+        <LotdgText colorClassName={LOTDG_TEXT_COLOR_CLASS_NAME.LIGHT_GREEN}>
           {label('graveyard.victory', { favor: lastAction.favor_gained ?? 0 })}
-        </p>
+        </LotdgText>
       )}
 
-      {lastAction?.defeat === true && <p className="colLtRed">{label('graveyard.defeat')}</p>}
+      {lastAction?.defeat === true && (
+        <LotdgText colorClassName={LOTDG_TEXT_COLOR_CLASS_NAME.LIGHT_RED}>
+          {label('graveyard.defeat')}
+        </LotdgText>
+      )}
 
-      {message !== '' && <p className="colLtYellow">{message}</p>}
-    </section>
+      <LotdgNoticeLine messageText={message} />
+    </LotdgScreen>
   )
 }

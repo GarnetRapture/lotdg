@@ -1,5 +1,8 @@
 {
   "group.language": "언어",
+  "group.theme": "테마",
+  "theme.legacy": "고전",
+  "theme.modern": "현대",
   "group.combat": "전투",
   "group.commerce": "상점",
   "group.village": "마을",

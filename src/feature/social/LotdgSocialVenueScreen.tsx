@@ -1,22 +1,28 @@
-import { useCallback, useEffect, useState, type FormEvent } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { getJson, postForm } from '../../shared/lib/lotdg-api-client'
 import {
   lotdgSocialVenueEnterSchema,
   type LotdgSocialVenueEnter,
 } from '../../shared/schema/social/lotdg-social-response-schema'
 import { lotdgCommentaryPostSchema } from '../../shared/schema/social/lotdg-commentary-schema'
-import { parseLegacyMarkup } from '../../shared/lib/lotdg-legacy-markup-parser'
 import { resolveErrorLabel, resolveMessageKeyLabel } from '../../shared/lib/lotdg-error-label'
 import { useLotdgLocale } from '../../i18n/useLotdgLocale'
 import { LOTDG_LOCALE_NAMESPACE } from '../../shared/constant/lotdg-supported-locale'
-import type { LotdgSocialVenueCode } from '../../shared/constant/lotdg-legacy-code'
-import { LotdgNoticeLine } from '../../shared/ui/LotdgNoticeLine'
-import type { LotdgCharacterScreenProps } from '../../shared/type/lotdg-screen-contract'
+import { LOTDG_TEXT_COLOR_CLASS_NAME } from '../../shared/constant/lotdg-legacy-color-code'
+import { LOTDG_COMMENT_MAXIMUM_LENGTH } from '../../shared/constant/lotdg-commentary-section-code'
+import type { LotdgSocialVenueScreenProps } from '../../shared/type/lotdg-screen-contract'
+import {
+  LotdgCommentLine,
+  LotdgFieldRow,
+  LotdgForm,
+  LotdgNoticeLine,
+  LotdgScreen,
+  LotdgSubmitButton,
+  LotdgText,
+  LotdgTextField,
+} from '../../shared/ui'
 
-export function LotdgSocialVenueScreen({
-  characterId,
-  venueCode,
-}: LotdgCharacterScreenProps & { readonly venueCode: LotdgSocialVenueCode }) {
+export function LotdgSocialVenueScreen({ characterId, venueCode }: LotdgSocialVenueScreenProps) {
   const { translate } = useLotdgLocale()
   const [venue, setVenue] = useState<LotdgSocialVenueEnter | null>(null)
   const [commentText, setCommentText] = useState('')
@@ -37,9 +43,7 @@ export function LotdgSocialVenueScreen({
   const label = (path: string, valueMap?: Record<string, string | number>) =>
     translate(LOTDG_LOCALE_NAMESPACE.SOCIAL, path, valueMap)
 
-  const post = async (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault()
-
+  const post = async () => {
     if (commentText.trim() === '') {
       return
     }
@@ -66,45 +70,45 @@ export function LotdgSocialVenueScreen({
   }
 
   return (
-    <section>
-      <h2>{label(`venue.${venueCode}.title`)}</h2>
-
-      <p>{label(`venue.${venueCode}.description`)}</p>
+    <LotdgScreen titleText={label(`venue.${venueCode}.title`)}>
+      <LotdgText>{label(`venue.${venueCode}.description`)}</LotdgText>
 
       {venue !== null && venue.entered && (
         <>
           {(venue.comment_list ?? []).length === 0 ? (
-            <p className="colDkWhite">{label('venue.empty')}</p>
+            <LotdgText colorClassName={LOTDG_TEXT_COLOR_CLASS_NAME.DARK_WHITE}>
+              {label('venue.empty')}
+            </LotdgText>
           ) : (
             (venue.comment_list ?? []).map((entry) => (
-              <p key={entry.commentary_id}>
-                <span className="colLtWhite">{entry.display_name}</span>{' '}
-                {parseLegacyMarkup(entry.comment_text)}
-              </p>
+              <LotdgCommentLine
+                key={entry.commentary_id}
+                authorName={entry.display_name}
+                commentText={entry.comment_text}
+              />
             ))
           )}
 
-          <form onSubmit={(event) => void post(event)}>
-            <p>
-              <input
-                className="lotdg-input"
+          <LotdgForm onSubmit={() => void post()}>
+            <LotdgFieldRow>
+              <LotdgTextField
                 value={commentText}
-                maxLength={200}
-                onChange={(event) => setCommentText(event.target.value)}
-              />{' '}
-              <button type="submit" className="lotdg-button">
-                {label('venue.action.post')}
-              </button>
-            </p>
-          </form>
+                maximumLength={LOTDG_COMMENT_MAXIMUM_LENGTH}
+                onValueChange={setCommentText}
+              />
+              <LotdgSubmitButton labelSlot={label('venue.action.post')} />
+            </LotdgFieldRow>
+          </LotdgForm>
         </>
       )}
 
       {venue !== null && !venue.entered && (
-        <p className="colLtRed">{resolveMessageKeyLabel(venue.message_key, translate)}</p>
+        <LotdgText colorClassName={LOTDG_TEXT_COLOR_CLASS_NAME.LIGHT_RED}>
+          {resolveMessageKeyLabel(venue.message_key, translate)}
+        </LotdgText>
       )}
 
       <LotdgNoticeLine messageText={message} />
-    </section>
+    </LotdgScreen>
   )
 }

@@ -82,60 +82,62 @@ export function LotdgAdministrationScreen({ characterId }: { readonly characterI
         />
       </p>
 
-      <table className="lotdg-stat">
-        <tbody>
-          <tr>
-            <th className="lotdg-stat__head">{label('administration.column.login-name')}</th>
-            <th className="lotdg-stat__head">{label('administration.column.display-name')}</th>
-            <th className="lotdg-stat__head">{label('administration.column.level')}</th>
-            <th className="lotdg-stat__head">{label('administration.column.superuser-level')}</th>
-            <th className="lotdg-stat__head">{label('administration.column.action')}</th>
-          </tr>
-          {accountList?.account_list.map((account) => (
-            <tr key={account.account_id}>
-              <td className="lotdg-stat__value">{account.login_name}</td>
-              <td className="lotdg-stat__value">{account.display_name}</td>
-              <td className="lotdg-stat__value">{account.level ?? '-'}</td>
-              <td className="lotdg-stat__value">
-                <select
-                  className="lotdg-select"
-                  value={account.superuser_level}
-                  onChange={(event) =>
-                    void mutate('account-level', {
-                      target_account_id: account.account_id,
-                      superuser_level: event.target.value,
-                    })
-                  }
-                >
-                  {[0, 1, 2, 3].map((level) => (
-                    <option key={level} value={level}>
-                      {level}
-                    </option>
-                  ))}
-                </select>
-              </td>
-              <td className="lotdg-stat__value">
-                <button
-                  type="button"
-                  className="lotdg-button"
-                  onClick={() =>
-                    void mutate('account-lock', {
-                      target_account_id: account.account_id,
-                      is_locked: account.is_locked ? '0' : '1',
-                    })
-                  }
-                >
-                  {label(
-                    account.is_locked
-                      ? 'administration.action.unlock'
-                      : 'administration.action.lock',
-                  )}
-                </button>
-              </td>
+      <div className="lotdg-table-scroll">
+        <table className="lotdg-table">
+          <tbody>
+            <tr>
+              <th>{label('administration.column.login-name')}</th>
+              <th>{label('administration.column.display-name')}</th>
+              <th>{label('administration.column.level')}</th>
+              <th>{label('administration.column.superuser-level')}</th>
+              <th>{label('administration.column.action')}</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+            {accountList?.account_list.map((account) => (
+              <tr key={account.account_id}>
+                <td>{account.login_name}</td>
+                <td>{account.display_name}</td>
+                <td>{account.level ?? '-'}</td>
+                <td>
+                  <select
+                    className="lotdg-select"
+                    value={account.superuser_level}
+                    onChange={(event) =>
+                      void mutate('account-level', {
+                        target_account_id: account.account_id,
+                        superuser_level: event.target.value,
+                      })
+                    }
+                  >
+                    {[0, 1, 2, 3].map((level) => (
+                      <option key={level} value={level}>
+                        {level}
+                      </option>
+                    ))}
+                  </select>
+                </td>
+                <td>
+                  <button
+                    type="button"
+                    className="lotdg-button"
+                    onClick={() =>
+                      void mutate('account-lock', {
+                        target_account_id: account.account_id,
+                        is_locked: account.is_locked ? '0' : '1',
+                      })
+                    }
+                  >
+                    {label(
+                      account.is_locked
+                        ? 'administration.action.unlock'
+                        : 'administration.action.lock',
+                    )}
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
 
       {message !== '' && <p className="colLtRed">{message}</p>}
     </section>

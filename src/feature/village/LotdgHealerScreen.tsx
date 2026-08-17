@@ -8,9 +8,16 @@ import {
 import { resolveErrorLabel, resolveMessageKeyLabel } from '../../shared/lib/lotdg-error-label'
 import { useLotdgLocale } from '../../i18n/useLotdgLocale'
 import { LOTDG_LOCALE_NAMESPACE } from '../../shared/constant/lotdg-supported-locale'
-import { LotdgDataTable } from '../../shared/ui/LotdgDataTable'
-import { LotdgNoticeLine } from '../../shared/ui/LotdgNoticeLine'
+import { LOTDG_TEXT_COLOR_CLASS_NAME } from '../../shared/constant/lotdg-legacy-color-code'
+import { LOTDG_COMMENTARY_SECTION_CODE } from '../../shared/constant/lotdg-commentary-section-code'
 import type { LotdgMutableScreenProps } from '../../shared/type/lotdg-screen-contract'
+import {
+  LotdgButton,
+  LotdgDataTable,
+  LotdgNoticeLine,
+  LotdgScreen,
+  LotdgText,
+} from '../../shared/ui'
 import { LotdgCommentaryBoard } from '../social/LotdgCommentaryBoard'
 
 export function LotdgHealerScreen({ characterId, onStateChange }: LotdgMutableScreenProps) {
@@ -57,20 +64,24 @@ export function LotdgHealerScreen({ characterId, onStateChange }: LotdgMutableSc
   }
 
   return (
-    <section>
-      <h2>{label(healer?.is_golinda === true ? 'healer.title-golinda' : 'healer.title')}</h2>
-
+    <LotdgScreen
+      titleText={label(healer?.is_golinda === true ? 'healer.title-golinda' : 'healer.title')}
+    >
       {healer !== null && (
         <>
-          <p>
+          <LotdgText>
             {label('healer.status', {
               hitPoint: healer.hit_point,
               maxHitPoint: healer.max_hit_point,
               gold: healer.gold,
             })}
-          </p>
+          </LotdgText>
 
-          {healer.is_golinda && <p className="colLtGreen">{label('healer.golinda-discount')}</p>}
+          {healer.is_golinda && (
+            <LotdgText colorClassName={LOTDG_TEXT_COLOR_CLASS_NAME.LIGHT_GREEN}>
+              {label('healer.golinda-discount')}
+            </LotdgText>
+          )}
 
           {healer.needs_healing ? (
             <LotdgDataTable
@@ -91,27 +102,29 @@ export function LotdgHealerScreen({ characterId, onStateChange }: LotdgMutableSc
                   columnKey: 'action',
                   headText: label('healer.column.action'),
                   render: (option) => (
-                    <button
-                      type="button"
-                      className="lotdg-button"
-                      disabled={healer.gold < option.price}
-                      onClick={() => void buyPotion(option.percent)}
-                    >
-                      {label('healer.action.buy')}
-                    </button>
+                    <LotdgButton
+                      labelSlot={label('healer.action.buy')}
+                      isDisabled={healer.gold < option.price}
+                      onSelect={() => void buyPotion(option.percent)}
+                    />
                   ),
                 },
               ]}
             />
           ) : (
-            <p className="colLtGreen">{label('healer.already-full')}</p>
+            <LotdgText colorClassName={LOTDG_TEXT_COLOR_CLASS_NAME.LIGHT_GREEN}>
+              {label('healer.already-full')}
+            </LotdgText>
           )}
         </>
       )}
 
       <LotdgNoticeLine messageText={message} />
 
-      <LotdgCommentaryBoard characterId={characterId} sectionCode="healer" />
-    </section>
+      <LotdgCommentaryBoard
+        characterId={characterId}
+        sectionCode={LOTDG_COMMENTARY_SECTION_CODE.HEALER}
+      />
+    </LotdgScreen>
   )
 }

@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState, type FormEvent } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { getJson, postForm } from '../../shared/lib/lotdg-api-client'
 import {
   lotdgPetitionListSchema,
@@ -8,8 +8,20 @@ import {
 import { resolveErrorLabel, resolveMessageKeyLabel } from '../../shared/lib/lotdg-error-label'
 import { useLotdgLocale } from '../../i18n/useLotdgLocale'
 import { LOTDG_LOCALE_NAMESPACE } from '../../shared/constant/lotdg-supported-locale'
+import { LOTDG_TEXT_COLOR_CLASS_NAME } from '../../shared/constant/lotdg-legacy-color-code'
+import type { LotdgCharacterScreenProps } from '../../shared/type/lotdg-screen-contract'
+import {
+  LotdgFieldRow,
+  LotdgForm,
+  LotdgInlineText,
+  LotdgNoticeLine,
+  LotdgScreen,
+  LotdgSubmitButton,
+  LotdgText,
+  LotdgTextAreaField,
+} from '../../shared/ui'
 
-export function LotdgPetitionScreen({ characterId }: { readonly characterId: number }) {
+export function LotdgPetitionScreen({ characterId }: LotdgCharacterScreenProps) {
   const { translate } = useLotdgLocale()
   const [petitionList, setPetitionList] = useState<LotdgPetitionList | null>(null)
   const [body, setBody] = useState('')
@@ -30,9 +42,7 @@ export function LotdgPetitionScreen({ characterId }: { readonly characterId: num
     reload()
   }, [reload])
 
-  const submit = async (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault()
-
+  const submit = async () => {
     try {
       const result = await postForm('/petition/submit', lotdgPetitionMutationSchema, {
         character_id: characterId,
@@ -52,40 +62,34 @@ export function LotdgPetitionScreen({ characterId }: { readonly characterId: num
   }
 
   return (
-    <section>
-      <h2>{label('petition.title')}</h2>
-
+    <LotdgScreen titleText={label('petition.title')}>
       {petitionList !== null && (
-        <p>
+        <LotdgText>
           {label('petition.summary', {
             unseen: petitionList.status_summary.unseen,
             seen: petitionList.status_summary.seen,
             closed: petitionList.status_summary.closed,
           })}
-        </p>
+        </LotdgText>
       )}
 
-      <form onSubmit={submit}>
-        <p>
-          <textarea
-            className="lotdg-input"
-            rows={4}
-            value={body}
-            onChange={(event) => setBody(event.target.value)}
-          />
-        </p>
-        <button type="submit" className="lotdg-button">
-          {label('petition.action.submit')}
-        </button>
-      </form>
+      <LotdgForm onSubmit={() => void submit()}>
+        <LotdgFieldRow isStacked>
+          <LotdgTextAreaField value={body} onValueChange={setBody} />
+          <LotdgSubmitButton labelSlot={label('petition.action.submit')} />
+        </LotdgFieldRow>
+      </LotdgForm>
 
       {petitionList?.petition_list.map((petition) => (
-        <p key={petition.petition_id}>
-          <span className="colLtWhite">{petition.display_name}</span> {petition.body}
-        </p>
+        <LotdgText key={petition.petition_id}>
+          <LotdgInlineText colorClassName={LOTDG_TEXT_COLOR_CLASS_NAME.LIGHT_WHITE}>
+            {petition.display_name}
+          </LotdgInlineText>{' '}
+          {petition.body}
+        </LotdgText>
       ))}
 
-      {message !== '' && <p className="colLtYellow">{message}</p>}
-    </section>
+      <LotdgNoticeLine messageText={message} />
+    </LotdgScreen>
   )
 }

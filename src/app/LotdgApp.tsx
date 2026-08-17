@@ -1,15 +1,22 @@
 import { useCallback, useEffect, useState } from 'react'
 import { LotdgShellLayout } from './layout/LotdgShellLayout'
+import { LOTDG_STAGE_SCENE_CODE, resolveStageSceneCode } from './layout/lotdg-stage-scene-code'
 import { LotdgLocaleProvider } from '../i18n/LotdgLocaleContext'
 import { useLotdgLocale } from '../i18n/useLotdgLocale'
 import { useLotdgLocalePersistence } from '../i18n/useLotdgLocalePersistence'
 import { LotdgSessionProvider } from './provider/LotdgSessionContext'
+import { LotdgThemeProvider } from './provider/LotdgThemeContext'
 import { useLotdgSession } from './provider/useLotdgSession'
+import { LotdgLocaleMenu } from './layout/LotdgLocaleMenu'
+import { LotdgThemeMenu } from './layout/LotdgThemeMenu'
+import { LOTDG_LOCALE_NAMESPACE } from '../shared/constant/lotdg-supported-locale'
 import {
-  LOTDG_LOCALE_NAMESPACE,
-  LOTDG_SUPPORTED_LOCALE_CODE_LIST,
-  LOTDG_SUPPORTED_LOCALE_ENDONYM,
-} from '../shared/constant/lotdg-supported-locale'
+  LOTDG_ATTRIBUTION_TEXT,
+  LOTDG_TITLE_BANNER_ALTERNATIVE_TEXT,
+} from '../shared/constant/lotdg-attribution'
+import { LotdgNavigationGroup } from '../shared/ui/LotdgNavigationGroup'
+import { LotdgNavigationItem } from '../shared/ui/LotdgNavigationItem'
+import { LotdgNoticeLink } from '../shared/ui/LotdgNoticeLink'
 import {
   LOTDG_SCREEN_CODE,
   LOTDG_SCREEN_TITLE_LABEL_PATH,
@@ -51,7 +58,10 @@ import { LotdgMessageOfTheDayScreen } from '../feature/social/LotdgMessageOfTheD
 import { LotdgPreferenceScreen } from '../feature/account/LotdgPreferenceScreen'
 import { LotdgAdministrationScreen } from '../feature/administration/LotdgAdministrationScreen'
 import { LotdgCharacterStatPanel } from '../feature/character/LotdgCharacterStatPanel'
-import { LOTDG_SOCIAL_VENUE_CODE } from '../shared/constant/lotdg-legacy-code'
+import {
+  LOTDG_SHOP_TYPE_CODE,
+  LOTDG_SOCIAL_VENUE_CODE,
+} from '../shared/constant/lotdg-legacy-code'
 
 const NAVIGATION_GROUP: ReadonlyArray<{
   readonly headLabelPath: string
@@ -108,32 +118,13 @@ const NAVIGATION_GROUP: ReadonlyArray<{
   },
 ]
 
-function LotdgLocaleMenu({ characterId }: { readonly characterId: number | null }) {
-  const { translate } = useLotdgLocale()
-  const { localeCode, changeLocaleCode } = useLotdgLocalePersistence(characterId)
+const LOTDG_LOGOUT_HASH_CODE = 'logout'
 
-  return (
-    <>
-      <span className="lotdg-navigation__head">
-        {translate(LOTDG_LOCALE_NAMESPACE.NAVIGATION, 'group.language')}
-      </span>
-      {LOTDG_SUPPORTED_LOCALE_CODE_LIST.map((code) => (
-        <a
-          key={code}
-          className="lotdg-navigation__item"
-          href={`#locale-${code}`}
-          aria-current={code === localeCode}
-          onClick={(event) => {
-            event.preventDefault()
-            changeLocaleCode(code)
-          }}
-        >
-          {LOTDG_SUPPORTED_LOCALE_ENDONYM[code]}
-        </a>
-      ))}
-    </>
-  )
-}
+const HEADER_LINK_SCREEN_CODE_LIST: readonly LotdgScreenCode[] = [
+  LOTDG_SCREEN_CODE.MOTD,
+  LOTDG_SCREEN_CODE.MAIL,
+  LOTDG_SCREEN_CODE.PETITION,
+]
 
 function LotdgAppBody() {
   const { session, signOut } = useLotdgSession()
@@ -205,9 +196,9 @@ function LotdgAppBody() {
           />
         )
       case LOTDG_SCREEN_CODE.WEAPON_EDITOR:
-        return <LotdgEquipmentEditorScreen characterId={session.characterId} shopType="weapon" />
+        return <LotdgEquipmentEditorScreen characterId={session.characterId} shopType={LOTDG_SHOP_TYPE_CODE.WEAPON} />
       case LOTDG_SCREEN_CODE.ARMOR_EDITOR:
-        return <LotdgEquipmentEditorScreen characterId={session.characterId} shopType="armor" />
+        return <LotdgEquipmentEditorScreen characterId={session.characterId} shopType={LOTDG_SHOP_TYPE_CODE.ARMOR} />
       case LOTDG_SCREEN_CODE.SPECIAL_EVENT:
         return (
           <LotdgSpecialEventScreen
@@ -229,7 +220,7 @@ function LotdgAppBody() {
         return (
           <LotdgEquipmentShopScreen
             characterId={session.characterId}
-            shopType="weapon"
+            shopType={LOTDG_SHOP_TYPE_CODE.WEAPON}
             onStateChange={refreshCharacter}
           />
         )
@@ -237,7 +228,7 @@ function LotdgAppBody() {
         return (
           <LotdgEquipmentShopScreen
             characterId={session.characterId}
-            shopType="armor"
+            shopType={LOTDG_SHOP_TYPE_CODE.ARMOR}
             onStateChange={refreshCharacter}
           />
         )
@@ -349,45 +340,57 @@ function LotdgAppBody() {
   return (
     <LotdgShellLayout
       pageTitle={pageTitle}
+      bannerAlternativeText={LOTDG_TITLE_BANNER_ALTERNATIVE_TEXT}
+      headerLinkSlot={
+        session === null ? null : (
+          <>
+            {HEADER_LINK_SCREEN_CODE_LIST.map((code) => (
+              <LotdgNoticeLink
+                key={code}
+                hashCode={code}
+                labelText={navigationLabel(LOTDG_SCREEN_TITLE_LABEL_PATH[code])}
+                onSelect={() => setScreenCode(code)}
+              />
+            ))}
+          </>
+        )
+      }
       navigationSlot={
         <>
           {session !== null &&
             NAVIGATION_GROUP.map((group) => (
-              <div key={group.headLabelPath}>
-                <span className="lotdg-navigation__head">
-                  {navigationLabel(group.headLabelPath)}
-                </span>
+              <LotdgNavigationGroup
+                key={group.headLabelPath}
+                headText={navigationLabel(group.headLabelPath)}
+              >
                 {group.screenCodeList.map((code) => (
-                  <a
+                  <LotdgNavigationItem
                     key={code}
-                    className="lotdg-navigation__item"
-                    href={`#${code}`}
-                    onClick={(event) => {
-                      event.preventDefault()
-                      setScreenCode(code)
-                    }}
-                  >
-                    {navigationLabel(LOTDG_SCREEN_TITLE_LABEL_PATH[code])}
-                  </a>
+                    hashCode={code}
+                    labelText={navigationLabel(LOTDG_SCREEN_TITLE_LABEL_PATH[code])}
+                    isCurrent={code === screenCode}
+                    onSelect={() => setScreenCode(code)}
+                  />
                 ))}
-              </div>
+              </LotdgNavigationGroup>
             ))}
 
           {session !== null && (
-            <a
-              className="lotdg-navigation__item"
-              href="#logout"
-              onClick={(event) => {
-                event.preventDefault()
+            <LotdgNavigationItem
+              hashCode={LOTDG_LOGOUT_HASH_CODE}
+              labelText={navigationLabel('action.logout')}
+              onSelect={() => {
                 signOut()
                 setScreenCode(LOTDG_SCREEN_CODE.LOGIN)
               }}
-            >
-              {navigationLabel('action.logout')}
-            </a>
+            />
           )}
-
+        </>
+      }
+      preferenceSlot={
+        <>
           <LotdgLocaleMenu characterId={session?.characterId ?? null} />
+          <LotdgThemeMenu />
         </>
       }
       characterStatSlot={
@@ -396,21 +399,22 @@ function LotdgAppBody() {
         )
       }
       stageSlot={renderStage()}
-      footerSlot={
-        <small>
-          Copyright 2002-2006 Eric Stevens &amp; JT. Ported by GarnetRapture. GPL-2.0-only.
-        </small>
+      stageSceneCode={
+        session === null ? LOTDG_STAGE_SCENE_CODE.NONE : resolveStageSceneCode(screenCode)
       }
+      footerSlot={<small>{LOTDG_ATTRIBUTION_TEXT}</small>}
     />
   )
 }
 
 export function LotdgApp() {
   return (
-    <LotdgLocaleProvider>
-      <LotdgSessionProvider>
-        <LotdgAppBody />
-      </LotdgSessionProvider>
-    </LotdgLocaleProvider>
+    <LotdgThemeProvider>
+      <LotdgLocaleProvider>
+        <LotdgSessionProvider>
+          <LotdgAppBody />
+        </LotdgSessionProvider>
+      </LotdgLocaleProvider>
+    </LotdgThemeProvider>
   )
 }

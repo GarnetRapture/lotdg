@@ -1,0 +1,36 @@
+/**
+ * 4계층 — legacy 테마. 3계층(semantic)의 역할 토큰과 이 파일의 효과 토큰만 정의한다.
+ * 2002년 브라우저가 실제로 그릴 수 있던 표현까지가 전부다: 그림자·전환·그라데이션·
+ * 둥근 모서리·애니메이션이 모두 없고, 비트맵은 보간 없이 픽셀 그대로 확대된다.
+ * 색은 3계층의 실측 기본값을 그대로 쓰므로 다시 적지 않는다.
+ */
+:root,
+[data-lotdg-theme='legacy'] {
+  --lotdg-effect-shadow-panel: none;
+  --lotdg-effect-shadow-rail-inset: none;
+  --lotdg-effect-shadow-banner: none;
+  --lotdg-effect-shadow-control-inset: none;
+  --lotdg-effect-glow-vital: none;
+  --lotdg-effect-glow-focus: none;
+
+  --lotdg-effect-transition-interactive: 0s;
+
+  --lotdg-effect-sheen-raised: none;
+  --lotdg-effect-sheen-head: none;
+  --lotdg-effect-sheen-pressed: none;
+  --lotdg-effect-vignette-stage: none;
+
+  --lotdg-effect-radius-panel: 0;
+  --lotdg-effect-radius-control: 0;
+
+  --lotdg-effect-scene-opacity: 1;
+  --lotdg-effect-image-rendering: pixelated;
+  --lotdg-effect-font-smoothing: auto;
+  --lotdg-effect-text-rendering: auto;
+
+  --lotdg-effect-animation-panel-enter: none;
+  --lotdg-effect-animation-stage-enter: none;
+  --lotdg-effect-animation-accent-pulse: none;
+  --lotdg-effect-animation-notice-enter: none;
+  --lotdg-effect-animation-row-enter: none;
+}

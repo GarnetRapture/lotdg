@@ -1,29 +1,23 @@
-import type { ReactNode } from 'react'
-
-export interface LotdgDataTableColumn<TRow> {
-  readonly columnKey: string
-  readonly headText: string
-  readonly render: (row: TRow) => ReactNode
-}
+import { LOTDG_TEXT_COLOR_CLASS_NAME } from '../constant/lotdg-legacy-color-code'
+import { LOTDG_UI_CLASS_NAME } from '../constant/lotdg-ui-class-name'
+import type { LotdgDataTableProps } from '../type/lotdg-ui-component-contract'
+import { LotdgText } from './LotdgText'
 
 export function LotdgDataTable<TRow>({
   columnList,
   rowList,
   rowKey,
   emptyText,
-}: {
-  readonly columnList: ReadonlyArray<LotdgDataTableColumn<TRow>>
-  readonly rowList: readonly TRow[]
-  readonly rowKey: (row: TRow, rowIndex: number) => string | number
-  readonly emptyText?: string
-}) {
+}: LotdgDataTableProps<TRow>) {
   if (rowList.length === 0) {
-    return emptyText === undefined ? null : <p className="colDkWhite">{emptyText}</p>
+    return emptyText === undefined ? null : (
+      <LotdgText colorClassName={LOTDG_TEXT_COLOR_CLASS_NAME.DARK_WHITE}>{emptyText}</LotdgText>
+    )
   }
 
   return (
-    <div className="lotdg-table-scroll">
-      <table className="lotdg-table">
+    <div className={LOTDG_UI_CLASS_NAME.TABLE_SCROLL}>
+      <table className={LOTDG_UI_CLASS_NAME.TABLE_ROOT}>
         <thead>
           <tr>
             {columnList.map((column) => (

@@ -1,22 +1,27 @@
-import { useCallback, useEffect, useState, type FormEvent } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { getJson, postForm } from '../../shared/lib/lotdg-api-client'
 import {
   lotdgCommentaryListSchema,
   lotdgCommentaryPostSchema,
   type LotdgCommentaryList,
 } from '../../shared/schema/social/lotdg-commentary-schema'
-import { parseLegacyMarkup } from '../../shared/lib/lotdg-legacy-markup-parser'
 import { resolveErrorLabel, resolveMessageKeyLabel } from '../../shared/lib/lotdg-error-label'
 import { useLotdgLocale } from '../../i18n/useLotdgLocale'
 import { LOTDG_LOCALE_NAMESPACE } from '../../shared/constant/lotdg-supported-locale'
+import { LOTDG_COMMENT_MAXIMUM_LENGTH } from '../../shared/constant/lotdg-commentary-section-code'
+import { LOTDG_NOTICE_TONE } from '../../shared/constant/lotdg-notice-tone'
+import type { LotdgCommentaryBoardProps } from '../../shared/type/lotdg-screen-contract'
+import {
+  LotdgCommentLine,
+  LotdgFieldRow,
+  LotdgForm,
+  LotdgNoticeLine,
+  LotdgSection,
+  LotdgSubmitButton,
+  LotdgTextField,
+} from '../../shared/ui'
 
-export function LotdgCommentaryBoard({
-  characterId,
-  sectionCode,
-}: {
-  readonly characterId: number
-  readonly sectionCode: string
-}) {
+export function LotdgCommentaryBoard({ characterId, sectionCode }: LotdgCommentaryBoardProps) {
   const { translate } = useLotdgLocale()
   const [board, setBoard] = useState<LotdgCommentaryList | null>(null)
   const [commentText, setCommentText] = useState('')
@@ -34,9 +39,7 @@ export function LotdgCommentaryBoard({
     reload()
   }, [reload])
 
-  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault()
-
+  const handleSubmit = async () => {
     if (commentText.trim() === '') {
       return
     }
@@ -63,29 +66,29 @@ export function LotdgCommentaryBoard({
   }
 
   return (
-    <section>
-      <h3>{translate(LOTDG_LOCALE_NAMESPACE.SOCIAL, 'commentary.title')}</h3>
-
+    <LotdgSection titleSlot={translate(LOTDG_LOCALE_NAMESPACE.SOCIAL, 'commentary.title')}>
       {board?.comment_list.map((comment) => (
-        <p key={comment.commentary_id}>
-          <span className="colLtWhite">{comment.display_name}</span>{' '}
-          {parseLegacyMarkup(comment.comment_text)}
-        </p>
+        <LotdgCommentLine
+          key={comment.commentary_id}
+          authorName={comment.display_name}
+          commentText={comment.comment_text}
+        />
       ))}
 
-      {errorMessage !== '' && <p className="colLtRed">{errorMessage}</p>}
+      <LotdgNoticeLine messageText={errorMessage} tone={LOTDG_NOTICE_TONE.FAILURE} />
 
-      <form onSubmit={handleSubmit}>
-        <input
-          className="lotdg-input"
-          value={commentText}
-          maxLength={200}
-          onChange={(event) => setCommentText(event.target.value)}
-        />{' '}
-        <button type="submit" className="lotdg-button">
-          {translate(LOTDG_LOCALE_NAMESPACE.SOCIAL, 'commentary.post')}
-        </button>
-      </form>
-    </section>
+      <LotdgForm onSubmit={() => void handleSubmit()}>
+        <LotdgFieldRow>
+          <LotdgTextField
+            value={commentText}
+            maximumLength={LOTDG_COMMENT_MAXIMUM_LENGTH}
+            onValueChange={setCommentText}
+          />
+          <LotdgSubmitButton
+            labelSlot={translate(LOTDG_LOCALE_NAMESPACE.SOCIAL, 'commentary.post')}
+          />
+        </LotdgFieldRow>
+      </LotdgForm>
+    </LotdgSection>
   )
 }

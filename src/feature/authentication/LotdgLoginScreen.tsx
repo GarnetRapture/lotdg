@@ -1,4 +1,4 @@
-import { useEffect, useState, type FormEvent } from 'react'
+import { useEffect, useState } from 'react'
 import { getJson, postForm } from '../../shared/lib/lotdg-api-client'
 import { lotdgLoginResponseSchema } from '../../shared/schema/system/lotdg-api-response-schema'
 import {
@@ -8,11 +8,27 @@ import {
 import { useLotdgSession } from '../../app/provider/useLotdgSession'
 import { resolveErrorLabel } from '../../shared/lib/lotdg-error-label'
 import { splitDuration } from '../../shared/lib/lotdg-duration-formatter'
-import { parseLegacyMarkup } from '../../shared/lib/lotdg-legacy-markup-parser'
 import { useLotdgLocale } from '../../i18n/useLotdgLocale'
 import { LOTDG_LOCALE_NAMESPACE } from '../../shared/constant/lotdg-supported-locale'
+import { LOTDG_TEXT_COLOR_CLASS_NAME } from '../../shared/constant/lotdg-legacy-color-code'
+import { LOTDG_CONTROL_WIDTH_CODE } from '../../shared/constant/lotdg-ui-class-name'
+import {
+  LOTDG_ACCESS_KEY,
+  LOTDG_AUTOCOMPLETE_TOKEN,
+} from '../../shared/constant/lotdg-form-token'
+import type { LotdgLoginScreenProps } from '../../shared/type/lotdg-screen-contract'
+import {
+  LotdgActionRow,
+  LotdgButton,
+  LotdgForm,
+  LotdgLoginPanel,
+  LotdgMarkupText,
+  LotdgSubmitButton,
+  LotdgText,
+  LotdgTextField,
+} from '../../shared/ui'
 
-export function LotdgLoginScreen({ onRegisterClick }: { readonly onRegisterClick: () => void }) {
+export function LotdgLoginScreen({ onRegisterClick }: LotdgLoginScreenProps) {
   const { signIn } = useLotdgSession()
   const { translate } = useLotdgLocale()
 
@@ -30,8 +46,7 @@ export function LotdgLoginScreen({ onRegisterClick }: { readonly onRegisterClick
       })
   }, [])
 
-  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault()
+  const handleSubmit = async () => {
     setErrorMessage('')
     setIsSubmitting(true)
 
@@ -75,86 +90,77 @@ export function LotdgLoginScreen({ onRegisterClick }: { readonly onRegisterClick
     translate(LOTDG_LOCALE_NAMESPACE.AUTHENTICATION, path, valueMap)
 
   return (
-    <section>
-      <p className="lotdg-align-center">{label('login.welcome')}</p>
+    <>
+      <LotdgText isCentered>{label('login.welcome')}</LotdgText>
 
       {information !== null && (
         <>
-          <p>
-            {parseLegacyMarkup(
-              label('login.game-time', {
-                gameTime: information.game_time,
-                gameDate: information.game_date,
-              }),
+          <LotdgMarkupText
+            sourceText={label('login.game-time', {
+              gameTime: information.game_time,
+              gameDate: information.game_date,
+            })}
+          />
+          <LotdgMarkupText
+            sourceText={label('login.new-day-clock', {
+              minute: information.day_duration_real_minute,
+              turn: information.turns_per_day,
+            })}
+          />
+          <LotdgMarkupText
+            sourceText={label(
+              'login.next-day-remaining',
+              splitDuration(information.real_seconds_until_next_game_day),
             )}
-          </p>
-          <p>
-            {parseLegacyMarkup(
-              label('login.new-day-clock', {
-                minute: information.day_duration_real_minute,
-                turn: information.turns_per_day,
-              }),
-            )}
-          </p>
-          <p>
-            {parseLegacyMarkup(
-              label(
-                'login.next-day-remaining',
-                splitDuration(information.real_seconds_until_next_game_day),
-              ),
-            )}
-          </p>
+          />
         </>
       )}
 
-      <p>{label('login.prompt')}</p>
+      <LotdgText>{label('login.prompt')}</LotdgText>
 
-      {errorMessage !== '' && <p className="colLtRed">{errorMessage}</p>}
+      {errorMessage !== '' && (
+        <LotdgText colorClassName={LOTDG_TEXT_COLOR_CLASS_NAME.LIGHT_RED}>
+          {errorMessage}
+        </LotdgText>
+      )}
 
-      <form onSubmit={handleSubmit}>
-        <div className="lotdg-align-center">
-          <div className="lotdg-login-panel">
-            <label htmlFor="login-name">{label('field.login-name')}</label>
-            <input
-              id="login-name"
-              className="lotdg-input lotdg-login-panel__field"
-              value={loginName}
-              onChange={(event) => setLoginName(event.target.value)}
-              autoComplete="username"
-              accessKey="u"
-            />
+      <LotdgForm onSubmit={() => void handleSubmit()}>
+        <LotdgLoginPanel>
+          <LotdgTextField
+            labelText={label('field.login-name')}
+            value={loginName}
+            onValueChange={setLoginName}
+            widthCode={LOTDG_CONTROL_WIDTH_CODE.LOGIN_PANEL}
+            autocompleteToken={LOTDG_AUTOCOMPLETE_TOKEN.USERNAME}
+            accessKey={LOTDG_ACCESS_KEY.LOGIN_NAME}
+          />
 
-            <label htmlFor="password">{label('field.password')}</label>
-            <input
-              id="password"
-              className="lotdg-input lotdg-login-panel__field"
-              type="password"
-              value={password}
-              onChange={(event) => setPassword(event.target.value)}
-              autoComplete="current-password"
-              accessKey="p"
-            />
+          <LotdgTextField
+            labelText={label('field.password')}
+            value={password}
+            onValueChange={setPassword}
+            isSecret
+            widthCode={LOTDG_CONTROL_WIDTH_CODE.LOGIN_PANEL}
+            autocompleteToken={LOTDG_AUTOCOMPLETE_TOKEN.CURRENT_PASSWORD}
+            accessKey={LOTDG_ACCESS_KEY.PASSWORD}
+          />
 
-            <button type="submit" className="lotdg-button" disabled={isSubmitting}>
-              {label('action.login')}
-            </button>
-          </div>
-        </div>
-      </form>
+          <LotdgSubmitButton labelSlot={label('action.login')} isDisabled={isSubmitting} />
+        </LotdgLoginPanel>
+      </LotdgForm>
 
-      <p>
-        <button type="button" className="lotdg-button" onClick={onRegisterClick}>
-          {label('action.create-character')}
-        </button>
-      </p>
+      <LotdgActionRow>
+        <LotdgButton labelSlot={label('action.create-character')} onSelect={onRegisterClick} />
+      </LotdgActionRow>
 
-      <p>{parseLegacyMarkup(label('login.introduction'))}</p>
+      <LotdgMarkupText sourceText={label('login.introduction')} />
 
-      <p>{parseLegacyMarkup(label('login.banner'))}</p>
+      <LotdgMarkupText sourceText={label('login.banner')} />
 
-      <p className="lotdg-align-center">
-        {parseLegacyMarkup(label('login.version', { version: information?.legacy_version ?? '' }))}
-      </p>
-    </section>
+      <LotdgMarkupText
+        sourceText={label('login.version', { version: information?.legacy_version ?? '' })}
+        isCentered
+      />
+    </>
   )
 }

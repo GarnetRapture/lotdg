@@ -1,5 +1,8 @@
 {
   "group.language": "言語",
+  "group.theme": "テーマ",
+  "theme.legacy": "クラシック",
+  "theme.modern": "モダン",
   "group.combat": "戦闘",
   "group.commerce": "商店",
   "group.village": "村",

@@ -1,0 +1,58 @@
+/**
+ * 6계층 — 능력치 표. LotdgStatTable 이 쓰는 라벨·값 두 칸 구조다.
+ */
+.lotdg-stat {
+  width: var(--lotdg-scale-stat-table-width);
+  max-width: 100%;
+  border-collapse: collapse;
+}
+
+.lotdg-stat--wide {
+  width: 100%;
+}
+
+.lotdg-stat__head {
+  padding: var(--lotdg-scale-space-tight);
+  font-weight: var(--lotdg-typography-weight-bold);
+  text-align: left;
+  color: var(--lotdg-text-vital-head);
+  background-color: var(--lotdg-surface-vital-head);
+  background-image: var(--lotdg-effect-sheen-head);
+  cursor: default;
+}
+
+.lotdg-stat__label,
+.lotdg-stat__value {
+  padding: var(--lotdg-scale-space-tight);
+  border-top: var(--lotdg-scale-hairline) solid var(--lotdg-edge-vital-row);
+  cursor: default;
+}
+
+.lotdg-stat__label {
+  font-weight: var(--lotdg-typography-weight-bold);
+}
+
+.lotdg-stat__buff {
+  padding: var(--lotdg-scale-space-tight);
+  border-top: var(--lotdg-scale-hairline) solid var(--lotdg-edge-vital-row);
+  cursor: default;
+}
+
+.lotdg-stat__buff-row {
+  display: block;
+  animation: var(--lotdg-effect-animation-row-enter);
+}
+
+.lotdg-stat__roster-head {
+  font-weight: var(--lotdg-typography-weight-bold);
+}
+
+.lotdg-stat__roster-name {
+  display: block;
+  color: var(--lotdg-text-console-dark-magenta);
+  animation: var(--lotdg-effect-animation-row-enter);
+}
+
+.lotdg-stat__roster-empty {
+  font-style: italic;
+}
