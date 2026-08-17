@@ -12,11 +12,13 @@ export function LotdgStatTable({ sectionList, footerSlot, isWide = false }: Lotd
       <tbody>
         {sectionList.map((section) => (
           <Fragment key={section.sectionKey}>
-            <tr>
-              <th className={LOTDG_UI_CLASS_NAME.STAT_HEAD} colSpan={LOTDG_STAT_COLUMN_COUNT}>
-                {section.headText}
-              </th>
-            </tr>
+            {section.headText !== undefined && (
+              <tr>
+                <th className={LOTDG_UI_CLASS_NAME.STAT_HEAD} colSpan={LOTDG_STAT_COLUMN_COUNT}>
+                  {section.headText}
+                </th>
+              </tr>
+            )}
             {section.entryList.map((entry) => (
               <tr key={entry.entryKey}>
                 <td className={LOTDG_UI_CLASS_NAME.STAT_LABEL}>{entry.labelText}</td>

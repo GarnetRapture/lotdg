@@ -1,6 +1,3 @@
-/**
- * 6계층 — 두루마리 패널. LotdgScrollPanel 이 그리는 위·아래 장식과 본문 상자다.
- */
 .lotdg-panel {
   display: flex;
   flex-direction: column;
@@ -18,10 +15,6 @@
   width: var(--lotdg-scale-stat-cap-width);
 }
 
-/**
- * 스크롤 장식. 원본은 182x11 비트맵이라 가로로 늘이면 문양이 뭉개진다. 폭을 늘리는
- * 대신 원본 비율대로 반복해 어떤 폭에서도 문양이 유지되게 한다.
- */
 .lotdg-panel__cap {
   display: block;
   width: 100%;

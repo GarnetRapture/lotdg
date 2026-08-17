@@ -9,8 +9,15 @@ import { resolveErrorLabel, resolveMessageKeyLabel } from '../../shared/lib/lotd
 import { useLotdgLocale } from '../../i18n/useLotdgLocale'
 import { LOTDG_LOCALE_NAMESPACE } from '../../shared/constant/lotdg-supported-locale'
 import { LOTDG_TOILET_TYPE, type LotdgToiletType } from '../../shared/constant/lotdg-legacy-code'
-import { LotdgNoticeLine } from '../../shared/ui/LotdgNoticeLine'
+import { LOTDG_TEXT_COLOR_CLASS_NAME } from '../../shared/constant/lotdg-legacy-color-code'
 import type { LotdgMutableScreenProps } from '../../shared/type/lotdg-screen-contract'
+import {
+  LotdgActionRow,
+  LotdgButton,
+  LotdgNoticeLine,
+  LotdgScreen,
+  LotdgText,
+} from '../../shared/ui'
 
 export function LotdgOuthouseScreen({ characterId, onStateChange }: LotdgMutableScreenProps) {
   const { translate } = useLotdgLocale()
@@ -104,49 +111,45 @@ export function LotdgOuthouseScreen({ characterId, onStateChange }: LotdgMutable
   }
 
   return (
-    <section>
-      <h2>{label('outhouse.title')}</h2>
-
+    <LotdgScreen titleText={label('outhouse.title')}>
       {outhouse !== null && (
         <>
-          <p>{label('outhouse.description')}</p>
+          <LotdgText>{label('outhouse.description')}</LotdgText>
 
           {outhouse.used_today ? (
-            <p className="colLtYellow">{label('outhouse.already-used')}</p>
+            <LotdgText colorClassName={LOTDG_TEXT_COLOR_CLASS_NAME.LIGHT_YELLOW}>
+              {label('outhouse.already-used')}
+            </LotdgText>
           ) : (
-            <p>
-              <button
-                type="button"
-                className="lotdg-button"
-                onClick={() => void enterStall(LOTDG_TOILET_TYPE.PUBLIC)}
-              >
-                {label('outhouse.action.public')}
-              </button>{' '}
-              <button
-                type="button"
-                className="lotdg-button"
-                disabled={!outhouse.can_pay}
-                onClick={() => void enterStall(LOTDG_TOILET_TYPE.PRIVATE)}
-              >
-                {label('outhouse.action.private', { cost: outhouse.private_cost })}
-              </button>
-            </p>
+            <LotdgActionRow>
+              <LotdgButton
+                labelSlot={label('outhouse.action.public')}
+                onSelect={() => void enterStall(LOTDG_TOILET_TYPE.PUBLIC)}
+              />
+              <LotdgButton
+                labelSlot={label('outhouse.action.private', { cost: outhouse.private_cost })}
+                isDisabled={!outhouse.can_pay}
+                onSelect={() => void enterStall(LOTDG_TOILET_TYPE.PRIVATE)}
+              />
+            </LotdgActionRow>
           )}
 
           {usedToiletType !== null && (
-            <p>
-              <button type="button" className="lotdg-button" onClick={() => void washHands()}>
-                {label('outhouse.action.wash')}
-              </button>{' '}
-              <button type="button" className="lotdg-button" onClick={() => void skipWashing()}>
-                {label('outhouse.action.skip-wash')}
-              </button>
-            </p>
+            <LotdgActionRow>
+              <LotdgButton
+                labelSlot={label('outhouse.action.wash')}
+                onSelect={() => void washHands()}
+              />
+              <LotdgButton
+                labelSlot={label('outhouse.action.skip-wash')}
+                onSelect={() => void skipWashing()}
+              />
+            </LotdgActionRow>
           )}
         </>
       )}
 
       <LotdgNoticeLine messageText={message} />
-    </section>
+    </LotdgScreen>
   )
 }

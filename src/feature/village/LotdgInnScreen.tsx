@@ -8,15 +8,26 @@ import {
 import { resolveErrorLabel, resolveMessageKeyLabel } from '../../shared/lib/lotdg-error-label'
 import { useLotdgLocale } from '../../i18n/useLotdgLocale'
 import { LOTDG_LOCALE_NAMESPACE } from '../../shared/constant/lotdg-supported-locale'
+import { LOTDG_SELECTABLE_SPECIALTY_CODE_LIST } from '../../shared/constant/lotdg-legacy-code'
+import { LOTDG_COMMENTARY_SECTION_CODE } from '../../shared/constant/lotdg-commentary-section-code'
+import { LOTDG_BOOLEAN_FIELD_VALUE } from '../../shared/constant/lotdg-form-token'
+import type { LotdgMutableScreenProps } from '../../shared/type/lotdg-screen-contract'
+import {
+  LotdgActionRow,
+  LotdgButton,
+  LotdgNoticeLine,
+  LotdgScreen,
+  LotdgText,
+} from '../../shared/ui'
 import { LotdgCommentaryBoard } from '../social/LotdgCommentaryBoard'
 
-export function LotdgInnScreen({
-  characterId,
-  onStateChange,
-}: {
-  readonly characterId: number
-  readonly onStateChange: () => void
-}) {
+const LOTDG_INN_ACTION_CODE = {
+  ALE: 'ale',
+  ROOM: 'room',
+  SPECIALTY: 'specialty',
+} as const
+
+export function LotdgInnScreen({ characterId, onStateChange }: LotdgMutableScreenProps) {
   const { translate } = useLotdgLocale()
   const [inn, setInn] = useState<LotdgInnEnter | null>(null)
   const [message, setMessage] = useState('')
@@ -63,12 +74,10 @@ export function LotdgInnScreen({
   }
 
   return (
-    <section>
-      <h2>{label('inn.title')}</h2>
-
+    <LotdgScreen titleText={label('inn.title')}>
       {inn !== null && (
         <>
-          <p>
+          <LotdgText>
             {label('inn.status', {
               gold: inn.gold,
               drunkenness: inn.drunkenness,
@@ -76,51 +85,52 @@ export function LotdgInnScreen({
               roomPrice: inn.room_price,
               roomPriceFromBank: inn.room_price_from_bank,
             })}
-          </p>
+          </LotdgText>
 
-          <p>
-            <button
-              type="button"
-              className="lotdg-button"
-              onClick={() => void act('ale')}
-              disabled={!inn.can_drink}
-            >
-              {label('inn.action.ale')}
-            </button>{' '}
-            <button
-              type="button"
-              className="lotdg-button"
-              onClick={() => void act('room', { pay_from_bank: '0' })}
-            >
-              {label('inn.action.room')}
-            </button>{' '}
-            <button
-              type="button"
-              className="lotdg-button"
-              onClick={() => void act('room', { pay_from_bank: '1' })}
-            >
-              {label('inn.action.room-from-bank')}
-            </button>
-          </p>
+          <LotdgActionRow>
+            <LotdgButton
+              labelSlot={label('inn.action.ale')}
+              isDisabled={!inn.can_drink}
+              onSelect={() => void act(LOTDG_INN_ACTION_CODE.ALE)}
+            />
+            <LotdgButton
+              labelSlot={label('inn.action.room')}
+              onSelect={() =>
+                void act(LOTDG_INN_ACTION_CODE.ROOM, {
+                  pay_from_bank: LOTDG_BOOLEAN_FIELD_VALUE.FALSE,
+                })
+              }
+            />
+            <LotdgButton
+              labelSlot={label('inn.action.room-from-bank')}
+              onSelect={() =>
+                void act(LOTDG_INN_ACTION_CODE.ROOM, {
+                  pay_from_bank: LOTDG_BOOLEAN_FIELD_VALUE.TRUE,
+                })
+              }
+            />
+          </LotdgActionRow>
 
-          <p>
-            {[1, 2, 3].map((specialtyCode) => (
-              <button
+          <LotdgActionRow>
+            {LOTDG_SELECTABLE_SPECIALTY_CODE_LIST.map((specialtyCode) => (
+              <LotdgButton
                 key={specialtyCode}
-                type="button"
-                className="lotdg-button"
-                onClick={() => void act('specialty', { specialty_code: specialtyCode })}
-              >
-                {label(`inn.action.specialty-${specialtyCode}`)}
-              </button>
+                labelSlot={label(`inn.action.specialty-${specialtyCode}`)}
+                onSelect={() =>
+                  void act(LOTDG_INN_ACTION_CODE.SPECIALTY, { specialty_code: specialtyCode })
+                }
+              />
             ))}
-          </p>
+          </LotdgActionRow>
         </>
       )}
 
-      {message !== '' && <p className="colLtYellow">{message}</p>}
+      <LotdgNoticeLine messageText={message} />
 
-      <LotdgCommentaryBoard characterId={characterId} sectionCode="inn" />
-    </section>
+      <LotdgCommentaryBoard
+        characterId={characterId}
+        sectionCode={LOTDG_COMMENTARY_SECTION_CODE.INN}
+      />
+    </LotdgScreen>
   )
 }

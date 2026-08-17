@@ -1,11 +1,3 @@
-/**
- * 6계층 — 좌측 네비게이션. LotdgNavigationGroup / LotdgNavigationItem 이 쓴다.
- */
-
-/**
- * 레거시는 제목 양옆을 &#151; 문자로 감쌌다. 글꼴에 따라 두부 문자로 떨어지므로
- * 같은 모양을 문자가 아닌 선으로 그린다.
- */
 .lotdg-navigation__head {
   display: flex;
   align-items: center;
@@ -50,10 +42,6 @@
   border-right-color: var(--lotdg-edge-navigation-hover-dark);
 }
 
-/**
- * 선택 상태. 레거시는 &#149; 문자를 앞에 붙였으나 글꼴 의존이 커서, 왼쪽 금색 표식과
- * 글자색으로 대체한다.
- */
 .lotdg-navigation__item[aria-current='true'] {
   color: var(--lotdg-text-navigation-head);
   border-color: var(--lotdg-edge-accent);

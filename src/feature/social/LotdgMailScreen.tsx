@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState, type FormEvent } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { getJson, postForm } from '../../shared/lib/lotdg-api-client'
 import {
   lotdgMailInboxSchema,
@@ -8,22 +8,39 @@ import {
   lotdgMailReplySchema,
   type LotdgMailInbox,
 } from '../../shared/schema/system/lotdg-api-response-schema'
-import { parseLegacyMarkup } from '../../shared/lib/lotdg-legacy-markup-parser'
 import { resolveErrorLabel, resolveMessageKeyLabel } from '../../shared/lib/lotdg-error-label'
 import { useLotdgLocale } from '../../i18n/useLotdgLocale'
 import { LOTDG_LOCALE_NAMESPACE } from '../../shared/constant/lotdg-supported-locale'
-import { LotdgNoticeLine } from '../../shared/ui/LotdgNoticeLine'
+import { LOTDG_TEXT_COLOR_CLASS_NAME } from '../../shared/constant/lotdg-legacy-color-code'
 import type { LotdgCharacterScreenProps } from '../../shared/type/lotdg-screen-contract'
+import {
+  LotdgActionRow,
+  LotdgButton,
+  LotdgCheckboxField,
+  LotdgDataTable,
+  LotdgFieldRow,
+  LotdgForm,
+  LotdgMarkupText,
+  LotdgNoticeLine,
+  LotdgScreen,
+  LotdgSection,
+  LotdgSubmitButton,
+  LotdgText,
+  LotdgTextAreaField,
+  LotdgTextField,
+} from '../../shared/ui'
 import type { z } from 'zod'
 
 type MailRead = z.infer<typeof lotdgMailReadSchema>
 type MailRecipientSearch = z.infer<typeof lotdgMailRecipientSearchSchema>
 
+const LOTDG_MAIL_NO_OPENED_ID = 0
+
 export function LotdgMailScreen({ characterId }: LotdgCharacterScreenProps) {
   const { translate } = useLotdgLocale()
   const [inbox, setInbox] = useState<LotdgMailInbox | null>(null)
   const [opened, setOpened] = useState<MailRead | null>(null)
-  const [openedId, setOpenedId] = useState(0)
+  const [openedId, setOpenedId] = useState(LOTDG_MAIL_NO_OPENED_ID)
   const [checkedIdList, setCheckedIdList] = useState<readonly number[]>([])
   const [recipientSearch, setRecipientSearch] = useState<MailRecipientSearch | null>(null)
   const [recipientSearchTerm, setRecipientSearchTerm] = useState('')
@@ -66,7 +83,7 @@ export function LotdgMailScreen({ characterId }: LotdgCharacterScreenProps) {
         mail_message_id: mailMessageId,
       })
       setOpened(null)
-      setOpenedId(0)
+      setOpenedId(LOTDG_MAIL_NO_OPENED_ID)
       reload()
     } catch (error) {
       setMessage(resolveErrorLabel(error, translate))
@@ -90,7 +107,7 @@ export function LotdgMailScreen({ characterId }: LotdgCharacterScreenProps) {
       )
       setCheckedIdList([])
       setOpened(null)
-      setOpenedId(0)
+      setOpenedId(LOTDG_MAIL_NO_OPENED_ID)
       reload()
     } catch (error) {
       setMessage(resolveErrorLabel(error, translate))
@@ -98,7 +115,7 @@ export function LotdgMailScreen({ characterId }: LotdgCharacterScreenProps) {
   }
 
   const prepareReply = async () => {
-    if (openedId <= 0) {
+    if (openedId <= LOTDG_MAIL_NO_OPENED_ID) {
       return
     }
 
@@ -122,9 +139,7 @@ export function LotdgMailScreen({ characterId }: LotdgCharacterScreenProps) {
     }
   }
 
-  const searchRecipient = async (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault()
-
+  const searchRecipient = async () => {
     if (recipientSearchTerm.trim() === '') {
       return
     }
@@ -141,9 +156,7 @@ export function LotdgMailScreen({ characterId }: LotdgCharacterScreenProps) {
     }
   }
 
-  const send = async (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault()
-
+  const send = async () => {
     try {
       const result = await postForm(`/mail/${characterId}/send`, lotdgMailMutationSchema, {
         recipient_login_name: recipientLoginName,
@@ -168,164 +181,148 @@ export function LotdgMailScreen({ characterId }: LotdgCharacterScreenProps) {
   }
 
   return (
-    <section>
-      <h2>{label('mail.title')}</h2>
-
+    <LotdgScreen titleText={label('mail.title')}>
       {inbox !== null && (
-        <p>
+        <LotdgText>
           {label('mail.summary', {
             unseen: inbox.unseen_count,
             seen: inbox.seen_count,
           })}
-        </p>
+        </LotdgText>
       )}
 
-      <table className="lotdg-stat">
-        <tbody>
-          <tr>
-            <th className="lotdg-stat__head">{label('mail.column.select')}</th>
-            <th className="lotdg-stat__head">{label('mail.column.sender')}</th>
-            <th className="lotdg-stat__head">{label('mail.column.subject')}</th>
-            <th className="lotdg-stat__head">{label('mail.column.action')}</th>
-          </tr>
-          {inbox?.message_list.map((item) => (
-            <tr key={item.mail_message_id}>
-              <td className="lotdg-stat__value">
-                <input
-                  type="checkbox"
-                  checked={checkedIdList.includes(item.mail_message_id)}
-                  onChange={(event) =>
-                    setCheckedIdList((previous) =>
-                      event.target.checked
-                        ? [...previous, item.mail_message_id]
-                        : previous.filter((identifier) => identifier !== item.mail_message_id),
-                    )
-                  }
+      <LotdgDataTable
+        rowList={inbox?.message_list ?? []}
+        rowKey={(item) => item.mail_message_id}
+        columnList={[
+          {
+            columnKey: 'select',
+            headText: label('mail.column.select'),
+            render: (item) => (
+              <LotdgCheckboxField
+                labelText={label('mail.column.select')}
+                isLabelHidden
+                isChecked={checkedIdList.includes(item.mail_message_id)}
+                onCheckedChange={(nextChecked) =>
+                  setCheckedIdList((previous) =>
+                    nextChecked
+                      ? [...previous, item.mail_message_id]
+                      : previous.filter((identifier) => identifier !== item.mail_message_id),
+                  )
+                }
+              />
+            ),
+          },
+          {
+            columnKey: 'sender',
+            headText: label('mail.column.sender'),
+            render: (item) => item.sender_display_name,
+          },
+          {
+            columnKey: 'subject',
+            headText: label('mail.column.subject'),
+            render: (item) => (item.is_seen ? item.subject : <b>{item.subject}</b>),
+          },
+          {
+            columnKey: 'action',
+            headText: label('mail.column.action'),
+            render: (item) => (
+              <LotdgActionRow>
+                <LotdgButton
+                  labelSlot={label('mail.action.read')}
+                  onSelect={() => void open(item.mail_message_id)}
                 />
-              </td>
-              <td className="lotdg-stat__value">{item.sender_display_name}</td>
-              <td className="lotdg-stat__value">
-                {item.is_seen ? item.subject : <b>{item.subject}</b>}
-              </td>
-              <td className="lotdg-stat__value">
-                <button
-                  type="button"
-                  className="lotdg-button"
-                  onClick={() => void open(item.mail_message_id)}
-                >
-                  {label('mail.action.read')}
-                </button>{' '}
-                <button
-                  type="button"
-                  className="lotdg-button"
-                  onClick={() => void remove(item.mail_message_id)}
-                >
-                  {label('mail.action.delete')}
-                </button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+                <LotdgButton
+                  labelSlot={label('mail.action.delete')}
+                  onSelect={() => void remove(item.mail_message_id)}
+                />
+              </LotdgActionRow>
+            ),
+          },
+        ]}
+      />
 
-      <p>
-        <button
-          type="button"
-          className="lotdg-button"
-          onClick={() =>
+      <LotdgActionRow>
+        <LotdgButton
+          labelSlot={label('mail.action.check-all')}
+          onSelect={() =>
             setCheckedIdList((inbox?.message_list ?? []).map((item) => item.mail_message_id))
           }
-        >
-          {label('mail.action.check-all')}
-        </button>{' '}
-        <button
-          type="button"
-          className="lotdg-button"
-          disabled={checkedIdList.length === 0}
-          onClick={() => void removeChecked()}
-        >
-          {label('mail.action.delete-checked')}
-        </button>
-      </p>
+        />
+        <LotdgButton
+          labelSlot={label('mail.action.delete-checked')}
+          isDisabled={checkedIdList.length === 0}
+          onSelect={() => void removeChecked()}
+        />
+      </LotdgActionRow>
 
       {opened?.found === true && (
-        <div>
-          <h3>{opened.subject}</h3>
-          <p>{parseLegacyMarkup(opened.body ?? '')}</p>
-          <p>
-            <button type="button" className="lotdg-button" onClick={() => void prepareReply()}>
-              {label('mail.action.reply')}
-            </button>
-          </p>
-        </div>
+        <LotdgSection titleSlot={opened.subject}>
+          <LotdgMarkupText sourceText={opened.body ?? ''} />
+          <LotdgActionRow>
+            <LotdgButton
+              labelSlot={label('mail.action.reply')}
+              onSelect={() => void prepareReply()}
+            />
+          </LotdgActionRow>
+        </LotdgSection>
       )}
 
-      <form onSubmit={(event) => void searchRecipient(event)}>
-        <p>
-          <label htmlFor="lotdg-mail-recipient-search">{label('mail.search-recipient')}</label>{' '}
-          <input
-            id="lotdg-mail-recipient-search"
-            className="lotdg-input"
+      <LotdgForm onSubmit={() => void searchRecipient()}>
+        <LotdgFieldRow>
+          <LotdgTextField
+            labelText={label('mail.search-recipient')}
             value={recipientSearchTerm}
-            onChange={(event) => setRecipientSearchTerm(event.target.value)}
-          />{' '}
-          <button type="submit" className="lotdg-button">
-            {label('mail.action.search')}
-          </button>
-        </p>
-      </form>
+            onValueChange={setRecipientSearchTerm}
+          />
+          <LotdgSubmitButton labelSlot={label('mail.action.search')} />
+        </LotdgFieldRow>
+      </LotdgForm>
 
       {recipientSearch !== null && (
-        <p>
+        <LotdgActionRow>
           {recipientSearch.candidate_list.length === 0 ? (
-            <span className="colDkWhite">{label('mail.search-empty')}</span>
+            <LotdgText colorClassName={LOTDG_TEXT_COLOR_CLASS_NAME.DARK_WHITE}>
+              {label('mail.search-empty')}
+            </LotdgText>
           ) : (
             recipientSearch.candidate_list.map((candidate) => (
-              <button
+              <LotdgButton
                 key={candidate.login_name}
-                type="button"
-                className="lotdg-button"
-                onClick={() => setRecipientLoginName(candidate.login_name)}
-              >
-                {candidate.display_name}
-              </button>
+                labelSlot={candidate.display_name}
+                onSelect={() => setRecipientLoginName(candidate.login_name)}
+              />
             ))
           )}
-        </p>
+        </LotdgActionRow>
       )}
 
-      <form onSubmit={(event) => void send(event)}>
-        <h3>{label('mail.compose')}</h3>
-        <p>
-          <input
-            className="lotdg-input"
-            placeholder={label('mail.column.recipient')}
-            value={recipientLoginName}
-            onChange={(event) => setRecipientLoginName(event.target.value)}
-          />
-        </p>
-        <p>
-          <input
-            className="lotdg-input"
-            placeholder={label('mail.column.subject')}
-            value={subject}
-            onChange={(event) => setSubject(event.target.value)}
-          />
-        </p>
-        <p>
-          <textarea
-            className="lotdg-input"
-            rows={4}
-            value={body}
-            onChange={(event) => setBody(event.target.value)}
-          />
-        </p>
-        <button type="submit" className="lotdg-button">
-          {label('mail.action.send')}
-        </button>
-      </form>
+      <LotdgSection titleSlot={label('mail.compose')}>
+        <LotdgForm onSubmit={() => void send()}>
+          <LotdgFieldRow isStacked>
+            <LotdgTextField
+              value={recipientLoginName}
+              onValueChange={setRecipientLoginName}
+              placeholderText={label('mail.column.recipient')}
+            />
+          </LotdgFieldRow>
+          <LotdgFieldRow isStacked>
+            <LotdgTextField
+              value={subject}
+              onValueChange={setSubject}
+              placeholderText={label('mail.column.subject')}
+            />
+          </LotdgFieldRow>
+          <LotdgFieldRow isStacked>
+            <LotdgTextAreaField value={body} onValueChange={setBody} />
+          </LotdgFieldRow>
+          <LotdgActionRow>
+            <LotdgSubmitButton labelSlot={label('mail.action.send')} />
+          </LotdgActionRow>
+        </LotdgForm>
+      </LotdgSection>
 
       <LotdgNoticeLine messageText={message} />
-    </section>
+    </LotdgScreen>
   )
 }

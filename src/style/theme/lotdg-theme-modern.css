@@ -1,31 +1,69 @@
-/**
- * 4계층 — modern 테마. legacy 와 같은 골격·같은 에셋 위에서, 당대에 없던 표현을
- * 전부 켠다: 표면 깊이(그림자·내부그림자·글로우), 상태 전환, 그라데이션 광택,
- * 둥근 모서리, 그리고 등장·맥동 애니메이션.
- *
- * 색도 함께 다시 정의한다 — 3계층 역할 이름을 그대로 덮어쓰므로 컴포넌트는 무엇이
- * 바뀌었는지 알 필요가 없다. 원색을 버리지 않고 색 혼합으로 깊이만 더한다.
- */
 [data-lotdg-theme='modern'] {
-  /* 색 — 원색을 바탕에 섞어 층이 서로 떨어져 보이게 한다 */
-  --lotdg-surface-page: color-mix(in srgb, var(--lotdg-primitive-black) 88%, var(--lotdg-primitive-brown-deep));
-  --lotdg-surface-header: color-mix(in srgb, var(--lotdg-primitive-indigo) 88%, var(--lotdg-primitive-black));
-  --lotdg-surface-rail: color-mix(in srgb, var(--lotdg-primitive-brown) 90%, var(--lotdg-primitive-black));
-  --lotdg-surface-stage: color-mix(in srgb, var(--lotdg-primitive-brown-deep) 94%, var(--lotdg-primitive-black));
+  --lotdg-surface-page: color-mix(
+    in srgb,
+    var(--lotdg-primitive-black) 88%,
+    var(--lotdg-primitive-brown-deep)
+  );
+  --lotdg-surface-header: color-mix(
+    in srgb,
+    var(--lotdg-primitive-indigo) 88%,
+    var(--lotdg-primitive-black)
+  );
+  --lotdg-surface-rail: color-mix(
+    in srgb,
+    var(--lotdg-primitive-brown) 90%,
+    var(--lotdg-primitive-black)
+  );
+  --lotdg-surface-stage: color-mix(
+    in srgb,
+    var(--lotdg-primitive-brown-deep) 94%,
+    var(--lotdg-primitive-black)
+  );
 
-  --lotdg-surface-navigation: color-mix(in srgb, var(--lotdg-primitive-navy-deep) 88%, var(--lotdg-primitive-black));
-  --lotdg-surface-navigation-hover: color-mix(in srgb, var(--lotdg-primitive-navy-hover) 82%, var(--lotdg-primitive-navy));
-  --lotdg-surface-vital: color-mix(in srgb, var(--lotdg-primitive-green-deep) 88%, var(--lotdg-primitive-black));
-  --lotdg-surface-control: color-mix(in srgb, var(--lotdg-primitive-brown) 82%, var(--lotdg-primitive-black));
-  --lotdg-surface-button: color-mix(in srgb, var(--lotdg-primitive-brown-raised) 92%, var(--lotdg-primitive-gold));
-  --lotdg-surface-table-row-odd: color-mix(in srgb, var(--lotdg-primitive-maroon) 70%, var(--lotdg-primitive-black));
-  --lotdg-surface-table-row-even: color-mix(in srgb, var(--lotdg-primitive-black) 92%, var(--lotdg-primitive-maroon));
+  --lotdg-surface-navigation: color-mix(
+    in srgb,
+    var(--lotdg-primitive-navy-deep) 88%,
+    var(--lotdg-primitive-black)
+  );
+  --lotdg-surface-navigation-hover: color-mix(
+    in srgb,
+    var(--lotdg-primitive-navy-hover) 82%,
+    var(--lotdg-primitive-navy)
+  );
+  --lotdg-surface-vital: color-mix(
+    in srgb,
+    var(--lotdg-primitive-green-deep) 88%,
+    var(--lotdg-primitive-black)
+  );
+  --lotdg-surface-control: color-mix(
+    in srgb,
+    var(--lotdg-primitive-brown) 82%,
+    var(--lotdg-primitive-black)
+  );
+  --lotdg-surface-button: color-mix(
+    in srgb,
+    var(--lotdg-primitive-brown-raised) 92%,
+    var(--lotdg-primitive-gold)
+  );
+  --lotdg-surface-table-row-odd: color-mix(
+    in srgb,
+    var(--lotdg-primitive-maroon) 70%,
+    var(--lotdg-primitive-black)
+  );
+  --lotdg-surface-table-row-even: color-mix(
+    in srgb,
+    var(--lotdg-primitive-black) 92%,
+    var(--lotdg-primitive-maroon)
+  );
 
   --lotdg-edge-navigation: color-mix(in srgb, var(--lotdg-primitive-gold) 20%, transparent);
   --lotdg-edge-accent: color-mix(in srgb, var(--lotdg-primitive-gold) 55%, transparent);
-  --lotdg-edge-control: color-mix(in srgb, var(--lotdg-primitive-tan) 80%, var(--lotdg-primitive-gold));
+  --lotdg-edge-control: color-mix(
+    in srgb,
+    var(--lotdg-primitive-tan) 80%,
+    var(--lotdg-primitive-gold)
+  );
 
-  /* 깊이 */
   --lotdg-effect-shadow-panel: 0 var(--lotdg-scale-hairline) var(--lotdg-scale-space-snug)
     rgb(0 0 0 / 0.55);
   --lotdg-effect-shadow-rail-inset: inset 0 0 var(--lotdg-scale-space-vignette) rgb(0 0 0 / 0.45);
@@ -39,10 +77,8 @@
   --lotdg-effect-glow-focus: 0 0 var(--lotdg-scale-space-normal)
     color-mix(in srgb, var(--lotdg-primitive-gold) 55%, transparent);
 
-  /* 상태 전환 */
   --lotdg-effect-transition-interactive: 120ms ease-out;
 
-  /* 표면 광택 */
   --lotdg-effect-sheen-raised: linear-gradient(rgb(255 255 255 / 0.1), rgb(0 0 0 / 0.15));
   --lotdg-effect-sheen-head: linear-gradient(rgb(255 255 255 / 0.12), transparent 60%);
   --lotdg-effect-sheen-pressed: linear-gradient(rgb(0 0 0 / 0.2), rgb(255 255 255 / 0.06));
@@ -52,17 +88,14 @@
     transparent 70%
   );
 
-  /* 모서리 */
   --lotdg-effect-radius-panel: var(--lotdg-scale-space-tight);
   --lotdg-effect-radius-control: var(--lotdg-scale-hairline);
 
-  /* 그림·글자 표현 */
   --lotdg-effect-scene-opacity: 0.28;
   --lotdg-effect-image-rendering: pixelated;
   --lotdg-effect-font-smoothing: antialiased;
   --lotdg-effect-text-rendering: optimizeLegibility;
 
-  /* 움직임 */
   --lotdg-effect-animation-panel-enter: lotdg-panel-enter 220ms ease-out both;
   --lotdg-effect-animation-stage-enter: lotdg-stage-enter 200ms ease-out both;
   --lotdg-effect-animation-accent-pulse: lotdg-accent-pulse 2600ms ease-in-out infinite;
@@ -70,10 +103,6 @@
   --lotdg-effect-animation-row-enter: lotdg-row-enter 160ms ease-out both;
 }
 
-/**
- * 키프레임은 전역 이름이라 테마 선택자 안에 넣을 수 없다. modern 이 아닐 때는 위
- * 애니메이션 토큰이 none 이므로 어느 규칙도 이 이름을 참조하지 않는다.
- */
 @keyframes lotdg-panel-enter {
   from {
     opacity: 0;

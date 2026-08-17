@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState, type FormEvent } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { getJson, postForm } from '../../shared/lib/lotdg-api-client'
 import {
   lotdgPreferenceInspectSchema,
@@ -12,10 +12,28 @@ import {
   LOTDG_SUPPORTED_LOCALE_CODE_LIST,
   LOTDG_SUPPORTED_LOCALE_ENDONYM,
 } from '../../shared/constant/lotdg-supported-locale'
-import { LotdgNoticeLine } from '../../shared/ui/LotdgNoticeLine'
+import {
+  LOTDG_BIOGRAPHY_MAXIMUM_LENGTH,
+  LOTDG_NOTIFICATION_PREFERENCE_KEY_LIST,
+} from '../../shared/constant/lotdg-legacy-code'
+import { LOTDG_BOOLEAN_FIELD_VALUE } from '../../shared/constant/lotdg-form-token'
 import type { LotdgMutableScreenProps } from '../../shared/type/lotdg-screen-contract'
+import {
+  LotdgActionRow,
+  LotdgCheckboxField,
+  LotdgFieldRow,
+  LotdgForm,
+  LotdgNoticeLine,
+  LotdgScreen,
+  LotdgSection,
+  LotdgSelectField,
+  LotdgSubmitButton,
+  LotdgTextField,
+} from '../../shared/ui'
 
-const NOTIFICATION_KEY_LIST = ['emailonmail', 'systemmail', 'dirtyemail'] as const
+const NOTIFICATION_KEY_LIST = LOTDG_NOTIFICATION_PREFERENCE_KEY_LIST
+
+const LOTDG_ENABLED_NOTIFICATION_VALUE = 1
 
 export function LotdgPreferenceScreen({ characterId, onStateChange }: LotdgMutableScreenProps) {
   const { translate, setLocaleCode } = useLotdgLocale()
@@ -37,7 +55,10 @@ export function LotdgPreferenceScreen({ characterId, onStateChange }: LotdgMutab
         setSelectedLocaleCode(result.locale_code)
         setNotificationMap(
           Object.fromEntries(
-            NOTIFICATION_KEY_LIST.map((key) => [key, Number(result.notification[key] ?? 0) === 1]),
+            NOTIFICATION_KEY_LIST.map((key) => [
+              key,
+              Number(result.notification[key] ?? 0) === LOTDG_ENABLED_NOTIFICATION_VALUE,
+            ]),
           ),
         )
       })
@@ -53,9 +74,7 @@ export function LotdgPreferenceScreen({ characterId, onStateChange }: LotdgMutab
   const label = (path: string, valueMap?: Record<string, string | number>) =>
     translate(LOTDG_LOCALE_NAMESPACE.SOCIAL, path, valueMap)
 
-  const save = async (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault()
-
+  const save = async () => {
     if (preference === null) {
       return
     }
@@ -70,7 +89,12 @@ export function LotdgPreferenceScreen({ characterId, onStateChange }: LotdgMutab
           email_address: emailAddress,
           biography,
           ...Object.fromEntries(
-            NOTIFICATION_KEY_LIST.map((key) => [key, notificationMap[key] === true ? '1' : '0']),
+            NOTIFICATION_KEY_LIST.map((key) => [
+              key,
+              notificationMap[key] === true
+                ? LOTDG_BOOLEAN_FIELD_VALUE.TRUE
+                : LOTDG_BOOLEAN_FIELD_VALUE.FALSE,
+            ]),
           ),
         },
       )
@@ -96,9 +120,7 @@ export function LotdgPreferenceScreen({ characterId, onStateChange }: LotdgMutab
     }
   }
 
-  const changePassword = async (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault()
-
+  const changePassword = async () => {
     try {
       const result = await postForm(
         `/preference/${characterId}/password`,
@@ -120,123 +142,87 @@ export function LotdgPreferenceScreen({ characterId, onStateChange }: LotdgMutab
   }
 
   return (
-    <section>
-      <h2>{label('preference.title')}</h2>
-
+    <LotdgScreen titleText={label('preference.title')}>
       {preference !== null && (
         <>
-          <form onSubmit={(event) => void save(event)}>
-            <p>
-              <label htmlFor="lotdg-preference-locale">{label('preference.field.locale')}</label>
-              <br />
-              <select
-                id="lotdg-preference-locale"
-                className="lotdg-select"
+          <LotdgForm onSubmit={() => void save()}>
+            <LotdgFieldRow isStacked>
+              <LotdgSelectField
+                labelText={label('preference.field.locale')}
                 value={selectedLocaleCode}
-                onChange={(event) => setSelectedLocaleCode(event.target.value)}
-              >
-                {LOTDG_SUPPORTED_LOCALE_CODE_LIST.map((code) => (
-                  <option key={code} value={code}>
-                    {LOTDG_SUPPORTED_LOCALE_ENDONYM[code]}
-                  </option>
-                ))}
-              </select>
-            </p>
+                onValueChange={setSelectedLocaleCode}
+                optionList={LOTDG_SUPPORTED_LOCALE_CODE_LIST.map((code) => ({
+                  optionValue: code,
+                  labelText: LOTDG_SUPPORTED_LOCALE_ENDONYM[code],
+                }))}
+              />
+            </LotdgFieldRow>
 
-            <p>
-              <label htmlFor="lotdg-preference-email">{label('preference.field.email')}</label>
-              <br />
-              <input
-                id="lotdg-preference-email"
-                className="lotdg-input"
+            <LotdgFieldRow isStacked>
+              <LotdgTextField
+                labelText={label('preference.field.email')}
                 value={emailAddress}
-                disabled={!preference.email_change_allowed}
-                onChange={(event) => setEmailAddress(event.target.value)}
+                onValueChange={setEmailAddress}
+                isDisabled={!preference.email_change_allowed}
               />
-            </p>
+            </LotdgFieldRow>
 
-            <p>
-              <label htmlFor="lotdg-preference-biography">
-                {label('preference.field.biography')}
-              </label>
-              <br />
-              <input
-                id="lotdg-preference-biography"
-                className="lotdg-input"
+            <LotdgFieldRow isStacked>
+              <LotdgTextField
+                labelText={label('preference.field.biography')}
                 value={biography}
-                maxLength={255}
-                disabled={!preference.biography_editable}
-                onChange={(event) => setBiography(event.target.value)}
+                onValueChange={setBiography}
+                maximumLength={LOTDG_BIOGRAPHY_MAXIMUM_LENGTH}
+                isDisabled={!preference.biography_editable}
               />
-            </p>
+            </LotdgFieldRow>
 
             {NOTIFICATION_KEY_LIST.map((key) => (
-              <p key={key}>
-                <label htmlFor={`lotdg-preference-${key}`}>
-                  <input
-                    id={`lotdg-preference-${key}`}
-                    type="checkbox"
-                    checked={notificationMap[key] === true}
-                    onChange={(event) =>
-                      setNotificationMap((previous) => ({
-                        ...previous,
-                        [key]: event.target.checked,
-                      }))
-                    }
-                  />{' '}
-                  {label(`preference.field.${key}`)}
-                </label>
-              </p>
+              <LotdgFieldRow key={key}>
+                <LotdgCheckboxField
+                  labelText={label(`preference.field.${key}`)}
+                  isChecked={notificationMap[key] === true}
+                  onCheckedChange={(nextChecked) =>
+                    setNotificationMap((previous) => ({ ...previous, [key]: nextChecked }))
+                  }
+                />
+              </LotdgFieldRow>
             ))}
 
-            <p>
-              <button type="submit" className="lotdg-button">
-                {label('preference.action.save')}
-              </button>
-            </p>
-          </form>
+            <LotdgActionRow>
+              <LotdgSubmitButton labelSlot={label('preference.action.save')} />
+            </LotdgActionRow>
+          </LotdgForm>
 
-          <h3>{label('preference.password-title')}</h3>
+          <LotdgSection titleSlot={label('preference.password-title')}>
+            <LotdgForm onSubmit={() => void changePassword()}>
+              <LotdgFieldRow isStacked>
+                <LotdgTextField
+                  labelText={label('preference.field.password')}
+                  value={password}
+                  onValueChange={setPassword}
+                  isSecret
+                />
+              </LotdgFieldRow>
 
-          <form onSubmit={(event) => void changePassword(event)}>
-            <p>
-              <label htmlFor="lotdg-preference-password">
-                {label('preference.field.password')}
-              </label>
-              <br />
-              <input
-                id="lotdg-preference-password"
-                className="lotdg-input"
-                type="password"
-                value={password}
-                onChange={(event) => setPassword(event.target.value)}
-              />
-            </p>
+              <LotdgFieldRow isStacked>
+                <LotdgTextField
+                  labelText={label('preference.field.password-confirmation')}
+                  value={passwordConfirmation}
+                  onValueChange={setPasswordConfirmation}
+                  isSecret
+                />
+              </LotdgFieldRow>
 
-            <p>
-              <label htmlFor="lotdg-preference-password-confirmation">
-                {label('preference.field.password-confirmation')}
-              </label>
-              <br />
-              <input
-                id="lotdg-preference-password-confirmation"
-                className="lotdg-input"
-                type="password"
-                value={passwordConfirmation}
-                onChange={(event) => setPasswordConfirmation(event.target.value)}
-              />
-            </p>
-
-            <p>
-              <button type="submit" className="lotdg-button">
-                {label('preference.action.change-password')}
-              </button>
-            </p>
-          </form>
+              <LotdgActionRow>
+                <LotdgSubmitButton labelSlot={label('preference.action.change-password')} />
+              </LotdgActionRow>
+            </LotdgForm>
+          </LotdgSection>
         </>
       )}
 
       <LotdgNoticeLine messageText={message} />
-    </section>
+    </LotdgScreen>
   )
 }

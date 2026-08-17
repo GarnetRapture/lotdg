@@ -1,5 +1,6 @@
 import type { LotdgCommentarySectionCode } from '../constant/lotdg-commentary-section-code'
 import type { LotdgShopTypeCode, LotdgSocialVenueCode } from '../constant/lotdg-legacy-code'
+import type { LotdgSpecialEventCode } from '../constant/lotdg-special-event-code'
 
 export type LotdgTranslateFunction = (
   namespaceCode: string,
@@ -18,6 +19,28 @@ export interface LotdgCharacterScreenProps {
 
 export interface LotdgMutableScreenProps extends LotdgCharacterScreenProps {
   readonly onStateChange: () => void
+}
+
+export interface LotdgSpecialEventScreenProps extends LotdgMutableScreenProps {
+  readonly eventCode: LotdgSpecialEventCode
+  readonly onLeave: () => void
+}
+
+export interface LotdgDarkHorseScreenProps extends LotdgMutableScreenProps {
+  readonly onLeave: () => void
+}
+
+export interface LotdgNewsScreenProps {
+  readonly characterId: number | null
+  readonly canRemove: boolean
+}
+
+export interface LotdgWarriorListScreenProps {
+  readonly onBiographyOpen: (characterId: number) => void
+}
+
+export interface LotdgForestScreenProps extends LotdgMutableScreenProps {
+  readonly onSpecialEventOpen: (eventCode: LotdgSpecialEventCode) => void
 }
 
 export interface LotdgLoginScreenProps {

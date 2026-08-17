@@ -17,6 +17,8 @@ export function LotdgTextField({
   widthCode = LOTDG_CONTROL_WIDTH_CODE.DEFAULT,
   autocompleteToken,
   accessKey,
+  placeholderText,
+  isNumeric = false,
 }: LotdgTextFieldProps) {
   const fieldId = useId()
 
@@ -39,6 +41,8 @@ export function LotdgTextField({
         disabled={isDisabled}
         autoComplete={autocompleteToken}
         accessKey={accessKey}
+        placeholder={placeholderText}
+        inputMode={isNumeric ? 'numeric' : undefined}
         onChange={(event) => onValueChange(event.target.value)}
       />
     </>

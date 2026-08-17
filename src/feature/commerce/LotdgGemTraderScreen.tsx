@@ -8,10 +8,25 @@ import {
 import { resolveErrorLabel, resolveMessageKeyLabel } from '../../shared/lib/lotdg-error-label'
 import { useLotdgLocale } from '../../i18n/useLotdgLocale'
 import { LOTDG_LOCALE_NAMESPACE } from '../../shared/constant/lotdg-supported-locale'
-import { LotdgDataTable } from '../../shared/ui/LotdgDataTable'
-import { LotdgNoticeLine } from '../../shared/ui/LotdgNoticeLine'
+import { LOTDG_COMMENTARY_SECTION_CODE } from '../../shared/constant/lotdg-commentary-section-code'
+import { LOTDG_TEXT_COLOR_CLASS_NAME } from '../../shared/constant/lotdg-legacy-color-code'
 import type { LotdgMutableScreenProps } from '../../shared/type/lotdg-screen-contract'
+import {
+  LotdgActionRow,
+  LotdgButton,
+  LotdgDataTable,
+  LotdgNoticeLine,
+  LotdgScreen,
+  LotdgText,
+} from '../../shared/ui'
 import { LotdgCommentaryBoard } from '../social/LotdgCommentaryBoard'
+
+const LOTDG_GEM_TRADER_ACTION_CODE = {
+  BUY: 'buy',
+  SELL: 'sell',
+} as const
+
+const LOTDG_GEM_SELL_MINIMUM_COUNT = 1
 
 export function LotdgGemTraderScreen({ characterId, onStateChange }: LotdgMutableScreenProps) {
   const { translate } = useLotdgLocale()
@@ -57,16 +72,16 @@ export function LotdgGemTraderScreen({ characterId, onStateChange }: LotdgMutabl
   }
 
   return (
-    <section>
-      <h2>{label('gem-trader.title')}</h2>
-
+    <LotdgScreen titleText={label('gem-trader.title')}>
       {trader !== null && (
         <>
-          <p>{label('gem-trader.status', { gold: trader.gold, gem: trader.gem })}</p>
+          <LotdgText>
+            {label('gem-trader.status', { gold: trader.gold, gem: trader.gem })}
+          </LotdgText>
 
           {trader.available ? (
             <>
-              <p>{label('gem-trader.stock', { stock: trader.stock })}</p>
+              <LotdgText>{label('gem-trader.stock', { stock: trader.stock })}</LotdgText>
 
               <LotdgDataTable
                 rowList={trader.purchase_option_list}
@@ -86,40 +101,45 @@ export function LotdgGemTraderScreen({ characterId, onStateChange }: LotdgMutabl
                     columnKey: 'action',
                     headText: label('gem-trader.column.action'),
                     render: (option) => (
-                      <button
-                        type="button"
-                        className="lotdg-button"
-                        disabled={!option.available}
-                        onClick={() => void act('buy', { option_code: option.option_code })}
-                      >
-                        {label('gem-trader.action.buy')}
-                      </button>
+                      <LotdgButton
+                        labelSlot={label('gem-trader.action.buy')}
+                        isDisabled={!option.available}
+                        onSelect={() =>
+                          void act(LOTDG_GEM_TRADER_ACTION_CODE.BUY, {
+                            option_code: option.option_code,
+                          })
+                        }
+                      />
                     ),
                   },
                 ]}
               />
 
-              <p>
-                {label('gem-trader.sell-offer', { price: trader.sell_price_per_gem })}{' '}
-                <button
-                  type="button"
-                  className="lotdg-button"
-                  disabled={trader.gem < 1}
-                  onClick={() => void act('sell')}
-                >
-                  {label('gem-trader.action.sell')}
-                </button>
-              </p>
+              <LotdgActionRow>
+                <LotdgText>
+                  {label('gem-trader.sell-offer', { price: trader.sell_price_per_gem })}
+                </LotdgText>
+                <LotdgButton
+                  labelSlot={label('gem-trader.action.sell')}
+                  isDisabled={trader.gem < LOTDG_GEM_SELL_MINIMUM_COUNT}
+                  onSelect={() => void act(LOTDG_GEM_TRADER_ACTION_CODE.SELL)}
+                />
+              </LotdgActionRow>
             </>
           ) : (
-            <p className="colLtRed">{label('gem-trader.unavailable')}</p>
+            <LotdgText colorClassName={LOTDG_TEXT_COLOR_CLASS_NAME.LIGHT_RED}>
+              {label('gem-trader.unavailable')}
+            </LotdgText>
           )}
         </>
       )}
 
       <LotdgNoticeLine messageText={message} />
 
-      <LotdgCommentaryBoard characterId={characterId} sectionCode="gemtrader" />
-    </section>
+      <LotdgCommentaryBoard
+        characterId={characterId}
+        sectionCode={LOTDG_COMMENTARY_SECTION_CODE.GEM_TRADER}
+      />
+    </LotdgScreen>
   )
 }

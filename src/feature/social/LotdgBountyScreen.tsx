@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState, type FormEvent } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { getJson, postForm } from '../../shared/lib/lotdg-api-client'
 import {
   lotdgBountyBoardSchema,
@@ -11,17 +11,33 @@ import { resolveErrorLabel, resolveMessageKeyLabel } from '../../shared/lib/lotd
 import { useLotdgLocale } from '../../i18n/useLotdgLocale'
 import { LOTDG_LOCALE_NAMESPACE } from '../../shared/constant/lotdg-supported-locale'
 import { LOTDG_LOCATION_LABEL_PATH } from '../../shared/constant/lotdg-legacy-code'
-import { LotdgDataTable } from '../../shared/ui/LotdgDataTable'
-import { LotdgNoticeLine } from '../../shared/ui/LotdgNoticeLine'
+import { LOTDG_COMMENTARY_SECTION_CODE } from '../../shared/constant/lotdg-commentary-section-code'
+import { LOTDG_TEXT_COLOR_CLASS_NAME } from '../../shared/constant/lotdg-legacy-color-code'
 import type { LotdgMutableScreenProps } from '../../shared/type/lotdg-screen-contract'
+import {
+  LotdgButton,
+  LotdgDataTable,
+  LotdgFieldRow,
+  LotdgForm,
+  LotdgNoticeLine,
+  LotdgScreen,
+  LotdgSelectField,
+  LotdgSubmitButton,
+  LotdgText,
+  LotdgTextField,
+} from '../../shared/ui'
 import { LotdgCommentaryBoard } from './LotdgCommentaryBoard'
+
+const LOTDG_BOUNTY_UNSELECTED_TARGET_ID = 0
+
+const LOTDG_DECIMAL_RADIX = 10
 
 export function LotdgBountyScreen({ characterId, onStateChange }: LotdgMutableScreenProps) {
   const { translate } = useLotdgLocale()
   const [board, setBoard] = useState<LotdgBountyBoard | null>(null)
   const [search, setSearch] = useState<LotdgBountySearch | null>(null)
   const [searchTerm, setSearchTerm] = useState('')
-  const [targetCharacterId, setTargetCharacterId] = useState(0)
+  const [targetCharacterId, setTargetCharacterId] = useState(LOTDG_BOUNTY_UNSELECTED_TARGET_ID)
   const [amount, setAmount] = useState('')
   const [message, setMessage] = useState('')
 
@@ -40,9 +56,7 @@ export function LotdgBountyScreen({ characterId, onStateChange }: LotdgMutableSc
   const label = (path: string, valueMap?: Record<string, string | number>) =>
     translate(LOTDG_LOCALE_NAMESPACE.SOCIAL, path, valueMap)
 
-  const searchTarget = async (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault()
-
+  const searchTarget = async () => {
     if (searchTerm.trim() === '') {
       return
     }
@@ -59,12 +73,10 @@ export function LotdgBountyScreen({ characterId, onStateChange }: LotdgMutableSc
     }
   }
 
-  const placeBounty = async (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault()
+  const placeBounty = async () => {
+    const parsedAmount = Number.parseInt(amount, LOTDG_DECIMAL_RADIX)
 
-    const parsedAmount = Number.parseInt(amount, 10)
-
-    if (targetCharacterId <= 0 || Number.isNaN(parsedAmount)) {
+    if (targetCharacterId <= LOTDG_BOUNTY_UNSELECTED_TARGET_ID || Number.isNaN(parsedAmount)) {
       setMessage(label('bounty.error.incomplete-form'))
 
       return
@@ -95,7 +107,7 @@ export function LotdgBountyScreen({ characterId, onStateChange }: LotdgMutableSc
           }),
         )
         setAmount('')
-        setTargetCharacterId(0)
+        setTargetCharacterId(LOTDG_BOUNTY_UNSELECTED_TARGET_ID)
       }
 
       onStateChange()
@@ -106,14 +118,12 @@ export function LotdgBountyScreen({ characterId, onStateChange }: LotdgMutableSc
   }
 
   return (
-    <section>
-      <h2>{label('bounty.title')}</h2>
-
+    <LotdgScreen titleText={label('bounty.title')}>
       {board !== null && (
         <>
-          <p>{label('bounty.description')}</p>
+          <LotdgText>{label('bounty.description')}</LotdgText>
 
-          <p>
+          <LotdgText>
             {label('bounty.rule', {
               minimumPerLevel: board.minimum_per_level,
               maximumPerLevel: board.maximum_per_level,
@@ -122,10 +132,12 @@ export function LotdgBountyScreen({ characterId, onStateChange }: LotdgMutableSc
               placedToday: board.bounty_set_today,
               maximumPerDay: board.maximum_bounty_per_day,
             })}
-          </p>
+          </LotdgText>
 
           {board.own_bounty > 0 && (
-            <p className="colLtRed">{label('bounty.own', { bounty: board.own_bounty })}</p>
+            <LotdgText colorClassName={LOTDG_TEXT_COLOR_CLASS_NAME.LIGHT_RED}>
+              {label('bounty.own', { bounty: board.own_bounty })}
+            </LotdgText>
           )}
 
           <LotdgDataTable
@@ -173,32 +185,25 @@ export function LotdgBountyScreen({ characterId, onStateChange }: LotdgMutableSc
                 columnKey: 'action',
                 headText: label('bounty.column.action'),
                 render: (entry) => (
-                  <button
-                    type="button"
-                    className="lotdg-button"
-                    onClick={() => setTargetCharacterId(entry.character_id)}
-                  >
-                    {label('bounty.action.select')}
-                  </button>
+                  <LotdgButton
+                    labelSlot={label('bounty.action.select')}
+                    onSelect={() => setTargetCharacterId(entry.character_id)}
+                  />
                 ),
               },
             ]}
           />
 
-          <form onSubmit={(event) => void searchTarget(event)}>
-            <p>
-              <label htmlFor="lotdg-bounty-search">{label('bounty.form.search')}</label>{' '}
-              <input
-                id="lotdg-bounty-search"
-                className="lotdg-input"
+          <LotdgForm onSubmit={() => void searchTarget()}>
+            <LotdgFieldRow>
+              <LotdgTextField
+                labelText={label('bounty.form.search')}
                 value={searchTerm}
-                onChange={(event) => setSearchTerm(event.target.value)}
-              />{' '}
-              <button type="submit" className="lotdg-button">
-                {label('bounty.action.search')}
-              </button>
-            </p>
-          </form>
+                onValueChange={setSearchTerm}
+              />
+              <LotdgSubmitButton labelSlot={label('bounty.action.search')} />
+            </LotdgFieldRow>
+          </LotdgForm>
 
           {search !== null && (
             <LotdgDataTable
@@ -229,34 +234,31 @@ export function LotdgBountyScreen({ characterId, onStateChange }: LotdgMutableSc
                   columnKey: 'action',
                   headText: label('bounty.column.action'),
                   render: (candidate) => (
-                    <button
-                      type="button"
-                      className="lotdg-button"
-                      disabled={!candidate.eligible}
-                      onClick={() => setTargetCharacterId(candidate.character_id)}
-                    >
-                      {label('bounty.action.select')}
-                    </button>
+                    <LotdgButton
+                      labelSlot={label('bounty.action.select')}
+                      isDisabled={!candidate.eligible}
+                      onSelect={() => setTargetCharacterId(candidate.character_id)}
+                    />
                   ),
                 },
               ]}
             />
           )}
 
-          <form onSubmit={(event) => void placeBounty(event)}>
-            <p>
-              <label htmlFor="lotdg-bounty-target">{label('bounty.form.target')}</label>{' '}
-              <select
-                id="lotdg-bounty-target"
-                className="lotdg-select"
-                value={targetCharacterId}
-                onChange={(event) => setTargetCharacterId(Number(event.target.value))}
-              >
-                <option value={0}>{label('bounty.form.target-unselected')}</option>
-                {[
+          <LotdgForm onSubmit={() => void placeBounty()}>
+            <LotdgFieldRow>
+              <LotdgSelectField
+                labelText={label('bounty.form.target')}
+                value={String(targetCharacterId)}
+                onValueChange={(nextValue) => setTargetCharacterId(Number(nextValue))}
+                optionList={[
+                  {
+                    optionValue: String(LOTDG_BOUNTY_UNSELECTED_TARGET_ID),
+                    labelText: label('bounty.form.target-unselected'),
+                  },
                   ...board.bounty_list.map((entry) => ({
-                    character_id: entry.character_id,
-                    display_name: entry.display_name,
+                    optionValue: String(entry.character_id),
+                    labelText: entry.display_name,
                   })),
                   ...(search?.candidate_list ?? [])
                     .filter(
@@ -267,34 +269,29 @@ export function LotdgBountyScreen({ characterId, onStateChange }: LotdgMutableSc
                         ),
                     )
                     .map((candidate) => ({
-                      character_id: candidate.character_id,
-                      display_name: candidate.display_name,
+                      optionValue: String(candidate.character_id),
+                      labelText: candidate.display_name,
                     })),
-                ].map((option) => (
-                  <option key={option.character_id} value={option.character_id}>
-                    {option.display_name}
-                  </option>
-                ))}
-              </select>{' '}
-              <label htmlFor="lotdg-bounty-amount">{label('bounty.form.amount')}</label>{' '}
-              <input
-                id="lotdg-bounty-amount"
-                className="lotdg-input"
-                inputMode="numeric"
+                ]}
+              />
+              <LotdgTextField
+                labelText={label('bounty.form.amount')}
                 value={amount}
-                onChange={(event) => setAmount(event.target.value)}
-              />{' '}
-              <button type="submit" className="lotdg-button">
-                {label('bounty.action.place')}
-              </button>
-            </p>
-          </form>
+                onValueChange={setAmount}
+                isNumeric
+              />
+              <LotdgSubmitButton labelSlot={label('bounty.action.place')} />
+            </LotdgFieldRow>
+          </LotdgForm>
         </>
       )}
 
       <LotdgNoticeLine messageText={message} />
 
-      <LotdgCommentaryBoard characterId={characterId} sectionCode="dag" />
-    </section>
+      <LotdgCommentaryBoard
+        characterId={characterId}
+        sectionCode={LOTDG_COMMENTARY_SECTION_CODE.BOUNTY}
+      />
+    </LotdgScreen>
   )
 }

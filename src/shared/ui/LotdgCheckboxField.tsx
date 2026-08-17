@@ -7,6 +7,7 @@ export function LotdgCheckboxField({
   isChecked,
   onCheckedChange,
   isDisabled = false,
+  isLabelHidden = false,
 }: LotdgCheckboxFieldProps) {
   const fieldId = useId()
 
@@ -18,11 +19,14 @@ export function LotdgCheckboxField({
         type="checkbox"
         checked={isChecked}
         disabled={isDisabled}
+        aria-label={isLabelHidden ? labelText : undefined}
         onChange={(event) => onCheckedChange(event.target.checked)}
       />
-      <label className={LOTDG_UI_CLASS_NAME.FIELD_LABEL} htmlFor={fieldId}>
-        {labelText}
-      </label>
+      {!isLabelHidden && (
+        <label className={LOTDG_UI_CLASS_NAME.FIELD_LABEL} htmlFor={fieldId}>
+          {labelText}
+        </label>
+      )}
     </>
   )
 }

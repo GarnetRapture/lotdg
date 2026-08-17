@@ -7,18 +7,15 @@ import {
 import { resolveErrorLabel, resolveMessageKeyLabel } from '../../shared/lib/lotdg-error-label'
 import { useLotdgLocale } from '../../i18n/useLotdgLocale'
 import { LOTDG_LOCALE_NAMESPACE } from '../../shared/constant/lotdg-supported-locale'
+import { LOTDG_TEXT_COLOR_CLASS_NAME } from '../../shared/constant/lotdg-legacy-color-code'
+import type { LotdgMutableScreenProps } from '../../shared/type/lotdg-screen-contract'
+import { LotdgActionRow, LotdgButton, LotdgScreen, LotdgSection, LotdgText } from '../../shared/ui'
 import type { z } from 'zod'
 
 type TrainingInspect = z.infer<typeof lotdgTrainingInspectSchema>
 type TrainingChallenge = z.infer<typeof lotdgTrainingChallengeSchema>
 
-export function LotdgTrainingScreen({
-  characterId,
-  onStateChange,
-}: {
-  readonly characterId: number
-  readonly onStateChange: () => void
-}) {
+export function LotdgTrainingScreen({ characterId, onStateChange }: LotdgMutableScreenProps) {
   const { translate } = useLotdgLocale()
   const [inspect, setInspect] = useState<TrainingInspect | null>(null)
   const [challenge, setChallenge] = useState<TrainingChallenge | null>(null)
@@ -54,68 +51,69 @@ export function LotdgTrainingScreen({
   }
 
   return (
-    <section>
-      <h2>{label('training.title')}</h2>
+    <LotdgScreen titleText={label('training.title')}>
+      {errorMessage !== '' && (
+        <LotdgText colorClassName={LOTDG_TEXT_COLOR_CLASS_NAME.LIGHT_RED}>{errorMessage}</LotdgText>
+      )}
 
-      {errorMessage !== '' && <p className="colLtRed">{errorMessage}</p>}
-
-      {inspect?.has_master === false && <p>{label('training.no-master')}</p>}
+      {inspect?.has_master === false && <LotdgText>{label('training.no-master')}</LotdgText>}
 
       {inspect?.has_master === true && (
         <>
-          <p className="colLtYellow">
+          <LotdgText colorClassName={LOTDG_TEXT_COLOR_CLASS_NAME.LIGHT_YELLOW}>
             {label('training.master', {
               name: inspect.master_name ?? '',
               weapon: inspect.master_weapon_name ?? '',
             })}
-          </p>
-          <p>
+          </LotdgText>
+          <LotdgText>
             {label('training.experience', {
               current: inspect.current_experience ?? 0,
               required: inspect.required_experience ?? 0,
               missing: inspect.missing_experience ?? 0,
             })}
-          </p>
-          <button
-            type="button"
-            className="lotdg-button"
-            onClick={() => void doChallenge()}
-            disabled={inspect.can_challenge !== true}
-          >
-            {label('training.action.challenge')}
-          </button>
+          </LotdgText>
+          <LotdgActionRow>
+            <LotdgButton
+              labelSlot={label('training.action.challenge')}
+              isDisabled={inspect.can_challenge !== true}
+              onSelect={() => void doChallenge()}
+            />
+          </LotdgActionRow>
         </>
       )}
 
       {challenge !== null && (
-        <div>
+        <LotdgSection>
           {challenge.challenged === false && challenge.message_key !== undefined && (
-            <p className="colLtRed">{resolveMessageKeyLabel(challenge.message_key, translate)}</p>
+            <LotdgText colorClassName={LOTDG_TEXT_COLOR_CLASS_NAME.LIGHT_RED}>
+              {resolveMessageKeyLabel(challenge.message_key, translate)}
+            </LotdgText>
           )}
           {challenge.victory === true && (
             <>
-              <p className="colLtGreen">
+              <LotdgText colorClassName={LOTDG_TEXT_COLOR_CLASS_NAME.LIGHT_GREEN}>
                 {label('training.victory', { name: challenge.master_name ?? '' })}
-              </p>
-              <p>{challenge.master_message}</p>
-              <p>
+              </LotdgText>
+              <LotdgText>{challenge.master_message}</LotdgText>
+              <LotdgText>
                 {label('training.advancement', {
                   level: challenge.advancement?.level ?? 0,
                   maxHitPoint: challenge.advancement?.max_hit_point ?? 0,
                 })}
-              </p>
+              </LotdgText>
             </>
           )}
           {challenge.victory === false && challenge.challenged === true && (
             <>
-              <p className="colLtRed">
+              <LotdgText colorClassName={LOTDG_TEXT_COLOR_CLASS_NAME.LIGHT_RED}>
                 {label('training.defeat', { name: challenge.master_name ?? '' })}
-              </p>
-              <p>{challenge.master_message}</p>
+              </LotdgText>
+              <LotdgText>{challenge.master_message}</LotdgText>
             </>
           )}
-        </div>
+        </LotdgSection>
       )}
-    </section>
+    </LotdgScreen>
   )
 }

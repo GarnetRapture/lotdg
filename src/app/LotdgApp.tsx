@@ -59,6 +59,7 @@ import { LotdgPreferenceScreen } from '../feature/account/LotdgPreferenceScreen'
 import { LotdgAdministrationScreen } from '../feature/administration/LotdgAdministrationScreen'
 import { LotdgCharacterStatPanel } from '../feature/character/LotdgCharacterStatPanel'
 import {
+  LOTDG_NEWS_REMOVAL_SUPERUSER_LEVEL,
   LOTDG_SHOP_TYPE_CODE,
   LOTDG_SOCIAL_VENUE_CODE,
 } from '../shared/constant/lotdg-legacy-code'
@@ -196,9 +197,19 @@ function LotdgAppBody() {
           />
         )
       case LOTDG_SCREEN_CODE.WEAPON_EDITOR:
-        return <LotdgEquipmentEditorScreen characterId={session.characterId} shopType={LOTDG_SHOP_TYPE_CODE.WEAPON} />
+        return (
+          <LotdgEquipmentEditorScreen
+            characterId={session.characterId}
+            shopType={LOTDG_SHOP_TYPE_CODE.WEAPON}
+          />
+        )
       case LOTDG_SCREEN_CODE.ARMOR_EDITOR:
-        return <LotdgEquipmentEditorScreen characterId={session.characterId} shopType={LOTDG_SHOP_TYPE_CODE.ARMOR} />
+        return (
+          <LotdgEquipmentEditorScreen
+            characterId={session.characterId}
+            shopType={LOTDG_SHOP_TYPE_CODE.ARMOR}
+          />
+        )
       case LOTDG_SCREEN_CODE.SPECIAL_EVENT:
         return (
           <LotdgSpecialEventScreen
@@ -318,7 +329,7 @@ function LotdgAppBody() {
         return (
           <LotdgNewsScreen
             characterId={session.characterId}
-            canRemove={session.superuserLevel >= 3}
+            canRemove={session.superuserLevel >= LOTDG_NEWS_REMOVAL_SUPERUSER_LEVEL}
           />
         )
       case LOTDG_SCREEN_CODE.MAIL:

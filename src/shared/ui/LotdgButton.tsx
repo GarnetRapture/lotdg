@@ -1,7 +1,4 @@
-import {
-  LOTDG_BUTTON_CLASS_NAME,
-  LOTDG_BUTTON_TONE_CODE,
-} from '../constant/lotdg-ui-class-name'
+import { LOTDG_BUTTON_CLASS_NAME, LOTDG_BUTTON_TONE_CODE } from '../constant/lotdg-ui-class-name'
 import type { LotdgButtonProps } from '../type/lotdg-ui-component-contract'
 
 export function LotdgButton({

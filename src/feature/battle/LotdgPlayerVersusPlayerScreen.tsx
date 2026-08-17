@@ -9,7 +9,13 @@ import { resolveErrorLabel, resolveMessageKeyLabel } from '../../shared/lib/lotd
 import { useLotdgLocale } from '../../i18n/useLotdgLocale'
 import { LOTDG_LOCALE_NAMESPACE } from '../../shared/constant/lotdg-supported-locale'
 import type { LotdgMutableScreenProps } from '../../shared/type/lotdg-screen-contract'
-import { LotdgButton, LotdgDataTable, LotdgNoticeLine, LotdgScreen, LotdgText } from '../../shared/ui'
+import {
+  LotdgButton,
+  LotdgDataTable,
+  LotdgNoticeLine,
+  LotdgScreen,
+  LotdgText,
+} from '../../shared/ui'
 
 export function LotdgPlayerVersusPlayerScreen({
   characterId,

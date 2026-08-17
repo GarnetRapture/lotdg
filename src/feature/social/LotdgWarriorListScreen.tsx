@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState, type FormEvent } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { getJson } from '../../shared/lib/lotdg-api-client'
 import {
   lotdgWarriorListSchema,
@@ -8,15 +8,38 @@ import { resolveErrorLabel } from '../../shared/lib/lotdg-error-label'
 import { useLotdgLocale } from '../../i18n/useLotdgLocale'
 import { LOTDG_LOCALE_NAMESPACE } from '../../shared/constant/lotdg-supported-locale'
 import { LOTDG_LOCATION_LABEL_PATH } from '../../shared/constant/lotdg-legacy-code'
-import { LotdgDataTable } from '../../shared/ui/LotdgDataTable'
-import { LotdgNoticeLine } from '../../shared/ui/LotdgNoticeLine'
 import { LOTDG_NOTICE_TONE } from '../../shared/constant/lotdg-notice-tone'
+import { LOTDG_TEXT_COLOR_CLASS_NAME } from '../../shared/constant/lotdg-legacy-color-code'
+import type { LotdgWarriorListScreenProps } from '../../shared/type/lotdg-screen-contract'
+import {
+  LotdgButton,
+  LotdgDataTable,
+  LotdgFieldRow,
+  LotdgForm,
+  LotdgLink,
+  LotdgNoticeLine,
+  LotdgPaginationRow,
+  LotdgScreen,
+  LotdgSubmitButton,
+  LotdgText,
+  LotdgTextField,
+} from '../../shared/ui'
 
-export function LotdgWarriorListScreen({
-  onBiographyOpen,
-}: {
-  readonly onBiographyOpen: (characterId: number) => void
-}) {
+const LOTDG_WARRIOR_LIST_MODE_CODE = { ONLINE: 'online', PAGE: 'page' } as const
+
+const LOTDG_WARRIOR_LIST_FIRST_PAGE = 1
+
+const LOTDG_BIOGRAPHY_HASH_PREFIX = 'biography-'
+
+function buildSearchQueryString(searchTerm: string): string {
+  return searchTerm.trim() === '' ? '' : `?search_term=${encodeURIComponent(searchTerm.trim())}`
+}
+
+function buildPageQueryString(pageNumber: number): string {
+  return `?page=${pageNumber}`
+}
+
+export function LotdgWarriorListScreen({ onBiographyOpen }: LotdgWarriorListScreenProps) {
   const { translate } = useLotdgLocale()
   const [warriorList, setWarriorList] = useState<LotdgWarriorList | null>(null)
   const [searchTerm, setSearchTerm] = useState('')
@@ -38,49 +61,44 @@ export function LotdgWarriorListScreen({
   const label = (path: string, valueMap?: Record<string, string | number>) =>
     translate(LOTDG_LOCALE_NAMESPACE.SOCIAL, path, valueMap)
 
-  const submitSearch = (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault()
-    setQueryString(
-      searchTerm.trim() === '' ? '' : `?search_term=${encodeURIComponent(searchTerm.trim())}`,
-    )
+  const submitSearch = () => {
+    setQueryString(buildSearchQueryString(searchTerm))
   }
 
   return (
-    <section>
-      <h2>{label('warrior-list.title')}</h2>
-
-      <form onSubmit={submitSearch}>
-        <p>
-          <label htmlFor="lotdg-warrior-search">{label('warrior-list.search')}</label>{' '}
-          <input
-            id="lotdg-warrior-search"
-            className="lotdg-input"
+    <LotdgScreen titleText={label('warrior-list.title')}>
+      <LotdgForm onSubmit={submitSearch}>
+        <LotdgFieldRow>
+          <LotdgTextField
+            labelText={label('warrior-list.search')}
             value={searchTerm}
-            onChange={(event) => setSearchTerm(event.target.value)}
-          />{' '}
-          <button type="submit" className="lotdg-button">
-            {label('warrior-list.action.search')}
-          </button>{' '}
-          <button type="button" className="lotdg-button" onClick={() => setQueryString('')}>
-            {label('warrior-list.action.online')}
-          </button>{' '}
-          <button type="button" className="lotdg-button" onClick={() => setQueryString('?page=1')}>
-            {label('warrior-list.action.all')}
-          </button>
-        </p>
-      </form>
+            onValueChange={setSearchTerm}
+          />
+          <LotdgSubmitButton labelSlot={label('warrior-list.action.search')} />
+          <LotdgButton
+            labelSlot={label('warrior-list.action.online')}
+            onSelect={() => setQueryString('')}
+          />
+          <LotdgButton
+            labelSlot={label('warrior-list.action.all')}
+            onSelect={() => setQueryString(buildPageQueryString(LOTDG_WARRIOR_LIST_FIRST_PAGE))}
+          />
+        </LotdgFieldRow>
+      </LotdgForm>
 
       {warriorList !== null && (
         <>
-          <p>
+          <LotdgText>
             {label('warrior-list.summary', {
               total: warriorList.total_player_count,
               shown: warriorList.warrior_list.length,
             })}
-          </p>
+          </LotdgText>
 
           {warriorList.truncated === true && (
-            <p className="colLtYellow">{label('warrior-list.truncated')}</p>
+            <LotdgText colorClassName={LOTDG_TEXT_COLOR_CLASS_NAME.LIGHT_YELLOW}>
+              {label('warrior-list.truncated')}
+            </LotdgText>
           )}
 
           <LotdgDataTable
@@ -92,15 +110,11 @@ export function LotdgWarriorListScreen({
                 columnKey: 'name',
                 headText: label('warrior-list.column.name'),
                 render: (warrior) => (
-                  <a
-                    href={`#biography-${warrior.character_id}`}
-                    onClick={(event) => {
-                      event.preventDefault()
-                      onBiographyOpen(warrior.character_id)
-                    }}
-                  >
-                    {warrior.display_name}
-                  </a>
+                  <LotdgLink
+                    hashCode={`${LOTDG_BIOGRAPHY_HASH_PREFIX}${warrior.character_id}`}
+                    labelSlot={warrior.display_name}
+                    onSelect={() => onBiographyOpen(warrior.character_id)}
+                  />
                 ),
               },
               {
@@ -134,25 +148,21 @@ export function LotdgWarriorListScreen({
             ]}
           />
 
-          {warriorList.mode === 'page' && warriorList.page_count !== undefined && (
-            <p>
-              {Array.from({ length: warriorList.page_count }, (_unused, pageIndex) => (
-                <button
-                  key={pageIndex + 1}
-                  type="button"
-                  className="lotdg-button"
-                  disabled={warriorList.page === pageIndex + 1}
-                  onClick={() => setQueryString(`?page=${pageIndex + 1}`)}
-                >
-                  {pageIndex + 1}
-                </button>
-              ))}
-            </p>
-          )}
+          {warriorList.mode === LOTDG_WARRIOR_LIST_MODE_CODE.PAGE &&
+            warriorList.page_count !== undefined && (
+              <LotdgPaginationRow
+                pageCount={warriorList.page_count}
+                activePageIndex={(warriorList.page ?? LOTDG_WARRIOR_LIST_FIRST_PAGE) - 1}
+                pageLabelText={(pageNumber) => String(pageNumber)}
+                onPageSelect={(pageIndex) =>
+                  setQueryString(buildPageQueryString(pageIndex + LOTDG_WARRIOR_LIST_FIRST_PAGE))
+                }
+              />
+            )}
         </>
       )}
 
       <LotdgNoticeLine messageText={errorMessage} tone={LOTDG_NOTICE_TONE.FAILURE} />
-    </section>
+    </LotdgScreen>
   )
 }

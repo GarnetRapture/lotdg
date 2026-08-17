@@ -1,6 +1,3 @@
-/**
- * 6계층 — 능력치 표. LotdgStatTable 이 쓰는 라벨·값 두 칸 구조다.
- */
 .lotdg-stat {
   width: var(--lotdg-scale-stat-table-width);
   max-width: 100%;

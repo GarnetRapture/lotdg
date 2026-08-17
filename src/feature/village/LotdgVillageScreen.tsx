@@ -63,9 +63,7 @@ export function LotdgVillageScreen({ characterId }: LotdgCharacterScreenProps) {
 
       {village.latest_news !== null && village.latest_news !== undefined && (
         <LotdgSection titleSlot={translate(LOTDG_LOCALE_NAMESPACE.VILLAGE, 'latest-news')}>
-          <LotdgMarkupText
-            sourceText={resolveNewsText(village.latest_news.news_text, translate)}
-          />
+          <LotdgMarkupText sourceText={resolveNewsText(village.latest_news.news_text, translate)} />
         </LotdgSection>
       )}
 

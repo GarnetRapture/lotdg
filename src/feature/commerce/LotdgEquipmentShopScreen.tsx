@@ -10,7 +10,13 @@ import { useLotdgLocale } from '../../i18n/useLotdgLocale'
 import { LOTDG_LOCALE_NAMESPACE } from '../../shared/constant/lotdg-supported-locale'
 import { LOTDG_SHOP_TYPE_CODE } from '../../shared/constant/lotdg-legacy-code'
 import type { LotdgEquipmentShopScreenProps } from '../../shared/type/lotdg-screen-contract'
-import { LotdgButton, LotdgDataTable, LotdgNoticeLine, LotdgScreen, LotdgText } from '../../shared/ui'
+import {
+  LotdgButton,
+  LotdgDataTable,
+  LotdgNoticeLine,
+  LotdgScreen,
+  LotdgText,
+} from '../../shared/ui'
 
 export function LotdgEquipmentShopScreen({
   characterId,

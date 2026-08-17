@@ -31,6 +31,12 @@ export const LOTDG_SPECIALTY_CODE = {
 
 export type LotdgSpecialtyCode = (typeof LOTDG_SPECIALTY_CODE)[keyof typeof LOTDG_SPECIALTY_CODE]
 
+export const LOTDG_SELECTABLE_SPECIALTY_CODE_LIST: readonly LotdgSpecialtyCode[] = [
+  LOTDG_SPECIALTY_CODE.DARK_ARTS,
+  LOTDG_SPECIALTY_CODE.MYSTICAL_POWER,
+  LOTDG_SPECIALTY_CODE.THIEVERY,
+]
+
 export const LOTDG_SPECIALTY_LABEL_PATH: Record<number, string> = {
   0: 'specialty.none',
   1: 'specialty.dark-arts',
@@ -55,6 +61,49 @@ export const LOTDG_SOCIAL_VENUE_CODE = { GARDENS: 'gardens', VETERANS: 'veterans
 
 export type LotdgSocialVenueCode =
   (typeof LOTDG_SOCIAL_VENUE_CODE)[keyof typeof LOTDG_SOCIAL_VENUE_CODE]
+
+export const LOTDG_NOTIFICATION_PREFERENCE_KEY = {
+  EMAIL_ON_MAIL: 'emailonmail',
+  SYSTEM_MAIL: 'systemmail',
+  DIRTY_EMAIL: 'dirtyemail',
+} as const
+
+export type LotdgNotificationPreferenceKey =
+  (typeof LOTDG_NOTIFICATION_PREFERENCE_KEY)[keyof typeof LOTDG_NOTIFICATION_PREFERENCE_KEY]
+
+export const LOTDG_NOTIFICATION_PREFERENCE_KEY_LIST = Object.values(
+  LOTDG_NOTIFICATION_PREFERENCE_KEY,
+) as readonly LotdgNotificationPreferenceKey[]
+
+export const LOTDG_BIOGRAPHY_MAXIMUM_LENGTH = 255
+
+export const LOTDG_SUPERUSER_LEVEL = {
+  NONE: 0,
+  MODERATOR: 1,
+  ADMINISTRATOR: 2,
+  OWNER: 3,
+} as const
+
+export type LotdgSuperuserLevel = (typeof LOTDG_SUPERUSER_LEVEL)[keyof typeof LOTDG_SUPERUSER_LEVEL]
+
+export const LOTDG_SUPERUSER_LEVEL_LIST = Object.values(
+  LOTDG_SUPERUSER_LEVEL,
+) as readonly LotdgSuperuserLevel[]
+
+export const LOTDG_NEWS_REMOVAL_SUPERUSER_LEVEL: LotdgSuperuserLevel = LOTDG_SUPERUSER_LEVEL.OWNER
+
+export const LOTDG_FOREST_SEARCH_TYPE_CODE = {
+  NORMAL: 'normal',
+  SLUM: 'slum',
+  THRILL: 'thrill',
+} as const
+
+export type LotdgForestSearchTypeCode =
+  (typeof LOTDG_FOREST_SEARCH_TYPE_CODE)[keyof typeof LOTDG_FOREST_SEARCH_TYPE_CODE]
+
+export const LOTDG_FOREST_SEARCH_TYPE_CODE_LIST = Object.values(
+  LOTDG_FOREST_SEARCH_TYPE_CODE,
+) as readonly LotdgForestSearchTypeCode[]
 
 export const LOTDG_SHOP_TYPE_CODE = { WEAPON: 'weapon', ARMOR: 'armor' } as const
 

@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState, type FormEvent } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { getJson, postForm } from '../../shared/lib/lotdg-api-client'
 import {
   lotdgEquipmentEditorListSchema,
@@ -9,14 +9,26 @@ import {
 import { resolveErrorLabel, resolveMessageKeyLabel } from '../../shared/lib/lotdg-error-label'
 import { useLotdgLocale } from '../../i18n/useLotdgLocale'
 import { LOTDG_LOCALE_NAMESPACE } from '../../shared/constant/lotdg-supported-locale'
-import { LotdgDataTable } from '../../shared/ui/LotdgDataTable'
-import { LotdgNoticeLine } from '../../shared/ui/LotdgNoticeLine'
-import type { LotdgCharacterScreenProps } from '../../shared/type/lotdg-screen-contract'
+import type { LotdgEquipmentEditorScreenProps } from '../../shared/type/lotdg-screen-contract'
+import {
+  LotdgActionRow,
+  LotdgButton,
+  LotdgDataTable,
+  LotdgFieldRow,
+  LotdgForm,
+  LotdgNoticeLine,
+  LotdgScreen,
+  LotdgSelectField,
+  LotdgSubmitButton,
+  LotdgTextField,
+} from '../../shared/ui'
+
+const LOTDG_EDITOR_NEW_ITEM_ID = 0
 
 export function LotdgEquipmentEditorScreen({
   characterId,
   shopType,
-}: LotdgCharacterScreenProps & { readonly shopType: 'weapon' | 'armor' }) {
+}: LotdgEquipmentEditorScreenProps) {
   const { translate } = useLotdgLocale()
   const [editor, setEditor] = useState<LotdgEquipmentEditorList | null>(null)
   const [dragonKillTier, setDragonKillTier] = useState(0)
@@ -50,7 +62,7 @@ export function LotdgEquipmentEditorScreen({
         lotdgEquipmentEditorNextPowerSchema,
       )
 
-      setItemId(0)
+      setItemId(LOTDG_EDITOR_NEW_ITEM_ID)
       setItemName('')
       setPower(result.next_power)
     } catch (error) {
@@ -58,9 +70,7 @@ export function LotdgEquipmentEditorScreen({
     }
   }
 
-  const save = async (submitEvent: FormEvent<HTMLFormElement>) => {
-    submitEvent.preventDefault()
-
+  const save = async () => {
     try {
       const result = await postForm(
         `/equipment-editor/${shopType}/${characterId}/save`,
@@ -105,24 +115,19 @@ export function LotdgEquipmentEditorScreen({
   }
 
   return (
-    <section>
-      <h2>{label(`equipment-editor.title.${shopType}`)}</h2>
-
+    <LotdgScreen titleText={label(`equipment-editor.title.${shopType}`)}>
       {editor !== null && (
         <>
-          <p>
+          <LotdgActionRow>
             {Array.from({ length: editor.maximum_tier + 1 }, (_unused, tier) => (
-              <button
+              <LotdgButton
                 key={tier}
-                type="button"
-                className="lotdg-button"
-                disabled={dragonKillTier === tier}
-                onClick={() => setDragonKillTier(tier)}
-              >
-                {label('equipment-editor.tier', { tier })}
-              </button>
+                labelSlot={label('equipment-editor.tier', { tier })}
+                isDisabled={dragonKillTier === tier}
+                onSelect={() => setDragonKillTier(tier)}
+              />
             ))}
-          </p>
+          </LotdgActionRow>
 
           <LotdgDataTable
             rowList={editor.item_list}
@@ -148,72 +153,58 @@ export function LotdgEquipmentEditorScreen({
                 columnKey: 'action',
                 headText: label('equipment-editor.column.action'),
                 render: (item) => (
-                  <>
-                    <button
-                      type="button"
-                      className="lotdg-button"
-                      onClick={() => {
+                  <LotdgActionRow>
+                    <LotdgButton
+                      labelSlot={label('equipment-editor.action.edit')}
+                      onSelect={() => {
                         setItemId(item.item_id)
                         setItemName(item.item_name)
                         setPower(item.power)
                       }}
-                    >
-                      {label('equipment-editor.action.edit')}
-                    </button>{' '}
-                    <button
-                      type="button"
-                      className="lotdg-button"
-                      onClick={() => void remove(item.item_id)}
-                    >
-                      {label('equipment-editor.action.remove')}
-                    </button>
-                  </>
+                    />
+                    <LotdgButton
+                      labelSlot={label('equipment-editor.action.remove')}
+                      onSelect={() => void remove(item.item_id)}
+                    />
+                  </LotdgActionRow>
                 ),
               },
             ]}
           />
 
-          <form onSubmit={(submitEvent) => void save(submitEvent)}>
-            <p>
-              <button type="button" className="lotdg-button" onClick={() => void loadNextPower()}>
-                {label('equipment-editor.action.add')}
-              </button>
-            </p>
-            <p>
-              <label htmlFor="lotdg-equipment-name">{label('equipment-editor.column.name')}</label>{' '}
-              <input
-                id="lotdg-equipment-name"
-                className="lotdg-input"
+          <LotdgForm onSubmit={() => void save()}>
+            <LotdgActionRow>
+              <LotdgButton
+                labelSlot={label('equipment-editor.action.add')}
+                onSelect={() => void loadNextPower()}
+              />
+            </LotdgActionRow>
+
+            <LotdgFieldRow>
+              <LotdgTextField
+                labelText={label('equipment-editor.column.name')}
                 value={itemName}
-                onChange={(changeEvent) => setItemName(changeEvent.target.value)}
-              />{' '}
-              <label htmlFor="lotdg-equipment-power">
-                {label(`equipment-editor.column.power.${shopType}`)}
-              </label>{' '}
-              <select
-                id="lotdg-equipment-power"
-                className="lotdg-select"
-                value={power}
-                onChange={(changeEvent) => setPower(Number(changeEvent.target.value))}
-              >
-                {Array.from(
+                onValueChange={setItemName}
+              />
+              <LotdgSelectField
+                labelText={label(`equipment-editor.column.power.${shopType}`)}
+                value={String(power)}
+                onValueChange={(nextValue) => setPower(Number(nextValue))}
+                optionList={Array.from(
                   { length: editor.maximum_power - editor.minimum_power + 1 },
                   (_unused, index) => editor.minimum_power + index,
-                ).map((powerValue) => (
-                  <option key={powerValue} value={powerValue}>
-                    {powerValue} ({editor.price_by_power[String(powerValue)] ?? 0})
-                  </option>
-                ))}
-              </select>{' '}
-              <button type="submit" className="lotdg-button">
-                {label('equipment-editor.action.save')}
-              </button>
-            </p>
-          </form>
+                ).map((powerValue) => ({
+                  optionValue: String(powerValue),
+                  labelText: `${powerValue} (${editor.price_by_power[String(powerValue)] ?? 0})`,
+                }))}
+              />
+              <LotdgSubmitButton labelSlot={label('equipment-editor.action.save')} />
+            </LotdgFieldRow>
+          </LotdgForm>
         </>
       )}
 
       <LotdgNoticeLine messageText={message} />
-    </section>
+    </LotdgScreen>
   )
 }

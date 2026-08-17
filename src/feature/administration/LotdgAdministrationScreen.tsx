@@ -10,8 +10,29 @@ import {
 import { resolveErrorLabel } from '../../shared/lib/lotdg-error-label'
 import { useLotdgLocale } from '../../i18n/useLotdgLocale'
 import { LOTDG_LOCALE_NAMESPACE } from '../../shared/constant/lotdg-supported-locale'
+import { LOTDG_SUPERUSER_LEVEL_LIST } from '../../shared/constant/lotdg-legacy-code'
+import { LOTDG_BOOLEAN_FIELD_VALUE } from '../../shared/constant/lotdg-form-token'
+import { LOTDG_NOTICE_TONE } from '../../shared/constant/lotdg-notice-tone'
+import type { LotdgCharacterScreenProps } from '../../shared/type/lotdg-screen-contract'
+import {
+  LotdgButton,
+  LotdgDataTable,
+  LotdgFieldRow,
+  LotdgNoticeLine,
+  LotdgScreen,
+  LotdgSelectField,
+  LotdgText,
+  LotdgTextField,
+} from '../../shared/ui'
 
-export function LotdgAdministrationScreen({ characterId }: { readonly characterId: number }) {
+const LOTDG_ADMINISTRATION_ACTION_CODE = {
+  ACCOUNT_LEVEL: 'account-level',
+  ACCOUNT_LOCK: 'account-lock',
+} as const
+
+const LOTDG_MISSING_LEVEL_TEXT = '-'
+
+export function LotdgAdministrationScreen({ characterId }: LotdgCharacterScreenProps) {
   const { translate } = useLotdgLocale()
   const [summary, setSummary] = useState<LotdgAdministrationSummary | null>(null)
   const [accountList, setAccountList] = useState<LotdgAdministrationAccountList | null>(null)
@@ -56,11 +77,9 @@ export function LotdgAdministrationScreen({ characterId }: { readonly characterI
   }
 
   return (
-    <section>
-      <h2>{label('administration.title')}</h2>
-
+    <LotdgScreen titleText={label('administration.title')}>
       {summary !== null && (
-        <p>
+        <LotdgText>
           {label('administration.summary', {
             account: summary.account_count,
             character: summary.character_count,
@@ -70,76 +89,78 @@ export function LotdgAdministrationScreen({ characterId }: { readonly characterI
             petition: summary.petition_count,
             ban: summary.ban_count,
           })}
-        </p>
+        </LotdgText>
       )}
 
-      <p>
-        <input
-          className="lotdg-input"
+      <LotdgFieldRow>
+        <LotdgTextField
           value={searchTerm}
-          placeholder={label('administration.search')}
-          onChange={(event) => setSearchTerm(event.target.value)}
+          onValueChange={setSearchTerm}
+          placeholderText={label('administration.search')}
         />
-      </p>
+      </LotdgFieldRow>
 
-      <div className="lotdg-table-scroll">
-        <table className="lotdg-table">
-          <tbody>
-            <tr>
-              <th>{label('administration.column.login-name')}</th>
-              <th>{label('administration.column.display-name')}</th>
-              <th>{label('administration.column.level')}</th>
-              <th>{label('administration.column.superuser-level')}</th>
-              <th>{label('administration.column.action')}</th>
-            </tr>
-            {accountList?.account_list.map((account) => (
-              <tr key={account.account_id}>
-                <td>{account.login_name}</td>
-                <td>{account.display_name}</td>
-                <td>{account.level ?? '-'}</td>
-                <td>
-                  <select
-                    className="lotdg-select"
-                    value={account.superuser_level}
-                    onChange={(event) =>
-                      void mutate('account-level', {
-                        target_account_id: account.account_id,
-                        superuser_level: event.target.value,
-                      })
-                    }
-                  >
-                    {[0, 1, 2, 3].map((level) => (
-                      <option key={level} value={level}>
-                        {level}
-                      </option>
-                    ))}
-                  </select>
-                </td>
-                <td>
-                  <button
-                    type="button"
-                    className="lotdg-button"
-                    onClick={() =>
-                      void mutate('account-lock', {
-                        target_account_id: account.account_id,
-                        is_locked: account.is_locked ? '0' : '1',
-                      })
-                    }
-                  >
-                    {label(
-                      account.is_locked
-                        ? 'administration.action.unlock'
-                        : 'administration.action.lock',
-                    )}
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+      <LotdgDataTable
+        rowList={accountList?.account_list ?? []}
+        rowKey={(account) => account.account_id}
+        columnList={[
+          {
+            columnKey: 'login-name',
+            headText: label('administration.column.login-name'),
+            render: (account) => account.login_name,
+          },
+          {
+            columnKey: 'display-name',
+            headText: label('administration.column.display-name'),
+            render: (account) => account.display_name,
+          },
+          {
+            columnKey: 'level',
+            headText: label('administration.column.level'),
+            render: (account) => account.level ?? LOTDG_MISSING_LEVEL_TEXT,
+          },
+          {
+            columnKey: 'superuser-level',
+            headText: label('administration.column.superuser-level'),
+            render: (account) => (
+              <LotdgSelectField
+                value={String(account.superuser_level)}
+                optionList={LOTDG_SUPERUSER_LEVEL_LIST.map((level) => ({
+                  optionValue: String(level),
+                  labelText: String(level),
+                }))}
+                onValueChange={(nextValue) =>
+                  void mutate(LOTDG_ADMINISTRATION_ACTION_CODE.ACCOUNT_LEVEL, {
+                    target_account_id: account.account_id,
+                    superuser_level: nextValue,
+                  })
+                }
+              />
+            ),
+          },
+          {
+            columnKey: 'action',
+            headText: label('administration.column.action'),
+            render: (account) => (
+              <LotdgButton
+                labelSlot={label(
+                  account.is_locked ? 'administration.action.unlock' : 'administration.action.lock',
+                )}
+                onSelect={() =>
+                  void mutate(LOTDG_ADMINISTRATION_ACTION_CODE.ACCOUNT_LOCK, {
+                    target_account_id: account.account_id,
+                    is_locked: account.is_locked
+                      ? LOTDG_BOOLEAN_FIELD_VALUE.FALSE
+                      : LOTDG_BOOLEAN_FIELD_VALUE.TRUE,
+                  })
+                }
+              />
+            ),
+          },
+        ]}
+      />
 
-      {message !== '' && <p className="colLtRed">{message}</p>}
-    </section>
+      <LotdgNoticeLine messageText={message} tone={LOTDG_NOTICE_TONE.FAILURE} />
+    </LotdgScreen>
   )
 }

@@ -14,9 +14,19 @@ import {
   LOTDG_SEX_CODE,
   LOTDG_SPECIALTY_LABEL_PATH,
 } from '../../shared/constant/lotdg-legacy-code'
-import { LotdgNoticeLine } from '../../shared/ui/LotdgNoticeLine'
 import { LOTDG_NOTICE_TONE } from '../../shared/constant/lotdg-notice-tone'
+import { LOTDG_TEXT_COLOR_CLASS_NAME } from '../../shared/constant/lotdg-legacy-color-code'
 import type { LotdgCharacterScreenProps } from '../../shared/type/lotdg-screen-contract'
+import type { LotdgStatSection } from '../../shared/type/lotdg-ui-component-contract'
+import {
+  LotdgInlineText,
+  LotdgMarkupText,
+  LotdgNoticeLine,
+  LotdgScreen,
+  LotdgSection,
+  LotdgStatTable,
+  LotdgText,
+} from '../../shared/ui'
 
 export function LotdgBiographyScreen({ characterId }: LotdgCharacterScreenProps) {
   const { translate } = useLotdgLocale()
@@ -48,87 +58,101 @@ export function LotdgBiographyScreen({ characterId }: LotdgCharacterScreenProps)
 
   const commonLabel = (path: string) => translate(LOTDG_LOCALE_NAMESPACE.COMMON, path)
 
-  return (
-    <section>
-      <h2>{label('biography.title')}</h2>
+  const profileSectionList: ReadonlyArray<LotdgStatSection> =
+    biography === null
+      ? []
+      : [
+          {
+            sectionKey: 'profile',
+            entryList: [
+              {
+                entryKey: 'login-name',
+                labelText: label('biography.field.login-name'),
+                valueSlot: biography.login_name,
+              },
+              {
+                entryKey: 'level',
+                labelText: label('biography.field.level'),
+                valueSlot: biography.level,
+              },
+              {
+                entryKey: 'sex',
+                labelText: label('biography.field.sex'),
+                valueSlot: commonLabel(
+                  biography.sex_code === LOTDG_SEX_CODE.FEMALE ? 'sex.female' : 'sex.male',
+                ),
+              },
+              {
+                entryKey: 'race',
+                labelText: label('biography.field.race'),
+                valueSlot: commonLabel(
+                  LOTDG_RACE_LABEL_PATH[biography.race_code] ?? 'race.unknown',
+                ),
+              },
+              {
+                entryKey: 'specialty',
+                labelText: label('biography.field.specialty'),
+                valueSlot: commonLabel(
+                  LOTDG_SPECIALTY_LABEL_PATH[biography.specialty_code] ?? 'specialty.none',
+                ),
+              },
+              {
+                entryKey: 'dragon-kill',
+                labelText: label('biography.field.dragon-kill'),
+                valueSlot: biography.dragon_kill_count,
+              },
+              {
+                entryKey: 'resurrection',
+                labelText: label('biography.field.resurrection'),
+                valueSlot: biography.resurrection_count,
+              },
+              {
+                entryKey: 'mount',
+                labelText: label('biography.field.mount'),
+                valueSlot: biography.mount_name ?? label('biography.no-mount'),
+              },
+            ],
+          },
+        ]
 
+  return (
+    <LotdgScreen titleText={label('biography.title')}>
       <LotdgNoticeLine messageText={errorMessage} tone={LOTDG_NOTICE_TONE.FAILURE} />
 
       {biography !== null && (
         <>
-          <p className="colLtWhite">
+          <LotdgText colorClassName={LOTDG_TEXT_COLOR_CLASS_NAME.LIGHT_WHITE}>
             {biography.rank_title} {biography.display_name}
-          </p>
+          </LotdgText>
 
-          <table className="lotdg-stat">
-            <tbody>
-              <tr>
-                <td className="lotdg-stat__label">{label('biography.field.login-name')}</td>
-                <td className="lotdg-stat__value">{biography.login_name}</td>
-              </tr>
-              <tr>
-                <td className="lotdg-stat__label">{label('biography.field.level')}</td>
-                <td className="lotdg-stat__value">{biography.level}</td>
-              </tr>
-              <tr>
-                <td className="lotdg-stat__label">{label('biography.field.sex')}</td>
-                <td className="lotdg-stat__value">
-                  {commonLabel(
-                    biography.sex_code === LOTDG_SEX_CODE.FEMALE ? 'sex.female' : 'sex.male',
-                  )}
-                </td>
-              </tr>
-              <tr>
-                <td className="lotdg-stat__label">{label('biography.field.race')}</td>
-                <td className="lotdg-stat__value">
-                  {commonLabel(LOTDG_RACE_LABEL_PATH[biography.race_code] ?? 'race.unknown')}
-                </td>
-              </tr>
-              <tr>
-                <td className="lotdg-stat__label">{label('biography.field.specialty')}</td>
-                <td className="lotdg-stat__value">
-                  {commonLabel(
-                    LOTDG_SPECIALTY_LABEL_PATH[biography.specialty_code] ?? 'specialty.none',
-                  )}
-                </td>
-              </tr>
-              <tr>
-                <td className="lotdg-stat__label">{label('biography.field.dragon-kill')}</td>
-                <td className="lotdg-stat__value">{biography.dragon_kill_count}</td>
-              </tr>
-              <tr>
-                <td className="lotdg-stat__label">{label('biography.field.resurrection')}</td>
-                <td className="lotdg-stat__value">{biography.resurrection_count}</td>
-              </tr>
-              <tr>
-                <td className="lotdg-stat__label">{label('biography.field.mount')}</td>
-                <td className="lotdg-stat__value">
-                  {biography.mount_name ?? label('biography.no-mount')}
-                </td>
-              </tr>
-            </tbody>
-          </table>
+          <LotdgStatTable sectionList={profileSectionList} />
 
-          <h3>{label('biography.body-title')}</h3>
-          <p>
-            {biography.biography === ''
-              ? label('biography.body-empty')
-              : parseLegacyMarkup(biography.biography)}
-          </p>
+          <LotdgSection titleSlot={label('biography.body-title')}>
+            {biography.biography === '' ? (
+              <LotdgText>{label('biography.body-empty')}</LotdgText>
+            ) : (
+              <LotdgMarkupText sourceText={biography.biography} />
+            )}
+          </LotdgSection>
 
-          <h3>{label('biography.news-title')}</h3>
-          {biography.news_history.length === 0 ? (
-            <p className="colDkWhite">{label('biography.news-empty')}</p>
-          ) : (
-            biography.news_history.map((news) => (
-              <p key={news.news_id}>
-                <span className="colDkWhite">{news.news_date}</span>{' '}
-                {parseLegacyMarkup(resolveNewsText(news.news_text, translate))}
-              </p>
-            ))
-          )}
+          <LotdgSection titleSlot={label('biography.news-title')}>
+            {biography.news_history.length === 0 ? (
+              <LotdgText colorClassName={LOTDG_TEXT_COLOR_CLASS_NAME.DARK_WHITE}>
+                {label('biography.news-empty')}
+              </LotdgText>
+            ) : (
+              biography.news_history.map((news) => (
+                <LotdgText key={news.news_id}>
+                  <LotdgInlineText colorClassName={LOTDG_TEXT_COLOR_CLASS_NAME.DARK_WHITE}>
+                    {news.news_date}
+                  </LotdgInlineText>{' '}
+                  {parseLegacyMarkup(resolveNewsText(news.news_text, translate))}
+                </LotdgText>
+              ))
+            )}
+          </LotdgSection>
         </>
       )}
-    </section>
+    </LotdgScreen>
   )
 }

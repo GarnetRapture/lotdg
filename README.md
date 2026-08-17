@@ -4,7 +4,7 @@
 
 <img src="public/asset/legacy/image/scroll-upper.gif" alt="" width="273">
 
-**한국어 · English · 日本語 · 简体中文 · Русский**
+**한국어** · [English](README.en.md) · [日本語](README.ja.md) · [简体中文](README.zh.md) · [Русский](README.ru.md)
 
 PHP4 기반 웹 텍스트 RPG **Legend of the Green Dragon 0.9.7+jt** 한국어판을<br>
 원본 동작과 동일하게 재구현한 프로젝트다.

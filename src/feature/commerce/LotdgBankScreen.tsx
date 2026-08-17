@@ -8,14 +8,25 @@ import {
 import { resolveErrorLabel, resolveMessageKeyLabel } from '../../shared/lib/lotdg-error-label'
 import { useLotdgLocale } from '../../i18n/useLotdgLocale'
 import { LOTDG_LOCALE_NAMESPACE } from '../../shared/constant/lotdg-supported-locale'
+import type { LotdgMutableScreenProps } from '../../shared/type/lotdg-screen-contract'
+import {
+  LotdgActionRow,
+  LotdgButton,
+  LotdgFieldRow,
+  LotdgNoticeLine,
+  LotdgScreen,
+  LotdgText,
+  LotdgTextField,
+} from '../../shared/ui'
 
-export function LotdgBankScreen({
-  characterId,
-  onStateChange,
-}: {
-  readonly characterId: number
-  readonly onStateChange: () => void
-}) {
+const LOTDG_BANK_ACTION_CODE = {
+  DEPOSIT: 'deposit',
+  WITHDRAW: 'withdraw',
+  BORROW: 'borrow',
+  TRANSFER: 'transfer',
+} as const
+
+export function LotdgBankScreen({ characterId, onStateChange }: LotdgMutableScreenProps) {
   const { translate } = useLotdgLocale()
   const [inspect, setInspect] = useState<LotdgBankInspect | null>(null)
   const [amount, setAmount] = useState('0')
@@ -58,62 +69,56 @@ export function LotdgBankScreen({
   }
 
   return (
-    <section>
-      <h2>{label('bank.title')}</h2>
-
+    <LotdgScreen titleText={label('bank.title')}>
       {inspect !== null && (
-        <p>
+        <LotdgText>
           {label('bank.balance', {
             gold: inspect.gold,
             goldInBank: inspect.gold_in_bank,
             depositLimit: inspect.deposit_limit,
             borrowLimit: inspect.borrow_limit,
           })}
-        </p>
+        </LotdgText>
       )}
 
-      <p>
-        <label htmlFor="bank-amount">{label('bank.amount')}</label>{' '}
-        <input
-          id="bank-amount"
-          className="lotdg-input"
-          value={amount}
-          onChange={(event) => setAmount(event.target.value)}
-        />
-      </p>
+      <LotdgFieldRow>
+        <LotdgTextField labelText={label('bank.amount')} value={amount} onValueChange={setAmount} />
+      </LotdgFieldRow>
 
-      <p>
-        <button type="button" className="lotdg-button" onClick={() => void operate('deposit')}>
-          {label('bank.action.deposit')}
-        </button>{' '}
-        <button type="button" className="lotdg-button" onClick={() => void operate('withdraw')}>
-          {label('bank.action.withdraw')}
-        </button>{' '}
-        <button type="button" className="lotdg-button" onClick={() => void operate('borrow')}>
-          {label('bank.action.borrow')}
-        </button>
-      </p>
+      <LotdgActionRow>
+        <LotdgButton
+          labelSlot={label('bank.action.deposit')}
+          onSelect={() => void operate(LOTDG_BANK_ACTION_CODE.DEPOSIT)}
+        />
+        <LotdgButton
+          labelSlot={label('bank.action.withdraw')}
+          onSelect={() => void operate(LOTDG_BANK_ACTION_CODE.WITHDRAW)}
+        />
+        <LotdgButton
+          labelSlot={label('bank.action.borrow')}
+          onSelect={() => void operate(LOTDG_BANK_ACTION_CODE.BORROW)}
+        />
+      </LotdgActionRow>
 
       {inspect?.transfer_allowed === true && (
-        <p>
-          <label htmlFor="bank-recipient">{label('bank.recipient')}</label>{' '}
-          <input
-            id="bank-recipient"
-            className="lotdg-input"
+        <LotdgFieldRow>
+          <LotdgTextField
+            labelText={label('bank.recipient')}
             value={recipientLoginName}
-            onChange={(event) => setRecipientLoginName(event.target.value)}
-          />{' '}
-          <button
-            type="button"
-            className="lotdg-button"
-            onClick={() => void operate('transfer', { recipient_login_name: recipientLoginName })}
-          >
-            {label('bank.action.transfer')}
-          </button>
-        </p>
+            onValueChange={setRecipientLoginName}
+          />
+          <LotdgButton
+            labelSlot={label('bank.action.transfer')}
+            onSelect={() =>
+              void operate(LOTDG_BANK_ACTION_CODE.TRANSFER, {
+                recipient_login_name: recipientLoginName,
+              })
+            }
+          />
+        </LotdgFieldRow>
       )}
 
-      {message !== '' && <p className="colLtYellow">{message}</p>}
-    </section>
+      <LotdgNoticeLine messageText={message} />
+    </LotdgScreen>
   )
 }

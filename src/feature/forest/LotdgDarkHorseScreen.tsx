@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState, type FormEvent } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { getJson, postForm } from '../../shared/lib/lotdg-api-client'
 import {
   lotdgDarkHorseEnemySearchSchema,
@@ -7,27 +7,55 @@ import {
   type LotdgDarkHorseEnemySearch,
 } from '../../shared/schema/world/lotdg-special-event-schema'
 import { lotdgCommentaryPostSchema } from '../../shared/schema/social/lotdg-commentary-schema'
-import { parseLegacyMarkup } from '../../shared/lib/lotdg-legacy-markup-parser'
 import { resolveErrorLabel, resolveMessageKeyLabel } from '../../shared/lib/lotdg-error-label'
 import { useLotdgLocale } from '../../i18n/useLotdgLocale'
 import { LOTDG_LOCALE_NAMESPACE } from '../../shared/constant/lotdg-supported-locale'
-import { LotdgDataTable } from '../../shared/ui/LotdgDataTable'
-import { LotdgNoticeLine } from '../../shared/ui/LotdgNoticeLine'
-import type { LotdgMutableScreenProps } from '../../shared/type/lotdg-screen-contract'
+import {
+  LOTDG_DARK_HORSE_ACTION_CODE,
+  LOTDG_DARK_HORSE_DRAW_OUTCOME_CODE,
+  LOTDG_DARK_HORSE_STAGE_CODE,
+  LOTDG_DARK_HORSE_STONE_SIDE_CODE,
+  LOTDG_DARK_HORSE_STONE_SIDE_CODE_LIST,
+  type LotdgDarkHorseActionCode,
+  type LotdgDarkHorseStoneSideCode,
+} from '../../shared/constant/lotdg-special-event-code'
+import { LOTDG_TEXT_COLOR_CLASS_NAME } from '../../shared/constant/lotdg-legacy-color-code'
+import { LOTDG_COMMENT_MAXIMUM_LENGTH } from '../../shared/constant/lotdg-commentary-section-code'
+import type { LotdgDarkHorseScreenProps } from '../../shared/type/lotdg-screen-contract'
+import {
+  LotdgActionRow,
+  LotdgButton,
+  LotdgCommentLine,
+  LotdgDataTable,
+  LotdgFieldRow,
+  LotdgForm,
+  LotdgMarkupText,
+  LotdgNoticeLine,
+  LotdgScreen,
+  LotdgSection,
+  LotdgSelectField,
+  LotdgSubmitButton,
+  LotdgText,
+  LotdgTextField,
+} from '../../shared/ui'
 
-const STONE_SIDE_LIST = ['likepair', 'unlikepair'] as const
+const LOTDG_DECIMAL_RADIX = 10
+
+const LOTDG_LIST_SEPARATOR = ', '
 
 export function LotdgDarkHorseScreen({
   characterId,
   onStateChange,
   onLeave,
-}: LotdgMutableScreenProps & { readonly onLeave: () => void }) {
+}: LotdgDarkHorseScreenProps) {
   const { translate } = useLotdgLocale()
   const [tavern, setTavern] = useState<LotdgDarkHorse | null>(null)
   const [enemySearch, setEnemySearch] = useState<LotdgDarkHorseEnemySearch | null>(null)
   const [searchTerm, setSearchTerm] = useState('')
   const [betText, setBetText] = useState('')
-  const [stoneSide, setStoneSide] = useState<(typeof STONE_SIDE_LIST)[number]>('likepair')
+  const [stoneSide, setStoneSide] = useState<LotdgDarkHorseStoneSideCode>(
+    LOTDG_DARK_HORSE_STONE_SIDE_CODE.LIKE_PAIR,
+  )
   const [etchingText, setEtchingText] = useState('')
   const [message, setMessage] = useState('')
 
@@ -46,7 +74,10 @@ export function LotdgDarkHorseScreen({
     start()
   }, [start])
 
-  const act = async (action: string, body: Record<string, string | number> = {}) => {
+  const act = async (
+    action: LotdgDarkHorseActionCode,
+    body: Record<string, string | number> = {},
+  ) => {
     try {
       const result = await postForm(
         `/special/darkhorse/${characterId}/${action}`,
@@ -66,9 +97,7 @@ export function LotdgDarkHorseScreen({
     }
   }
 
-  const searchEnemy = async (submitEvent: FormEvent<HTMLFormElement>) => {
-    submitEvent.preventDefault()
-
+  const searchEnemy = async () => {
     if (searchTerm.trim() === '') {
       return
     }
@@ -85,9 +114,7 @@ export function LotdgDarkHorseScreen({
     }
   }
 
-  const postEtching = async (submitEvent: FormEvent<HTMLFormElement>) => {
-    submitEvent.preventDefault()
-
+  const postEtching = async () => {
     if (etchingText.trim() === '') {
       return
     }
@@ -101,99 +128,88 @@ export function LotdgDarkHorseScreen({
 
       setMessage(result.posted ? '' : resolveMessageKeyLabel(result.message_key, translate))
       setEtchingText('')
-      void act('etching')
+      void act(LOTDG_DARK_HORSE_ACTION_CODE.ETCHING)
     } catch (error) {
       setMessage(resolveErrorLabel(error, translate))
     }
   }
 
-  const parsedBet = Number.parseInt(betText, 10) || 0
+  const parsedBet = Number.parseInt(betText, LOTDG_DECIMAL_RADIX) || 0
 
   return (
-    <section>
-      <h2>{label('special.darkhorse.title')}</h2>
+    <LotdgScreen titleText={label('special.darkhorse.title')}>
+      <LotdgMarkupText sourceText={label('special.darkhorse.description')} />
 
-      <p>{parseLegacyMarkup(label('special.darkhorse.description'))}</p>
-
-      {tavern?.stage === 'outside' && (
-        <p>
-          <button type="button" className="lotdg-button" onClick={() => void act('enter')}>
-            {label('special.darkhorse.action.enter')}
-          </button>{' '}
-          <button type="button" className="lotdg-button" onClick={onLeave}>
-            {label('special.action.return-to-forest')}
-          </button>
-        </p>
+      {tavern?.stage === LOTDG_DARK_HORSE_STAGE_CODE.OUTSIDE && (
+        <LotdgActionRow>
+          <LotdgButton
+            labelSlot={label('special.darkhorse.action.enter')}
+            onSelect={() => void act(LOTDG_DARK_HORSE_ACTION_CODE.ENTER)}
+          />
+          <LotdgButton labelSlot={label('special.action.return-to-forest')} onSelect={onLeave} />
+        </LotdgActionRow>
       )}
 
-      {tavern?.stage === 'inside' && (
+      {tavern?.stage === LOTDG_DARK_HORSE_STAGE_CODE.INSIDE && (
         <>
-          <p>
-            <button type="button" className="lotdg-button" onClick={() => void act('etching')}>
-              {label('special.darkhorse.action.etching')}
-            </button>{' '}
-            <button type="button" className="lotdg-button" onClick={() => void act('leave')}>
-              {label('special.darkhorse.action.leave')}
-            </button>
-          </p>
+          <LotdgActionRow>
+            <LotdgButton
+              labelSlot={label('special.darkhorse.action.etching')}
+              onSelect={() => void act(LOTDG_DARK_HORSE_ACTION_CODE.ETCHING)}
+            />
+            <LotdgButton
+              labelSlot={label('special.darkhorse.action.leave')}
+              onSelect={() => void act(LOTDG_DARK_HORSE_ACTION_CODE.LEAVE)}
+            />
+          </LotdgActionRow>
 
-          <h3>{label('special.darkhorse.dice.title')}</h3>
-          <p>
-            {label('special.darkhorse.dice.rule')}{' '}
-            <input
-              className="lotdg-input"
-              inputMode="numeric"
-              value={betText}
-              onChange={(changeEvent) => setBetText(changeEvent.target.value)}
-            />{' '}
-            <button
-              type="button"
-              className="lotdg-button"
-              onClick={() => void act('dice-start', { bet: parsedBet })}
-            >
-              {label('special.action.bet')}
-            </button>
-          </p>
+          <LotdgSection titleSlot={label('special.darkhorse.dice.title')}>
+            <LotdgText>{label('special.darkhorse.dice.rule')}</LotdgText>
+            <LotdgFieldRow>
+              <LotdgTextField value={betText} onValueChange={setBetText} isNumeric />
+              <LotdgButton
+                labelSlot={label('special.action.bet')}
+                onSelect={() =>
+                  void act(LOTDG_DARK_HORSE_ACTION_CODE.DICE_START, { bet: parsedBet })
+                }
+              />
+            </LotdgFieldRow>
+          </LotdgSection>
 
-          <h3>{label('special.darkhorse.stone.title')}</h3>
-          <p>
-            {label('special.darkhorse.stone.rule')}{' '}
-            <select
-              className="lotdg-select"
-              value={stoneSide}
-              onChange={(changeEvent) =>
-                setStoneSide(changeEvent.target.value as (typeof STONE_SIDE_LIST)[number])
-              }
-            >
-              {STONE_SIDE_LIST.map((side) => (
-                <option key={side} value={side}>
-                  {label(`special.darkhorse.stone.side.${side}`)}
-                </option>
-              ))}
-            </select>{' '}
-            <button
-              type="button"
-              className="lotdg-button"
-              onClick={() => void act('stone-start', { side: stoneSide, bet: parsedBet })}
-            >
-              {label('special.action.bet')}
-            </button>
-          </p>
+          <LotdgSection titleSlot={label('special.darkhorse.stone.title')}>
+            <LotdgText>{label('special.darkhorse.stone.rule')}</LotdgText>
+            <LotdgFieldRow>
+              <LotdgSelectField
+                value={stoneSide}
+                onValueChange={(nextValue) =>
+                  setStoneSide(nextValue as LotdgDarkHorseStoneSideCode)
+                }
+                optionList={LOTDG_DARK_HORSE_STONE_SIDE_CODE_LIST.map((side) => ({
+                  optionValue: side,
+                  labelText: label(`special.darkhorse.stone.side.${side}`),
+                }))}
+              />
+              <LotdgButton
+                labelSlot={label('special.action.bet')}
+                onSelect={() =>
+                  void act(LOTDG_DARK_HORSE_ACTION_CODE.STONE_START, {
+                    side: stoneSide,
+                    bet: parsedBet,
+                  })
+                }
+              />
+            </LotdgFieldRow>
+          </LotdgSection>
 
-          <h3>{label('special.darkhorse.enemy.title')}</h3>
-          <form onSubmit={(submitEvent) => void searchEnemy(submitEvent)}>
-            <p>
-              {label('special.darkhorse.enemy.rule')}{' '}
-              <input
-                className="lotdg-input"
-                value={searchTerm}
-                onChange={(changeEvent) => setSearchTerm(changeEvent.target.value)}
-              />{' '}
-              <button type="submit" className="lotdg-button">
-                {label('special.action.search')}
-              </button>
-            </p>
-          </form>
+          <LotdgSection titleSlot={label('special.darkhorse.enemy.title')}>
+            <LotdgForm onSubmit={() => void searchEnemy()}>
+              <LotdgText>{label('special.darkhorse.enemy.rule')}</LotdgText>
+              <LotdgFieldRow>
+                <LotdgTextField value={searchTerm} onValueChange={setSearchTerm} />
+                <LotdgSubmitButton labelSlot={label('special.action.search')} />
+              </LotdgFieldRow>
+            </LotdgForm>
+          </LotdgSection>
 
           {enemySearch !== null && (
             <LotdgDataTable
@@ -215,17 +231,16 @@ export function LotdgDarkHorseScreen({
                   columnKey: 'action',
                   headText: label('special.darkhorse.enemy.column.action'),
                   render: (candidate) => (
-                    <button
-                      type="button"
-                      className="lotdg-button"
-                      onClick={() =>
-                        void act('enemy-inspect', { target_login_name: candidate.login_name })
-                      }
-                    >
-                      {label('special.darkhorse.enemy.action.inspect', {
+                    <LotdgButton
+                      labelSlot={label('special.darkhorse.enemy.action.inspect', {
                         cost: enemySearch.lookup_cost,
                       })}
-                    </button>
+                      onSelect={() =>
+                        void act(LOTDG_DARK_HORSE_ACTION_CODE.ENEMY_INSPECT, {
+                          target_login_name: candidate.login_name,
+                        })
+                      }
+                    />
                   ),
                 },
               ]}
@@ -234,67 +249,76 @@ export function LotdgDarkHorseScreen({
         </>
       )}
 
-      {tavern?.stage === 'dice-game' && (
-        <p>
-          {label('special.darkhorse.dice.progress', {
-            roll: tavern.roll ?? 0,
-            count: tavern.roll_count ?? 0,
-            bet: tavern.bet ?? 0,
-          })}{' '}
-          <button
-            type="button"
-            className="lotdg-button"
-            disabled={tavern.can_reroll !== true}
-            onClick={() => void act('dice-reroll')}
-          >
-            {label('special.darkhorse.dice.action.reroll')}
-          </button>{' '}
-          <button type="button" className="lotdg-button" onClick={() => void act('dice-keep')}>
-            {label('special.darkhorse.dice.action.keep')}
-          </button>
-        </p>
+      {tavern?.stage === LOTDG_DARK_HORSE_STAGE_CODE.DICE_GAME && (
+        <LotdgActionRow>
+          <LotdgText>
+            {label('special.darkhorse.dice.progress', {
+              roll: tavern.roll ?? 0,
+              count: tavern.roll_count ?? 0,
+              bet: tavern.bet ?? 0,
+            })}
+          </LotdgText>
+          <LotdgButton
+            labelSlot={label('special.darkhorse.dice.action.reroll')}
+            isDisabled={tavern.can_reroll !== true}
+            onSelect={() => void act(LOTDG_DARK_HORSE_ACTION_CODE.DICE_REROLL)}
+          />
+          <LotdgButton
+            labelSlot={label('special.darkhorse.dice.action.keep')}
+            onSelect={() => void act(LOTDG_DARK_HORSE_ACTION_CODE.DICE_KEEP)}
+          />
+        </LotdgActionRow>
       )}
 
-      {tavern?.stage === 'dice-settled' && (
-        <p className="colLtGreen">
-          {label(`special.darkhorse.dice.outcome.${tavern.outcome ?? 'draw'}`, {
-            playerRoll: tavern.player_roll ?? 0,
-            oldManRoll: (tavern.old_man_roll_list ?? []).join(', '),
-            gold: tavern.gold_gained ?? tavern.gold_lost ?? 0,
-          })}
-        </p>
+      {tavern?.stage === LOTDG_DARK_HORSE_STAGE_CODE.DICE_SETTLED && (
+        <LotdgText colorClassName={LOTDG_TEXT_COLOR_CLASS_NAME.LIGHT_GREEN}>
+          {label(
+            `special.darkhorse.dice.outcome.${tavern.outcome ?? LOTDG_DARK_HORSE_DRAW_OUTCOME_CODE}`,
+            {
+              playerRoll: tavern.player_roll ?? 0,
+              oldManRoll: (tavern.old_man_roll_list ?? []).join(LOTDG_LIST_SEPARATOR),
+              gold: tavern.gold_gained ?? tavern.gold_lost ?? 0,
+            },
+          )}
+        </LotdgText>
       )}
 
-      {tavern?.stage === 'stone-game' && (
-        <p>
-          {label('special.darkhorse.stone.progress', {
-            drawn: (tavern.drawn_list ?? [])
-              .map((stone) => label(`special.darkhorse.stone.${stone}`))
-              .join(', '),
-            playerScore: tavern.player_score ?? 0,
-            oldManScore: tavern.old_man_score ?? 0,
-            red: tavern.red ?? 0,
-            blue: tavern.blue ?? 0,
-            bet: tavern.bet ?? 0,
-          })}{' '}
-          <button type="button" className="lotdg-button" onClick={() => void act('stone-draw')}>
-            {label('special.darkhorse.stone.action.draw')}
-          </button>
-        </p>
+      {tavern?.stage === LOTDG_DARK_HORSE_STAGE_CODE.STONE_GAME && (
+        <LotdgActionRow>
+          <LotdgText>
+            {label('special.darkhorse.stone.progress', {
+              drawn: (tavern.drawn_list ?? [])
+                .map((stone) => label(`special.darkhorse.stone.${stone}`))
+                .join(LOTDG_LIST_SEPARATOR),
+              playerScore: tavern.player_score ?? 0,
+              oldManScore: tavern.old_man_score ?? 0,
+              red: tavern.red ?? 0,
+              blue: tavern.blue ?? 0,
+              bet: tavern.bet ?? 0,
+            })}
+          </LotdgText>
+          <LotdgButton
+            labelSlot={label('special.darkhorse.stone.action.draw')}
+            onSelect={() => void act(LOTDG_DARK_HORSE_ACTION_CODE.STONE_DRAW)}
+          />
+        </LotdgActionRow>
       )}
 
-      {tavern?.stage === 'stone-settled' && (
-        <p className="colLtGreen">
-          {label(`special.darkhorse.stone.outcome.${tavern.outcome ?? 'draw'}`, {
-            playerScore: tavern.player_score ?? 0,
-            oldManScore: tavern.old_man_score ?? 0,
-            gold: tavern.gold_gained ?? tavern.gold_lost ?? 0,
-          })}
-        </p>
+      {tavern?.stage === LOTDG_DARK_HORSE_STAGE_CODE.STONE_SETTLED && (
+        <LotdgText colorClassName={LOTDG_TEXT_COLOR_CLASS_NAME.LIGHT_GREEN}>
+          {label(
+            `special.darkhorse.stone.outcome.${tavern.outcome ?? LOTDG_DARK_HORSE_DRAW_OUTCOME_CODE}`,
+            {
+              playerScore: tavern.player_score ?? 0,
+              oldManScore: tavern.old_man_score ?? 0,
+              gold: tavern.gold_gained ?? tavern.gold_lost ?? 0,
+            },
+          )}
+        </LotdgText>
       )}
 
       {tavern?.inspected === true && (
-        <p>
+        <LotdgText>
           {label('special.darkhorse.enemy.result', {
             name: tavern.display_name ?? '',
             level: tavern.level ?? 0,
@@ -305,46 +329,43 @@ export function LotdgDarkHorseScreen({
             attack: tavern.attack_point ?? 0,
             defence: tavern.defence_point ?? 0,
           })}
-        </p>
+        </LotdgText>
       )}
 
-      {tavern?.stage === 'etching' && (
+      {tavern?.stage === LOTDG_DARK_HORSE_STAGE_CODE.ETCHING && (
         <>
           {(tavern.comment_list ?? []).map((entry) => (
-            <p key={entry.commentary_id}>
-              <span className="colLtWhite">{entry.display_name}</span>{' '}
-              {parseLegacyMarkup(entry.comment_text)}
-            </p>
+            <LotdgCommentLine
+              key={entry.commentary_id}
+              authorName={entry.display_name}
+              commentText={entry.comment_text}
+            />
           ))}
 
-          <form onSubmit={(submitEvent) => void postEtching(submitEvent)}>
-            <p>
-              <input
-                className="lotdg-input"
+          <LotdgForm onSubmit={() => void postEtching()}>
+            <LotdgFieldRow>
+              <LotdgTextField
                 value={etchingText}
-                maxLength={200}
-                onChange={(changeEvent) => setEtchingText(changeEvent.target.value)}
-              />{' '}
-              <button type="submit" className="lotdg-button">
-                {label('special.action.post')}
-              </button>{' '}
-              <button type="button" className="lotdg-button" onClick={() => void act('enter')}>
-                {label('special.darkhorse.action.back')}
-              </button>
-            </p>
-          </form>
+                onValueChange={setEtchingText}
+                maximumLength={LOTDG_COMMENT_MAXIMUM_LENGTH}
+              />
+              <LotdgSubmitButton labelSlot={label('special.action.post')} />
+              <LotdgButton
+                labelSlot={label('special.darkhorse.action.back')}
+                onSelect={() => void act(LOTDG_DARK_HORSE_ACTION_CODE.ENTER)}
+              />
+            </LotdgFieldRow>
+          </LotdgForm>
         </>
       )}
 
-      {tavern?.stage === 'left' && (
-        <p>
-          <button type="button" className="lotdg-button" onClick={onLeave}>
-            {label('special.action.return-to-forest')}
-          </button>
-        </p>
+      {tavern?.stage === LOTDG_DARK_HORSE_STAGE_CODE.LEFT && (
+        <LotdgActionRow>
+          <LotdgButton labelSlot={label('special.action.return-to-forest')} onSelect={onLeave} />
+        </LotdgActionRow>
       )}
 
       <LotdgNoticeLine messageText={message} />
-    </section>
+    </LotdgScreen>
   )
 }

@@ -8,19 +8,25 @@ import {
 import { resolveErrorLabel, resolveMessageKeyLabel } from '../../shared/lib/lotdg-error-label'
 import { useLotdgLocale } from '../../i18n/useLotdgLocale'
 import { LOTDG_LOCALE_NAMESPACE } from '../../shared/constant/lotdg-supported-locale'
+import { LOTDG_TEXT_COLOR_CLASS_NAME } from '../../shared/constant/lotdg-legacy-color-code'
+import { LOTDG_BOOLEAN_FIELD_VALUE } from '../../shared/constant/lotdg-form-token'
+import type { LotdgMutableScreenProps } from '../../shared/type/lotdg-screen-contract'
+import {
+  LotdgActionRow,
+  LotdgButton,
+  LotdgInlineText,
+  LotdgNoticeLine,
+  LotdgScreen,
+  LotdgText,
+} from '../../shared/ui'
+import { LOTDG_NOTICE_TONE } from '../../shared/constant/lotdg-notice-tone'
 import type { z } from 'zod'
 
 type DragonEnter = z.infer<typeof lotdgDragonEnterSchema>
 type DragonRound = z.infer<typeof lotdgDragonRoundSchema>
 type DragonRebirth = z.infer<typeof lotdgDragonRebirthSchema>
 
-export function LotdgDragonScreen({
-  characterId,
-  onStateChange,
-}: {
-  readonly characterId: number
-  readonly onStateChange: () => void
-}) {
+export function LotdgDragonScreen({ characterId, onStateChange }: LotdgMutableScreenProps) {
   const { translate } = useLotdgLocale()
   const [lair, setLair] = useState<DragonEnter | null>(null)
   const [roundList, setRoundList] = useState<DragonRound[]>([])
@@ -54,7 +60,12 @@ export function LotdgDragonScreen({
         const rebirthResult = await postForm(
           `/dragon/${characterId}/rebirth`,
           lotdgDragonRebirthSchema,
-          { flawless: result.flawless === true ? '1' : '0' },
+          {
+            flawless:
+              result.flawless === true
+                ? LOTDG_BOOLEAN_FIELD_VALUE.TRUE
+                : LOTDG_BOOLEAN_FIELD_VALUE.FALSE,
+          },
         )
         setRebirth(rebirthResult)
         setLair(null)
@@ -70,33 +81,28 @@ export function LotdgDragonScreen({
   }
 
   return (
-    <section>
-      <h2>{label('dragon.title')}</h2>
-      <p>{label('dragon.description')}</p>
+    <LotdgScreen titleText={label('dragon.title')}>
+      <LotdgText>{label('dragon.description')}</LotdgText>
 
-      <p>
-        <button type="button" className="lotdg-button" onClick={() => void enterLair()}>
-          {label('dragon.action.enter')}
-        </button>{' '}
+      <LotdgActionRow>
+        <LotdgButton labelSlot={label('dragon.action.enter')} onSelect={() => void enterLair()} />
         {lair?.entered === true && (
-          <button type="button" className="lotdg-button" onClick={() => void fight()}>
-            {label('dragon.action.fight')}
-          </button>
+          <LotdgButton labelSlot={label('dragon.action.fight')} onSelect={() => void fight()} />
         )}
-      </p>
+      </LotdgActionRow>
 
       {lair?.dragon !== undefined && (
-        <p className="colLtGreen">
+        <LotdgText colorClassName={LOTDG_TEXT_COLOR_CLASS_NAME.LIGHT_GREEN}>
           {label('dragon.status', {
             health: lair.dragon.health,
             attack: lair.dragon.attack_point,
             defense: lair.dragon.defense_point,
           })}
-        </p>
+        </LotdgText>
       )}
 
       {roundList.map((round, index) => (
-        <p key={index}>
+        <LotdgText key={index}>
           {label('dragon.round', {
             round: index + 1,
             damageToDragon: round.damage_to_dragon ?? 0,
@@ -104,22 +110,27 @@ export function LotdgDragonScreen({
             playerHitPoint: round.player_hit_point ?? 0,
             dragonHitPoint: round.dragon_hit_point ?? 0,
           })}
-          {round.defeat === true && <span className="colLtRed"> {label('dragon.defeat')}</span>}
-        </p>
+          {round.defeat === true && (
+            <LotdgInlineText colorClassName={LOTDG_TEXT_COLOR_CLASS_NAME.LIGHT_RED}>
+              {' '}
+              {label('dragon.defeat')}
+            </LotdgInlineText>
+          )}
+        </LotdgText>
       ))}
 
       {rebirth !== null && (
-        <p className="colLtGreen">
+        <LotdgText colorClassName={LOTDG_TEXT_COLOR_CLASS_NAME.LIGHT_GREEN}>
           {label('dragon.rebirth', {
             count: rebirth.dragon_kill_count,
             title: rebirth.new_title,
             gold: rebirth.gold,
             gem: rebirth.gem_gain,
           })}
-        </p>
+        </LotdgText>
       )}
 
-      {message !== '' && <p className="colLtRed">{message}</p>}
-    </section>
+      <LotdgNoticeLine messageText={message} tone={LOTDG_NOTICE_TONE.FAILURE} />
+    </LotdgScreen>
   )
 }

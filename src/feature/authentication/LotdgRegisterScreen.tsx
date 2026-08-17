@@ -73,107 +73,79 @@ export function LotdgRegisterScreen({ onLoginClick }: LotdgRegisterScreenProps) 
     }
   }
 
+  const label = (path: string) => translate(LOTDG_LOCALE_NAMESPACE.AUTHENTICATION, path)
+
   return (
-    <section>
-      <h2>{translate(LOTDG_LOCALE_NAMESPACE.AUTHENTICATION, 'register.title')}</h2>
-
-      <form onSubmit={handleSubmit}>
-        <p>
-          <label htmlFor="register-login-name">
-            {translate(LOTDG_LOCALE_NAMESPACE.AUTHENTICATION, 'field.login-name')}
-          </label>
-          <br />
-          <input
-            id="register-login-name"
-            className="lotdg-input"
+    <LotdgScreen titleText={label('register.title')}>
+      <LotdgForm onSubmit={() => void handleSubmit()}>
+        <LotdgFieldRow isStacked>
+          <LotdgTextField
+            labelText={label('field.login-name')}
             value={loginName}
-            onChange={(event) => setLoginName(event.target.value)}
+            onValueChange={setLoginName}
+            autocompleteToken={LOTDG_AUTOCOMPLETE_TOKEN.USERNAME}
           />
-        </p>
+        </LotdgFieldRow>
 
-        <p>
-          <label htmlFor="register-password">
-            {translate(LOTDG_LOCALE_NAMESPACE.AUTHENTICATION, 'field.password')}
-          </label>
-          <br />
-          <input
-            id="register-password"
-            className="lotdg-input"
-            type="password"
+        <LotdgFieldRow isStacked>
+          <LotdgTextField
+            labelText={label('field.password')}
             value={password}
-            onChange={(event) => setPassword(event.target.value)}
+            onValueChange={setPassword}
+            isSecret
+            autocompleteToken={LOTDG_AUTOCOMPLETE_TOKEN.NEW_PASSWORD}
           />
-        </p>
+        </LotdgFieldRow>
 
-        <p>
-          <label htmlFor="register-password-confirmation">
-            {translate(LOTDG_LOCALE_NAMESPACE.AUTHENTICATION, 'field.password-confirmation')}
-          </label>
-          <br />
-          <input
-            id="register-password-confirmation"
-            className="lotdg-input"
-            type="password"
+        <LotdgFieldRow isStacked>
+          <LotdgTextField
+            labelText={label('field.password-confirmation')}
             value={passwordConfirmation}
-            onChange={(event) => setPasswordConfirmation(event.target.value)}
+            onValueChange={setPasswordConfirmation}
+            isSecret
+            autocompleteToken={LOTDG_AUTOCOMPLETE_TOKEN.NEW_PASSWORD}
           />
-        </p>
+        </LotdgFieldRow>
 
-        <p>
-          <label htmlFor="register-email">
-            {translate(LOTDG_LOCALE_NAMESPACE.AUTHENTICATION, 'field.email-address')}
-          </label>
-          <br />
-          <input
-            id="register-email"
-            className="lotdg-input"
+        <LotdgFieldRow isStacked>
+          <LotdgTextField
+            labelText={label('field.email-address')}
             value={emailAddress}
-            onChange={(event) => setEmailAddress(event.target.value)}
+            onValueChange={setEmailAddress}
+            autocompleteToken={LOTDG_AUTOCOMPLETE_TOKEN.EMAIL_ADDRESS}
           />
-        </p>
+        </LotdgFieldRow>
 
-        <p>
-          <label htmlFor="register-sex">
-            {translate(LOTDG_LOCALE_NAMESPACE.AUTHENTICATION, 'field.sex')}
-          </label>
-          <br />
-          <select
-            id="register-sex"
-            className="lotdg-select"
-            value={sexCode}
-            onChange={(event) => setSexCode(Number(event.target.value))}
-          >
-            <option value={0}>
-              {translate(LOTDG_LOCALE_NAMESPACE.AUTHENTICATION, 'field.sex-male')}
-            </option>
-            <option value={1}>
-              {translate(LOTDG_LOCALE_NAMESPACE.AUTHENTICATION, 'field.sex-female')}
-            </option>
-          </select>
-        </p>
+        <LotdgFieldRow isStacked>
+          <LotdgSelectField
+            labelText={label('field.sex')}
+            value={String(sexCode)}
+            onValueChange={(nextValue) => setSexCode(Number(nextValue))}
+            optionList={[
+              { optionValue: String(LOTDG_SEX_CODE.MALE), labelText: label('field.sex-male') },
+              {
+                optionValue: String(LOTDG_SEX_CODE.FEMALE),
+                labelText: label('field.sex-female'),
+              },
+            ]}
+          />
+        </LotdgFieldRow>
 
-        {errorKeyList.length > 0 && (
-          <ul className="colLtRed">
-            {errorKeyList.map((errorKey) => (
-              <li key={errorKey}>
-                {translate(
-                  LOTDG_LOCALE_NAMESPACE.AUTHENTICATION,
-                  errorKey.replace(/^authentication\./, ''),
-                )}
-              </li>
-            ))}
-          </ul>
-        )}
+        <LotdgMessageList
+          messageTextList={errorKeyList.map((errorKey) =>
+            label(errorKey.replace(LOTDG_AUTHENTICATION_LABEL_PREFIX, '')),
+          )}
+          colorClassName={LOTDG_TEXT_COLOR_CLASS_NAME.LIGHT_RED}
+        />
 
-        <p>
-          <button type="submit" className="lotdg-button" disabled={isSubmitting}>
-            {translate(LOTDG_LOCALE_NAMESPACE.AUTHENTICATION, 'action.create-character')}
-          </button>{' '}
-          <button type="button" className="lotdg-button" onClick={onLoginClick}>
-            {translate(LOTDG_LOCALE_NAMESPACE.AUTHENTICATION, 'action.back-to-login')}
-          </button>
-        </p>
-      </form>
-    </section>
+        <LotdgActionRow>
+          <LotdgSubmitButton
+            labelSlot={label('action.create-character')}
+            isDisabled={isSubmitting}
+          />
+          <LotdgButton labelSlot={label('action.back-to-login')} onSelect={onLoginClick} />
+        </LotdgActionRow>
+      </LotdgForm>
+    </LotdgScreen>
   )
 }

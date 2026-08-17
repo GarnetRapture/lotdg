@@ -1,23 +1,14 @@
-/**
- * 3계층 — 의미 토큰.
- * 컴포넌트가 참조하는 유일한 색·에셋 층이다. 이름은 값이 아니라 역할을 말한다.
- * 여기 적힌 값은 legacy 실측 기본값이며, 4계층(theme)이 같은 이름을 다시 정의해
- * 테마를 바꾼다. 컴포넌트는 테마 이름을 알지 못한다.
- */
 :root {
-  /* 바탕 */
   --lotdg-surface-page: var(--lotdg-primitive-black);
   --lotdg-surface-header: var(--lotdg-primitive-indigo);
   --lotdg-surface-rail: var(--lotdg-primitive-brown);
   --lotdg-surface-stage: var(--lotdg-primitive-brown-deep);
 
-  /* 글자 */
   --lotdg-text-page: var(--lotdg-primitive-grey);
   --lotdg-text-title: var(--lotdg-primitive-white);
   --lotdg-text-footer: var(--lotdg-primitive-console-light-black);
   --lotdg-text-anchor: var(--lotdg-primitive-azure);
 
-  /* 네비게이션 */
   --lotdg-surface-navigation: var(--lotdg-primitive-navy-deep);
   --lotdg-surface-navigation-head: var(--lotdg-primitive-navy);
   --lotdg-surface-navigation-hover: var(--lotdg-primitive-navy-hover);
@@ -27,38 +18,31 @@
   --lotdg-edge-navigation-hover-light: var(--lotdg-primitive-navy-edge);
   --lotdg-edge-navigation-hover-dark: var(--lotdg-primitive-black);
 
-  /* 능력치 패널 */
   --lotdg-surface-vital: var(--lotdg-primitive-green-deep);
   --lotdg-surface-vital-head: var(--lotdg-primitive-green);
   --lotdg-text-vital-head: var(--lotdg-primitive-console-light-yellow);
   --lotdg-edge-vital-row: var(--lotdg-primitive-green);
 
-  /* 알림 링크 */
   --lotdg-text-notice: var(--lotdg-primitive-orange);
   --lotdg-surface-notice-active: var(--lotdg-primitive-tan);
 
-  /* 입력 컨트롤 */
   --lotdg-surface-control: var(--lotdg-primitive-brown);
   --lotdg-edge-control: var(--lotdg-primitive-tan);
   --lotdg-text-control: var(--lotdg-primitive-grey);
 
-  /* 버튼 */
   --lotdg-surface-button: var(--lotdg-primitive-brown-raised);
   --lotdg-text-button: var(--lotdg-primitive-gold-light);
   --lotdg-edge-button-light: var(--lotdg-primitive-brown-edge-light);
   --lotdg-edge-button-dark: var(--lotdg-primitive-brown-edge-dark);
 
-  /* 표 */
   --lotdg-surface-table-head: var(--lotdg-primitive-crimson);
   --lotdg-text-table-head: var(--lotdg-primitive-white);
   --lotdg-surface-table-row-odd: var(--lotdg-primitive-maroon);
   --lotdg-surface-table-row-even: var(--lotdg-primitive-black);
 
-  /* 금색 테두리 — 머리띠와 초점 표시 */
   --lotdg-edge-accent: transparent;
   --lotdg-edge-accent-strong: var(--lotdg-primitive-gold);
 
-  /* 콘솔 글자색 — 레거시 마크업 파서가 만드는 클래스가 쓴다 */
   --lotdg-text-console-dark-blue: var(--lotdg-primitive-console-dark-blue);
   --lotdg-text-console-dark-green: var(--lotdg-primitive-console-dark-green);
   --lotdg-text-console-dark-cyan: var(--lotdg-primitive-console-dark-cyan);
@@ -75,7 +59,6 @@
   --lotdg-text-console-light-white: var(--lotdg-primitive-console-light-white);
   --lotdg-text-console-light-black: var(--lotdg-primitive-console-light-black);
 
-  /* 에셋 */
   --lotdg-asset-header-background: var(--lotdg-primitive-image-header-background);
   --lotdg-asset-footer-rule: var(--lotdg-primitive-image-footer-rule);
   --lotdg-asset-scene-village: var(--lotdg-primitive-image-scene-village);
@@ -83,7 +66,6 @@
   --lotdg-asset-scene-castle: var(--lotdg-primitive-image-scene-castle);
   --lotdg-asset-login-dragon: var(--lotdg-primitive-image-login-dragon);
 
-  /* 글자 계열 — 3계층에서 역할 이름을 얻는다 */
   --lotdg-typography-family-body: var(--lotdg-primitive-font-family-body);
   --lotdg-typography-family-title: var(--lotdg-primitive-font-family-title);
   --lotdg-typography-family-control: var(--lotdg-primitive-font-family-control);

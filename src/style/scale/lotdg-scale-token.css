@@ -1,8 +1,3 @@
-/**
- * 2계층 — 배율 토큰.
- * 1계층의 기준 픽셀에 뷰포트 배율을 곱한 최종 치수다. 컴포넌트가 길이를 쓸 때는
- * 반드시 이 층의 이름을 쓰고, calc 로 픽셀을 직접 곱하지 않는다.
- */
 :root {
   --lotdg-scale-factor: clamp(
     1,
@@ -10,7 +5,6 @@
     var(--lotdg-metric-scale-factor-maximum)
   );
 
-  /* 간격 */
   --lotdg-scale-hairline: calc(var(--lotdg-metric-space-hairline) * var(--lotdg-scale-factor));
   --lotdg-scale-space-tight: calc(var(--lotdg-metric-space-tight) * var(--lotdg-scale-factor));
   --lotdg-scale-space-snug: calc(var(--lotdg-metric-space-snug) * var(--lotdg-scale-factor));
@@ -21,14 +15,12 @@
     var(--lotdg-metric-space-vignette) * var(--lotdg-scale-factor)
   );
 
-  /* 골격 */
   --lotdg-scale-rail-width: calc(var(--lotdg-metric-rail-width) * var(--lotdg-scale-factor));
   --lotdg-scale-header-height: calc(var(--lotdg-metric-header-height) * var(--lotdg-scale-factor));
   --lotdg-scale-stage-reading-width: calc(
     var(--lotdg-metric-stage-reading-width) * var(--lotdg-scale-factor)
   );
 
-  /* 두루마리 패널 */
   --lotdg-scale-rail-panel-width: calc(
     var(--lotdg-metric-rail-panel-width) * var(--lotdg-scale-factor)
   );
@@ -36,7 +28,6 @@
     var(--lotdg-metric-scroll-cap-height) * var(--lotdg-scale-factor)
   );
 
-  /* 네비게이션 */
   --lotdg-scale-navigation-panel-width: calc(
     var(--lotdg-metric-navigation-panel-width) * var(--lotdg-scale-factor)
   );
@@ -47,7 +38,6 @@
     var(--lotdg-metric-navigation-head-width) * var(--lotdg-scale-factor)
   );
 
-  /* 능력치 패널 */
   --lotdg-scale-stat-cap-width: calc(
     var(--lotdg-metric-stat-cap-width) * var(--lotdg-scale-factor)
   );
@@ -58,7 +48,6 @@
     var(--lotdg-metric-stat-table-width) * var(--lotdg-scale-factor)
   );
 
-  /* 제목 띠 */
   --lotdg-scale-title-banner-width: calc(
     var(--lotdg-metric-title-banner-width) * var(--lotdg-scale-factor)
   );
@@ -66,7 +55,6 @@
     var(--lotdg-metric-title-banner-height) * var(--lotdg-scale-factor)
   );
 
-  /* 로그인 패널 */
   --lotdg-scale-login-panel-width: calc(
     var(--lotdg-metric-login-panel-width) * var(--lotdg-scale-factor)
   );
@@ -83,7 +71,6 @@
     var(--lotdg-metric-login-field-width) * var(--lotdg-scale-factor)
   );
 
-  /* 글자 */
   --lotdg-scale-font-size-body: calc(
     var(--lotdg-metric-font-size-body) * var(--lotdg-scale-factor)
   );

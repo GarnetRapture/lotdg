@@ -1,11 +1,4 @@
-/**
- * 1계층 — 색 원시값.
- * reference/templates/yar2.css 와 reference/images 에서 실측한 색만 둔다. 역할을
- * 뜻하지 않으며, 어떤 컴포넌트도 이 층을 직접 참조하지 않는다. 참조는 3계층
- * (semantic) 과 4계층(theme) 만 한다.
- */
 :root {
-  /* 바탕 계열 */
   --lotdg-primitive-black: #000000;
   --lotdg-primitive-brown-deep: #352d20;
   --lotdg-primitive-brown: #433828;
@@ -14,38 +7,28 @@
   --lotdg-primitive-brown-edge-dark: #403225;
   --lotdg-primitive-tan: #806b4d;
 
-  /* 남색 계열 — 좌측 네비 */
   --lotdg-primitive-navy-deep: #000033;
   --lotdg-primitive-navy: #000099;
   --lotdg-primitive-navy-hover: #003366;
   --lotdg-primitive-navy-edge: #0364a3;
   --lotdg-primitive-indigo: #333f7c;
 
-  /* 금색 계열 — 머리띠와 버튼 글자 */
   --lotdg-primitive-gold: #f4d17b;
   --lotdg-primitive-gold-light: #f8db83;
 
-  /* 초록 계열 — 능력치 패널 */
   --lotdg-primitive-green-deep: #003300;
   --lotdg-primitive-green: #009900;
 
-  /* 붉은 계열 — 표 머리 */
   --lotdg-primitive-crimson: #990000;
   --lotdg-primitive-maroon: #330000;
 
-  /* 강조 */
   --lotdg-primitive-orange: #ff9900;
   --lotdg-primitive-azure: #0099ff;
 
-  /* 무채색 */
   --lotdg-primitive-grey: #cccccc;
   --lotdg-primitive-grey-mid: #999999;
   --lotdg-primitive-white: #ffffff;
 
-  /**
-   * 레거시 콘솔 16색. `1~`e 코드가 그대로 대응하며 마크업 파서가 생성하는
-   * colDk*/colLt* 클래스가 이 값을 쓴다.
-   */
   --lotdg-primitive-console-dark-blue: #0000b0;
   --lotdg-primitive-console-dark-green: #00b000;
   --lotdg-primitive-console-dark-cyan: #00b0b0;

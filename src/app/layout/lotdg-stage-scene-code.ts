@@ -1,10 +1,5 @@
 import { LOTDG_SCREEN_CODE, type LotdgScreenCode } from '../router/lotdg-screen-code'
 
-/**
- * 본문 배경 장면. 레거시 대응 — reference/templates/yarbrough.css 의
- * td.village / td.forest / td.dragon 이 화면별로 배경 그림을 깔던 것을,
- * 실제로 존재하는 에셋(village / forest / castle)에 맞춰 정리한다.
- */
 export const LOTDG_STAGE_SCENE_CODE = {
   NONE: 'none',
   VILLAGE: 'village',

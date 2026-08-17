@@ -16,9 +16,7 @@ export function LotdgLocaleMenu({ characterId }: LotdgLocaleMenuProps) {
   const { localeCode, changeLocaleCode } = useLotdgLocalePersistence(characterId)
 
   return (
-    <LotdgNavigationGroup
-      headText={translate(LOTDG_LOCALE_NAMESPACE.NAVIGATION, 'group.language')}
-    >
+    <LotdgNavigationGroup headText={translate(LOTDG_LOCALE_NAMESPACE.NAVIGATION, 'group.language')}>
       {LOTDG_SUPPORTED_LOCALE_CODE_LIST.map((code) => (
         <LotdgNavigationItem
           key={code}

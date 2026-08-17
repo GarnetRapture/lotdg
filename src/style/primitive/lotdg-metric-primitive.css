@@ -1,40 +1,27 @@
-/**
- * 1계층 — 치수 원시값.
- * 전부 배율 1일 때의 레거시 원본 픽셀이다. reference/templates/yar2.htm 의 표 폭과
- * reference/images 의 비트맵 실측치이며, 배율을 곱한 값은 2계층(scale)이 만든다.
- * 컴포넌트는 이 층을 직접 쓰지 않는다.
- */
 :root {
-  /* 골격 */
   --lotdg-metric-rail-width: 145px;
   --lotdg-metric-header-height: 60px;
 
-  /* 두루마리 패널 */
   --lotdg-metric-rail-panel-width: 142px;
   --lotdg-metric-scroll-cap-height: 11px;
 
-  /* 네비게이션 */
   --lotdg-metric-navigation-panel-width: 135px;
   --lotdg-metric-navigation-item-width: 135px;
   --lotdg-metric-navigation-head-width: 137px;
 
-  /* 능력치 패널 */
   --lotdg-metric-stat-cap-width: 152px;
   --lotdg-metric-stat-panel-width: 121px;
   --lotdg-metric-stat-table-width: 140px;
 
-  /* 제목 띠 — reference/images/title.gif 실측 */
   --lotdg-metric-title-banner-width: 395px;
   --lotdg-metric-title-banner-height: 55px;
 
-  /* 로그인 용 그림 — reference/images/dragon.gif 실측 */
   --lotdg-metric-login-panel-width: 212px;
   --lotdg-metric-login-panel-height: 234px;
   --lotdg-metric-login-dragon-height: 239px;
   --lotdg-metric-login-panel-bottom: 52px;
   --lotdg-metric-login-field-width: 84px;
 
-  /* 간격 사다리 */
   --lotdg-metric-space-hairline: 1px;
   --lotdg-metric-space-tight: 2px;
   --lotdg-metric-space-snug: 4px;
@@ -43,29 +30,17 @@
   --lotdg-metric-space-wide: 10px;
   --lotdg-metric-space-vignette: 18px;
 
-  /* 글자 크기 */
   --lotdg-metric-font-size-body: 10px;
   --lotdg-metric-font-size-title: 20px;
   --lotdg-metric-font-size-control: 12px;
 
-  /**
-   * 레이아웃이 가로로 요구하는 최소 폭. 좌측 네비 열과 제목 띠의 합이다. 이보다
-   * 좁으면 두 열을 나란히 세울 수 없어 세로로 쌓는다. 미디어 쿼리는 사용자 정의
-   * 속성을 평가하지 못하므로 component/lotdg-shell.css 가 같은 값 540px 을 적는다.
-   */
   --lotdg-metric-viewport-reference-width: calc(
     var(--lotdg-metric-rail-width) + var(--lotdg-metric-title-banner-width)
   );
 
-  /**
-   * 배율 1 — 원본 픽셀 그대로 — 이 되는 기준 폭. 본문·네비·능력치 세 영역이 모두
-   * 원본 크기로 들어가고도 여백이 남는 폭이다.
-   */
   --lotdg-metric-viewport-design-width: 1280px;
 
-  /** 배율 상한. 레거시 에셋은 고정 크기 비트맵이라 무한히 키우면 계단이 드러난다. */
   --lotdg-metric-scale-factor-maximum: 4;
 
-  /** 본문 최대 폭. 초고해상도에서 한 줄이 지나치게 길어지는 것을 막는다. */
   --lotdg-metric-stage-reading-width: 1200px;
 }

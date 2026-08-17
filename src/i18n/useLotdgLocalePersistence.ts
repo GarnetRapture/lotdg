@@ -11,10 +11,6 @@ export function isSupportedLocaleCode(value: string): value is LotdgSupportedLoc
   return (LOTDG_SUPPORTED_LOCALE_CODE_LIST as readonly string[]).includes(value)
 }
 
-/**
- * 언어 선택을 account_preference.locale_code 와 맞춘다. 로그인 응답이 실어 오는
- * 저장값을 적용하고, 변경은 즉시 화면에 반영한 뒤 같은 값을 서버에 기록한다.
- */
 export function useLotdgLocalePersistence(characterId: number | null) {
   const { localeCode, setLocaleCode } = useLotdgLocale()
 

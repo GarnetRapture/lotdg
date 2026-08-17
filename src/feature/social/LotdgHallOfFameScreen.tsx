@@ -8,9 +8,8 @@ import {
 import { resolveErrorLabel } from '../../shared/lib/lotdg-error-label'
 import { useLotdgLocale } from '../../i18n/useLotdgLocale'
 import { LOTDG_LOCALE_NAMESPACE } from '../../shared/constant/lotdg-supported-locale'
-import { LotdgDataTable } from '../../shared/ui/LotdgDataTable'
-import { LotdgNoticeLine } from '../../shared/ui/LotdgNoticeLine'
 import { LOTDG_NOTICE_TONE } from '../../shared/constant/lotdg-notice-tone'
+import { LotdgDataTable, LotdgNoticeLine, LotdgScreen, LotdgSection } from '../../shared/ui'
 
 interface LotdgHallOfFameSection {
   readonly sectionKey: keyof LotdgHallOfFame
@@ -81,16 +80,15 @@ export function LotdgHallOfFameScreen() {
     translate(LOTDG_LOCALE_NAMESPACE.SOCIAL, path, valueMap)
 
   return (
-    <section>
-      <h2>{label('hall-of-fame.title')}</h2>
-
+    <LotdgScreen titleText={label('hall-of-fame.title')}>
       <LotdgNoticeLine messageText={errorMessage} tone={LOTDG_NOTICE_TONE.FAILURE} />
 
       {hallOfFame !== null &&
         SECTION_LIST.map((section) => (
-          <section key={section.sectionKey}>
-            <h3>{label(`hall-of-fame.section.${section.sectionKey}`)}</h3>
-
+          <LotdgSection
+            key={section.sectionKey}
+            titleSlot={label(`hall-of-fame.section.${section.sectionKey}`)}
+          >
             <LotdgDataTable
               rowList={hallOfFame[section.sectionKey]}
               rowKey={(entry) => `${section.sectionKey}-${entry.rank}-${entry.display_name}`}
@@ -113,8 +111,8 @@ export function LotdgHallOfFameScreen() {
                 },
               ]}
             />
-          </section>
+          </LotdgSection>
         ))}
-    </section>
+    </LotdgScreen>
   )
 }

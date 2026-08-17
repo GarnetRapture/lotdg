@@ -10,15 +10,22 @@ import { resolveNewsText } from '../../shared/lib/lotdg-news-label-resolver'
 import { resolveErrorLabel } from '../../shared/lib/lotdg-error-label'
 import { useLotdgLocale } from '../../i18n/useLotdgLocale'
 import { LOTDG_LOCALE_NAMESPACE } from '../../shared/constant/lotdg-supported-locale'
-import { LotdgNoticeLine } from '../../shared/ui/LotdgNoticeLine'
+import { LOTDG_TEXT_COLOR_CLASS_NAME } from '../../shared/constant/lotdg-legacy-color-code'
+import type { LotdgNewsScreenProps } from '../../shared/type/lotdg-screen-contract'
+import {
+  LotdgActionRow,
+  LotdgButton,
+  LotdgNoticeLine,
+  LotdgPaginationRow,
+  LotdgScreen,
+  LotdgText,
+} from '../../shared/ui'
 
-export function LotdgNewsScreen({
-  characterId,
-  canRemove,
-}: {
-  readonly characterId: number | null
-  readonly canRemove: boolean
-}) {
+const LOTDG_NEWS_ACTION_CODE = { REMOVE: 'remove' } as const
+
+const LOTDG_NEWS_FIRST_PAGE = 1
+
+export function LotdgNewsScreen({ characterId, canRemove }: LotdgNewsScreenProps) {
   const { translate } = useLotdgLocale()
   const [news, setNews] = useState<LotdgNewsList | null>(null)
   const [dayOffset, setDayOffset] = useState(0)
@@ -47,7 +54,7 @@ export function LotdgNewsScreen({
 
     try {
       await postForm('/news', lotdgNewsRemovalSchema, {
-        action: 'remove',
+        action: LOTDG_NEWS_ACTION_CODE.REMOVE,
         character_id: characterId,
         news_id: newsId,
       })
@@ -58,12 +65,10 @@ export function LotdgNewsScreen({
   }
 
   return (
-    <section>
-      <h2>{label('news.title')}</h2>
-
+    <LotdgScreen titleText={label('news.title')}>
       {news !== null && (
         <>
-          <p>
+          <LotdgText>
             {label('news.date', { date: news.news_date })}
             {news.total_count > news.news_list.length &&
               ` ${label('news.range', {
@@ -71,70 +76,56 @@ export function LotdgNewsScreen({
                 to: news.range_to,
                 total: news.total_count,
               })}`}
-          </p>
+          </LotdgText>
 
-          <p>
-            <button
-              type="button"
-              className="lotdg-button"
-              onClick={() => {
+          <LotdgActionRow>
+            <LotdgButton
+              labelSlot={label('news.action.previous-day')}
+              onSelect={() => {
                 setDayOffset((previous) => previous + 1)
-                setPage(1)
+                setPage(LOTDG_NEWS_FIRST_PAGE)
               }}
-            >
-              {label('news.action.previous-day')}
-            </button>{' '}
-            <button
-              type="button"
-              className="lotdg-button"
-              disabled={dayOffset === 0}
-              onClick={() => {
+            />
+            <LotdgButton
+              labelSlot={label('news.action.next-day')}
+              isDisabled={dayOffset === 0}
+              onSelect={() => {
                 setDayOffset((previous) => Math.max(0, previous - 1))
-                setPage(1)
+                setPage(LOTDG_NEWS_FIRST_PAGE)
               }}
-            >
-              {label('news.action.next-day')}
-            </button>
-          </p>
+            />
+          </LotdgActionRow>
 
           {news.news_list.length === 0 ? (
-            <p className="colDkWhite">{label('news.empty')}</p>
+            <LotdgText colorClassName={LOTDG_TEXT_COLOR_CLASS_NAME.DARK_WHITE}>
+              {label('news.empty')}
+            </LotdgText>
           ) : (
             news.news_list.map((item) => (
-              <p key={item.news_id}>
+              <LotdgActionRow key={item.news_id}>
                 {canRemove && (
-                  <button
-                    type="button"
-                    className="lotdg-button"
-                    onClick={() => void remove(item.news_id)}
-                  >
-                    {label('news.action.remove')}
-                  </button>
-                )}{' '}
-                {parseLegacyMarkup(resolveNewsText(item.news_text, translate))}
-              </p>
+                  <LotdgButton
+                    labelSlot={label('news.action.remove')}
+                    onSelect={() => void remove(item.news_id)}
+                  />
+                )}
+                <LotdgText>
+                  {parseLegacyMarkup(resolveNewsText(item.news_text, translate))}
+                </LotdgText>
+              </LotdgActionRow>
             ))
           )}
 
-          {news.page_count > 1 && (
-            <p>
-              {Array.from({ length: news.page_count }, (_unused, pageIndex) => (
-                <button
-                  key={pageIndex + 1}
-                  type="button"
-                  className="lotdg-button"
-                  disabled={news.page === pageIndex + 1}
-                  onClick={() => setPage(pageIndex + 1)}
-                >
-                  {pageIndex + 1}
-                </button>
-              ))}
-            </p>
-          )}
+          <LotdgPaginationRow
+            pageCount={news.page_count}
+            activePageIndex={news.page - LOTDG_NEWS_FIRST_PAGE}
+            pageLabelText={(pageNumber) => String(pageNumber)}
+            onPageSelect={(pageIndex) => setPage(pageIndex + LOTDG_NEWS_FIRST_PAGE)}
+          />
         </>
       )}
 
       <LotdgNoticeLine messageText={message} />
-    </section>
+    </LotdgScreen>
   )
 }

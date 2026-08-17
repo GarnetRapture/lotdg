@@ -1,30 +1,48 @@
-import { useCallback, useEffect, useState, type FormEvent } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { getJson, postForm } from '../../shared/lib/lotdg-api-client'
 import {
   lotdgSpecialEventSchema,
   type LotdgSpecialEvent,
 } from '../../shared/schema/world/lotdg-special-event-schema'
 import { resolveErrorLabel, resolveMessageKeyLabel } from '../../shared/lib/lotdg-error-label'
-import { parseLegacyMarkup } from '../../shared/lib/lotdg-legacy-markup-parser'
 import { useLotdgLocale } from '../../i18n/useLotdgLocale'
 import { LOTDG_LOCALE_NAMESPACE } from '../../shared/constant/lotdg-supported-locale'
 import {
   LOTDG_INSTANT_SPECIAL_EVENT_CODE_LIST,
+  LOTDG_SPECIAL_EVENT_ACCEPT_ACTION_CODE,
+  LOTDG_SPECIAL_EVENT_ACTION_CODE,
   LOTDG_SPECIAL_EVENT_CODE,
-  type LotdgSpecialEventCode,
+  LOTDG_SPECIAL_EVENT_DECLINE_ACTION_CODE,
+  LOTDG_SPECIAL_EVENT_STAGE_CODE,
+  type LotdgSpecialEventActionCode,
 } from '../../shared/constant/lotdg-special-event-code'
-import { LotdgNoticeLine } from '../../shared/ui/LotdgNoticeLine'
-import type { LotdgMutableScreenProps } from '../../shared/type/lotdg-screen-contract'
+import { LOTDG_TEXT_COLOR_CLASS_NAME } from '../../shared/constant/lotdg-legacy-color-code'
+import { LOTDG_COMMENT_MAXIMUM_LENGTH } from '../../shared/constant/lotdg-commentary-section-code'
+import type { LotdgSpecialEventScreenProps } from '../../shared/type/lotdg-screen-contract'
+import {
+  LotdgActionRow,
+  LotdgButton,
+  LotdgCommentLine,
+  LotdgFieldRow,
+  LotdgForm,
+  LotdgMarkupText,
+  LotdgNoticeLine,
+  LotdgScreen,
+  LotdgSubmitButton,
+  LotdgText,
+  LotdgTextField,
+} from '../../shared/ui'
+
+const LOTDG_DECIMAL_RADIX = 10
+
+const LOTDG_KITTEN_LABEL_SEPARATOR = ' / '
 
 export function LotdgSpecialEventScreen({
   characterId,
   eventCode,
   onStateChange,
   onLeave,
-}: LotdgMutableScreenProps & {
-  readonly eventCode: LotdgSpecialEventCode
-  readonly onLeave: () => void
-}) {
+}: LotdgSpecialEventScreenProps) {
   const { translate } = useLotdgLocale()
   const [event, setEvent] = useState<LotdgSpecialEvent | null>(null)
   const [betText, setBetText] = useState('')
@@ -51,7 +69,10 @@ export function LotdgSpecialEventScreen({
     start()
   }, [start])
 
-  const act = async (action: string, body: Record<string, string | number> = {}) => {
+  const act = async (
+    action: LotdgSpecialEventActionCode,
+    body: Record<string, string | number> = {},
+  ) => {
     try {
       const result = await postForm(
         `/special/${eventCode}/${characterId}/${action}`,
@@ -71,29 +92,28 @@ export function LotdgSpecialEventScreen({
     }
   }
 
-  const submitBet = (submitEvent: FormEvent<HTMLFormElement>) => {
-    submitEvent.preventDefault()
-    void act('bet', { bet: Number.parseInt(betText, 10) || 0 })
+  const submitBet = () => {
+    void act(LOTDG_SPECIAL_EVENT_ACTION_CODE.BET, {
+      bet: Number.parseInt(betText, LOTDG_DECIMAL_RADIX) || 0,
+    })
   }
 
-  const submitGuess = (submitEvent: FormEvent<HTMLFormElement>) => {
-    submitEvent.preventDefault()
-    void act('guess', { guess: Number.parseInt(guessText, 10) || 0 })
+  const submitGuess = () => {
+    void act(LOTDG_SPECIAL_EVENT_ACTION_CODE.GUESS, {
+      guess: Number.parseInt(guessText, LOTDG_DECIMAL_RADIX) || 0,
+    })
   }
 
-  const submitAnswer = (submitEvent: FormEvent<HTMLFormElement>) => {
-    submitEvent.preventDefault()
-    void act('answer', { answer: answerText })
+  const submitAnswer = () => {
+    void act(LOTDG_SPECIAL_EVENT_ACTION_CODE.ANSWER, { answer: answerText })
   }
 
-  const submitComment = (submitEvent: FormEvent<HTMLFormElement>) => {
-    submitEvent.preventDefault()
-
+  const submitComment = () => {
     if (commentText.trim() === '') {
       return
     }
 
-    void act('post', { comment_text: commentText })
+    void act(LOTDG_SPECIAL_EVENT_ACTION_CODE.POST, { comment_text: commentText })
     setCommentText('')
   }
 
@@ -103,7 +123,7 @@ export function LotdgSpecialEventScreen({
     }
 
     return (
-      <p className="colLtGreen">
+      <LotdgText colorClassName={LOTDG_TEXT_COLOR_CLASS_NAME.LIGHT_GREEN}>
         {label(`special.${eventCode}.outcome.${event.outcome}`, {
           gold: event.gold_gained ?? event.gold_lost ?? 0,
           gem: event.gem_gained ?? event.gem_lost ?? 0,
@@ -116,7 +136,7 @@ export function LotdgSpecialEventScreen({
           answer: event.answer_text ?? '',
           reward: event.reward ?? '',
         })}
-      </p>
+      </LotdgText>
     )
   }
 
@@ -129,69 +149,41 @@ export function LotdgSpecialEventScreen({
       return null
     }
 
-    if (event.stage === 'awaiting-choice' || event.stage === 'outside') {
-      const acceptAction =
-        eventCode === LOTDG_SPECIAL_EVENT_CODE.GLOWING_STREAM
-          ? 'drink'
-          : eventCode === LOTDG_SPECIAL_EVENT_CODE.FAIRY ||
-              eventCode === LOTDG_SPECIAL_EVENT_CODE.SKILL_MASTER
-            ? 'give'
-            : eventCode === LOTDG_SPECIAL_EVENT_CODE.RIDDLES
-              ? 'accept'
-              : eventCode === LOTDG_SPECIAL_EVENT_CODE.AUDREY
-                ? 'play'
-                : eventCode === LOTDG_SPECIAL_EVENT_CODE.GOLD_MINE
-                  ? 'mine'
-                  : eventCode === LOTDG_SPECIAL_EVENT_CODE.NECROMANCER
-                    ? 'approach'
-                    : eventCode === LOTDG_SPECIAL_EVENT_CODE.OLD_MAN_TOWN
-                      ? 'escort'
-                      : eventCode === LOTDG_SPECIAL_EVENT_CODE.DARK_HORSE
-                        ? 'enter'
-                        : 'start'
-
-      const declineAction =
-        eventCode === LOTDG_SPECIAL_EVENT_CODE.FAIRY ||
-        eventCode === LOTDG_SPECIAL_EVENT_CODE.SKILL_MASTER
-          ? 'refuse'
-          : eventCode === LOTDG_SPECIAL_EVENT_CODE.AUDREY
-            ? 'run'
-            : eventCode === LOTDG_SPECIAL_EVENT_CODE.NECROMANCER ||
-                eventCode === LOTDG_SPECIAL_EVENT_CODE.DARK_HORSE
-              ? 'leave'
-              : eventCode === LOTDG_SPECIAL_EVENT_CODE.DISTRESS
-                ? 'ignore'
-                : 'decline'
-
+    if (
+      event.stage === LOTDG_SPECIAL_EVENT_STAGE_CODE.AWAITING_CHOICE ||
+      event.stage === LOTDG_SPECIAL_EVENT_STAGE_CODE.OUTSIDE
+    ) {
       if (eventCode === LOTDG_SPECIAL_EVENT_CODE.DISTRESS) {
         return (
-          <p>
+          <LotdgActionRow>
             {(event.location_code_list ?? []).map((locationCode) => (
-              <button
+              <LotdgButton
                 key={locationCode}
-                type="button"
-                className="lotdg-button"
-                onClick={() => void act('visit', { location_code: locationCode })}
-              >
-                {label(`special.distress.location-${locationCode}`)}
-              </button>
-            ))}{' '}
-            <button type="button" className="lotdg-button" onClick={() => void act('ignore')}>
-              {label('special.action.decline')}
-            </button>
-          </p>
+                labelSlot={label(`special.distress.location-${locationCode}`)}
+                onSelect={() =>
+                  void act(LOTDG_SPECIAL_EVENT_ACTION_CODE.VISIT, { location_code: locationCode })
+                }
+              />
+            ))}
+            <LotdgButton
+              labelSlot={label('special.action.decline')}
+              onSelect={() => void act(LOTDG_SPECIAL_EVENT_ACTION_CODE.IGNORE)}
+            />
+          </LotdgActionRow>
         )
       }
 
       return (
-        <p>
-          <button type="button" className="lotdg-button" onClick={() => void act(acceptAction)}>
-            {label('special.action.accept')}
-          </button>{' '}
-          <button type="button" className="lotdg-button" onClick={() => void act(declineAction)}>
-            {label('special.action.decline')}
-          </button>
-        </p>
+        <LotdgActionRow>
+          <LotdgButton
+            labelSlot={label('special.action.accept')}
+            onSelect={() => void act(LOTDG_SPECIAL_EVENT_ACCEPT_ACTION_CODE[eventCode])}
+          />
+          <LotdgButton
+            labelSlot={label('special.action.decline')}
+            onSelect={() => void act(LOTDG_SPECIAL_EVENT_DECLINE_ACTION_CODE[eventCode])}
+          />
+        </LotdgActionRow>
       )
     }
 
@@ -199,16 +191,14 @@ export function LotdgSpecialEventScreen({
   }
 
   return (
-    <section>
-      <h2>{label(`special.${eventCode}.title`)}</h2>
-
-      <p>{parseLegacyMarkup(label(`special.${eventCode}.description`))}</p>
+    <LotdgScreen titleText={label(`special.${eventCode}.title`)}>
+      <LotdgMarkupText sourceText={label(`special.${eventCode}.description`)} />
 
       {renderChoice()}
 
-      {event?.stage === 'awaiting-bet' && (
-        <form onSubmit={submitBet}>
-          <p>
+      {event?.stage === LOTDG_SPECIAL_EVENT_STAGE_CODE.AWAITING_BET && (
+        <LotdgForm onSubmit={submitBet}>
+          <LotdgText>
             {label('special.oldmanbet.rule', {
               minimum: event.minimum_number ?? 1,
               maximum: event.maximum_number ?? 100,
@@ -216,123 +206,101 @@ export function LotdgSpecialEventScreen({
               multiplier: event.win_multiplier ?? 3,
               gold: event.gold ?? 0,
             })}
-          </p>
-          <p>
-            <input
-              className="lotdg-input"
-              inputMode="numeric"
-              value={betText}
-              onChange={(changeEvent) => setBetText(changeEvent.target.value)}
-            />{' '}
-            <button type="submit" className="lotdg-button">
-              {label('special.action.bet')}
-            </button>
-          </p>
-        </form>
+          </LotdgText>
+          <LotdgFieldRow>
+            <LotdgTextField value={betText} onValueChange={setBetText} isNumeric />
+            <LotdgSubmitButton labelSlot={label('special.action.bet')} />
+          </LotdgFieldRow>
+        </LotdgForm>
       )}
 
-      {event?.stage === 'awaiting-guess' && (
-        <form onSubmit={submitGuess}>
-          <p>
+      {event?.stage === LOTDG_SPECIAL_EVENT_STAGE_CODE.AWAITING_GUESS && (
+        <LotdgForm onSubmit={submitGuess}>
+          <LotdgText>
             {label('special.oldmanbet.progress', {
               bet: event.bet ?? 0,
               tryCount: event.try_count ?? 0,
               remaining: event.remaining_try ?? 0,
             })}
             {event.hint !== undefined && ` ${label(`special.oldmanbet.hint.${event.hint}`)}`}
-          </p>
-          <p>
-            <input
-              className="lotdg-input"
-              inputMode="numeric"
-              value={guessText}
-              onChange={(changeEvent) => setGuessText(changeEvent.target.value)}
-            />{' '}
-            <button type="submit" className="lotdg-button">
-              {label('special.action.guess')}
-            </button>
-          </p>
-        </form>
+          </LotdgText>
+          <LotdgFieldRow>
+            <LotdgTextField value={guessText} onValueChange={setGuessText} isNumeric />
+            <LotdgSubmitButton labelSlot={label('special.action.guess')} />
+          </LotdgFieldRow>
+        </LotdgForm>
       )}
 
-      {event?.stage === 'awaiting-answer' && (
-        <form onSubmit={submitAnswer}>
-          <p>{parseLegacyMarkup(event.riddle_text ?? '')}</p>
-          <p>
-            <input
-              className="lotdg-input"
-              value={answerText}
-              onChange={(changeEvent) => setAnswerText(changeEvent.target.value)}
-            />{' '}
-            <button type="submit" className="lotdg-button">
-              {label('special.action.answer')}
-            </button>
-          </p>
-        </form>
+      {event?.stage === LOTDG_SPECIAL_EVENT_STAGE_CODE.AWAITING_ANSWER && (
+        <LotdgForm onSubmit={submitAnswer}>
+          <LotdgMarkupText sourceText={event.riddle_text ?? ''} />
+          <LotdgFieldRow>
+            <LotdgTextField value={answerText} onValueChange={setAnswerText} />
+            <LotdgSubmitButton labelSlot={label('special.action.answer')} />
+          </LotdgFieldRow>
+        </LotdgForm>
       )}
 
-      {event?.stage === 'awaiting-gem' && (
-        <p>
-          <button type="button" className="lotdg-button" onClick={() => void act('give-gem')}>
-            {label('special.necromancer.action.give-gem')}
-          </button>{' '}
-          <button type="button" className="lotdg-button" onClick={() => void act('keep-gem')}>
-            {label('special.necromancer.action.keep-gem')}
-          </button>
-        </p>
+      {event?.stage === LOTDG_SPECIAL_EVENT_STAGE_CODE.AWAITING_GEM && (
+        <LotdgActionRow>
+          <LotdgButton
+            labelSlot={label('special.necromancer.action.give-gem')}
+            onSelect={() => void act(LOTDG_SPECIAL_EVENT_ACTION_CODE.GIVE_GEM)}
+          />
+          <LotdgButton
+            labelSlot={label('special.necromancer.action.keep-gem')}
+            onSelect={() => void act(LOTDG_SPECIAL_EVENT_ACTION_CODE.KEEP_GEM)}
+          />
+        </LotdgActionRow>
       )}
 
-      {event?.stage === 'resting' && (
+      {event?.stage === LOTDG_SPECIAL_EVENT_STAGE_CODE.RESTING && (
         <>
-          <p>
+          <LotdgText>
             {event.already_rested === true
               ? label('special.grassyfield.already-rested')
               : label('special.grassyfield.rested', {
                   mount: event.mount_name ?? '',
                   turn: event.turn_lost ?? 0,
                 })}
-          </p>
+          </LotdgText>
 
           {(event.comment_list ?? []).map((entry) => (
-            <p key={entry.commentary_id}>
-              <span className="colLtWhite">{entry.display_name}</span>{' '}
-              {parseLegacyMarkup(entry.comment_text)}
-            </p>
+            <LotdgCommentLine
+              key={entry.commentary_id}
+              authorName={entry.display_name}
+              commentText={entry.comment_text}
+            />
           ))}
 
-          <form onSubmit={submitComment}>
-            <p>
-              <input
-                className="lotdg-input"
+          <LotdgForm onSubmit={submitComment}>
+            <LotdgFieldRow>
+              <LotdgTextField
                 value={commentText}
-                maxLength={200}
-                onChange={(changeEvent) => setCommentText(changeEvent.target.value)}
-              />{' '}
-              <button type="submit" className="lotdg-button">
-                {label('special.action.post')}
-              </button>
-            </p>
-          </form>
+                onValueChange={setCommentText}
+                maximumLength={LOTDG_COMMENT_MAXIMUM_LENGTH}
+              />
+              <LotdgSubmitButton labelSlot={label('special.action.post')} />
+            </LotdgFieldRow>
+          </LotdgForm>
         </>
       )}
 
       {event?.kitten_code_list !== undefined && (
-        <p>
+        <LotdgText>
           {event.kitten_code_list
             .map((kittenCode) => label(`special.audrey.kitten-${kittenCode}`))
-            .join(' / ')}
-        </p>
+            .join(LOTDG_KITTEN_LABEL_SEPARATOR)}
+        </LotdgText>
       )}
 
       {renderOutcome()}
 
       <LotdgNoticeLine messageText={message} />
 
-      <p>
-        <button type="button" className="lotdg-button" onClick={onLeave}>
-          {label('special.action.return-to-forest')}
-        </button>
-      </p>
-    </section>
+      <LotdgActionRow>
+        <LotdgButton labelSlot={label('special.action.return-to-forest')} onSelect={onLeave} />
+      </LotdgActionRow>
+    </LotdgScreen>
   )
 }

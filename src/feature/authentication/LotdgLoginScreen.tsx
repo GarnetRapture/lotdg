@@ -12,10 +12,7 @@ import { useLotdgLocale } from '../../i18n/useLotdgLocale'
 import { LOTDG_LOCALE_NAMESPACE } from '../../shared/constant/lotdg-supported-locale'
 import { LOTDG_TEXT_COLOR_CLASS_NAME } from '../../shared/constant/lotdg-legacy-color-code'
 import { LOTDG_CONTROL_WIDTH_CODE } from '../../shared/constant/lotdg-ui-class-name'
-import {
-  LOTDG_ACCESS_KEY,
-  LOTDG_AUTOCOMPLETE_TOKEN,
-} from '../../shared/constant/lotdg-form-token'
+import { LOTDG_ACCESS_KEY, LOTDG_AUTOCOMPLETE_TOKEN } from '../../shared/constant/lotdg-form-token'
 import type { LotdgLoginScreenProps } from '../../shared/type/lotdg-screen-contract'
 import {
   LotdgActionRow,
@@ -119,9 +116,7 @@ export function LotdgLoginScreen({ onRegisterClick }: LotdgLoginScreenProps) {
       <LotdgText>{label('login.prompt')}</LotdgText>
 
       {errorMessage !== '' && (
-        <LotdgText colorClassName={LOTDG_TEXT_COLOR_CLASS_NAME.LIGHT_RED}>
-          {errorMessage}
-        </LotdgText>
+        <LotdgText colorClassName={LOTDG_TEXT_COLOR_CLASS_NAME.LIGHT_RED}>{errorMessage}</LotdgText>
       )}
 
       <LotdgForm onSubmit={() => void handleSubmit()}>

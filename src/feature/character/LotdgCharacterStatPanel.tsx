@@ -7,13 +7,11 @@ import {
 import { parseLegacyMarkup } from '../../shared/lib/lotdg-legacy-markup-parser'
 import { useLotdgLocale } from '../../i18n/useLotdgLocale'
 import { LOTDG_LOCALE_NAMESPACE } from '../../shared/constant/lotdg-supported-locale'
-import { LOTDG_TEXT_COLOR_CLASS_NAME } from '../../shared/constant/lotdg-legacy-color-code'
-import { LOTDG_UI_CLASS_NAME } from '../../shared/constant/lotdg-ui-class-name'
 import type {
   LotdgStatEntry,
   LotdgStatSection,
 } from '../../shared/type/lotdg-ui-component-contract'
-import { LotdgStatTable } from '../../shared/ui/LotdgStatTable'
+import { LotdgStatBuffList, LotdgStatTable } from '../../shared/ui'
 
 const SPIRIT_LABEL_PATH: Record<number, string> = {
   [-6]: 'spirit.dead',
@@ -147,22 +145,15 @@ export function LotdgCharacterStatPanel({
     <LotdgStatTable
       sectionList={sectionList}
       footerSlot={
-        <>
-          <b>{label('field.buff')}</b>
-          <br />
-          {buffEntryList.length === 0 ? (
-            <span className={LOTDG_TEXT_COLOR_CLASS_NAME.LIGHT_YELLOW}>{label('buff.none')}</span>
-          ) : (
-            buffEntryList.map(([buffKey, buff]) => (
-              <span key={buffKey} className={LOTDG_UI_CLASS_NAME.STAT_BUFF_ROW}>
-                {parseLegacyMarkup(buff.name ?? buffKey)}{' '}
-                <span className={LOTDG_TEXT_COLOR_CLASS_NAME.DARK_WHITE}>
-                  {label('buff.rounds-left', { rounds: buff.rounds ?? 0 })}
-                </span>
-              </span>
-            ))
-          )}
-        </>
+        <LotdgStatBuffList
+          titleText={label('field.buff')}
+          emptyText={label('buff.none')}
+          buffList={buffEntryList.map(([buffKey, buff]) => ({
+            buffKey,
+            nameSlot: parseLegacyMarkup(buff.name ?? buffKey),
+            roundsText: label('buff.rounds-left', { rounds: buff.rounds ?? 0 }),
+          }))}
+        />
       }
     />
   )

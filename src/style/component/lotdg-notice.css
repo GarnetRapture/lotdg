@@ -1,6 +1,3 @@
-/**
- * 6계층 — 알림. LotdgNoticeLine 의 한 줄 알림과 머리띠의 알림 링크다.
- */
 .lotdg-notice-line {
   margin: var(--lotdg-scale-space-normal) 0;
   animation: var(--lotdg-effect-animation-notice-enter);

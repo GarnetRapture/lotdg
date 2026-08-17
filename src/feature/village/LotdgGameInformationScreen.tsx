@@ -10,9 +10,16 @@ import {
 import { resolveErrorLabel, resolveMessageKeyLabel } from '../../shared/lib/lotdg-error-label'
 import { useLotdgLocale } from '../../i18n/useLotdgLocale'
 import { LOTDG_LOCALE_NAMESPACE } from '../../shared/constant/lotdg-supported-locale'
-import { LotdgDataTable } from '../../shared/ui/LotdgDataTable'
-import { LotdgNoticeLine } from '../../shared/ui/LotdgNoticeLine'
 import type { LotdgMutableScreenProps } from '../../shared/type/lotdg-screen-contract'
+import {
+  LotdgActionRow,
+  LotdgButton,
+  LotdgDataTable,
+  LotdgNoticeLine,
+  LotdgScreen,
+  LotdgSection,
+  LotdgText,
+} from '../../shared/ui'
 
 export function LotdgGameInformationScreen({
   characterId,
@@ -62,20 +69,18 @@ export function LotdgGameInformationScreen({
   }
 
   return (
-    <section>
-      <h2>{label('game-information.title')}</h2>
-
+    <LotdgScreen titleText={label('game-information.title')}>
       {information !== null && (
         <>
-          <p>
+          <LotdgText>
             {label('game-information.credit', {
               author: information.original_author,
               porter: information.porter_name,
               license: information.license_code,
             })}
-          </p>
+          </LotdgText>
 
-          <p>
+          <LotdgText>
             {label('game-information.clock', {
               daysPerDay: information.days_per_calendar_day,
               hour: information.day_duration_hour,
@@ -84,12 +89,10 @@ export function LotdgGameInformationScreen({
               serverTime: information.server_time,
               second: information.real_seconds_until_next_game_day,
             })}
-          </p>
+          </LotdgText>
 
           {Object.entries(information.setting_group_map).map(([groupCode, entryList]) => (
-            <section key={groupCode}>
-              <h3>{label(`game-information.group.${groupCode}`)}</h3>
-
+            <LotdgSection key={groupCode} titleSlot={label(`game-information.group.${groupCode}`)}>
               <LotdgDataTable
                 rowList={entryList}
                 rowKey={(entry) => entry.setting_key}
@@ -106,26 +109,25 @@ export function LotdgGameInformationScreen({
                   },
                 ]}
               />
-            </section>
+            </LotdgSection>
           ))}
         </>
       )}
 
       {webVote !== null && webVote.enabled && (
-        <p>
-          {label('game-information.vote.description', { gem: webVote.gem_reward })}{' '}
-          <button
-            type="button"
-            className="lotdg-button"
-            disabled={!webVote.can_claim}
-            onClick={() => void claim()}
-          >
-            {label('game-information.vote.action')}
-          </button>
-        </p>
+        <LotdgActionRow>
+          <LotdgText>
+            {label('game-information.vote.description', { gem: webVote.gem_reward })}
+          </LotdgText>
+          <LotdgButton
+            labelSlot={label('game-information.vote.action')}
+            isDisabled={!webVote.can_claim}
+            onSelect={() => void claim()}
+          />
+        </LotdgActionRow>
       )}
 
       <LotdgNoticeLine messageText={message} />
-    </section>
+    </LotdgScreen>
   )
 }

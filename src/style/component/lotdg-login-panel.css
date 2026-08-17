@@ -1,7 +1,3 @@
-/**
- * 6계층 — 로그인 패널. reference/images/dragon.gif 를 배경으로 깔고 그 아래쪽 빈
- * 자리에 입력칸을 앉히던 레거시 배치를 그대로 재현한다.
- */
 .lotdg-login-panel {
   display: inline-flex;
   flex-direction: column;

@@ -9,27 +9,33 @@ import {
 import { resolveErrorLabel, resolveMessageKeyLabel } from '../../shared/lib/lotdg-error-label'
 import { useLotdgLocale } from '../../i18n/useLotdgLocale'
 import { LOTDG_LOCALE_NAMESPACE } from '../../shared/constant/lotdg-supported-locale'
+import { LOTDG_SPECIAL_EVENT_CODE_LIST } from '../../shared/constant/lotdg-special-event-code'
 import {
-  LOTDG_SPECIAL_EVENT_CODE_LIST,
-  type LotdgSpecialEventCode,
-} from '../../shared/constant/lotdg-special-event-code'
-import type { LotdgMutableScreenProps } from '../../shared/type/lotdg-screen-contract'
-
-const SEARCH_TYPE_LIST = ['normal', 'slum', 'thrill'] as const
+  LOTDG_FOREST_SEARCH_TYPE_CODE_LIST,
+  type LotdgForestSearchTypeCode,
+} from '../../shared/constant/lotdg-legacy-code'
+import { LOTDG_TEXT_COLOR_CLASS_NAME } from '../../shared/constant/lotdg-legacy-color-code'
+import type { LotdgForestScreenProps } from '../../shared/type/lotdg-screen-contract'
+import {
+  LotdgActionRow,
+  LotdgButton,
+  LotdgInlineText,
+  LotdgScreen,
+  LotdgSection,
+  LotdgText,
+} from '../../shared/ui'
 
 export function LotdgForestScreen({
   characterId,
   onStateChange,
   onSpecialEventOpen,
-}: LotdgMutableScreenProps & {
-  readonly onSpecialEventOpen: (eventCode: LotdgSpecialEventCode) => void
-}) {
+}: LotdgForestScreenProps) {
   const { translate } = useLotdgLocale()
   const [encounter, setEncounter] = useState<LotdgForestEncounter | null>(null)
   const [roundList, setRoundList] = useState<LotdgBattleRound[]>([])
   const [errorMessage, setErrorMessage] = useState('')
 
-  const search = async (searchType: string) => {
+  const search = async (searchType: LotdgForestSearchTypeCode) => {
     setErrorMessage('')
     setRoundList([])
 
@@ -63,67 +69,66 @@ export function LotdgForestScreen({
     translate(LOTDG_LOCALE_NAMESPACE.FOREST, path, valueMap)
 
   return (
-    <section>
-      <h2>{label('title')}</h2>
-      <p>{label('description')}</p>
+    <LotdgScreen titleText={label('title')}>
+      <LotdgText>{label('description')}</LotdgText>
 
-      <p>
-        {SEARCH_TYPE_LIST.map((searchType) => (
-          <button
+      <LotdgActionRow>
+        {LOTDG_FOREST_SEARCH_TYPE_CODE_LIST.map((searchType) => (
+          <LotdgButton
             key={searchType}
-            type="button"
-            className="lotdg-button"
-            onClick={() => void search(searchType)}
-          >
-            {label(`action.search-${searchType}`)}
-          </button>
+            labelSlot={label(`action.search-${searchType}`)}
+            onSelect={() => void search(searchType)}
+          />
         ))}
-      </p>
+      </LotdgActionRow>
 
-      <p>
+      <LotdgActionRow>
         {LOTDG_SPECIAL_EVENT_CODE_LIST.map((eventCode) => (
-          <button
+          <LotdgButton
             key={eventCode}
-            type="button"
-            className="lotdg-button"
-            onClick={() => onSpecialEventOpen(eventCode)}
-          >
-            {label(`special.${eventCode}.title`)}
-          </button>
+            labelSlot={label(`special.${eventCode}.title`)}
+            onSelect={() => onSpecialEventOpen(eventCode)}
+          />
         ))}
-      </p>
+      </LotdgActionRow>
 
-      {errorMessage !== '' && <p className="colLtRed">{errorMessage}</p>}
+      {errorMessage !== '' && (
+        <LotdgText colorClassName={LOTDG_TEXT_COLOR_CLASS_NAME.LIGHT_RED}>{errorMessage}</LotdgText>
+      )}
 
       {encounter?.encountered === false && encounter.message_key !== undefined && (
-        <p className="colLtRed">{resolveMessageKeyLabel(encounter.message_key, translate)}</p>
+        <LotdgText colorClassName={LOTDG_TEXT_COLOR_CLASS_NAME.LIGHT_RED}>
+          {resolveMessageKeyLabel(encounter.message_key, translate)}
+        </LotdgText>
       )}
 
       {encounter?.enemy !== undefined && (
-        <div>
-          <p className="colLtYellow">
+        <LotdgSection>
+          <LotdgText colorClassName={LOTDG_TEXT_COLOR_CLASS_NAME.LIGHT_YELLOW}>
             {label('encounter', {
               name: encounter.enemy.creature_name,
               weapon: encounter.enemy.weapon_name,
             })}
-          </p>
-          <p>
+          </LotdgText>
+          <LotdgText>
             {label('enemy-status', {
               level: encounter.enemy.creature_level,
               health: encounter.enemy.health,
             })}
-          </p>
+          </LotdgText>
           {encounter.enemy_first_strike === true && (
-            <p className="colLtRed">{label('enemy-first-strike')}</p>
+            <LotdgText colorClassName={LOTDG_TEXT_COLOR_CLASS_NAME.LIGHT_RED}>
+              {label('enemy-first-strike')}
+            </LotdgText>
           )}
-          <button type="button" className="lotdg-button" onClick={() => void fight()}>
-            {label('action.fight')}
-          </button>
-        </div>
+          <LotdgActionRow>
+            <LotdgButton labelSlot={label('action.fight')} onSelect={() => void fight()} />
+          </LotdgActionRow>
+        </LotdgSection>
       )}
 
       {roundList.map((round, index) => (
-        <p key={index}>
+        <LotdgText key={index}>
           {label('round-result', {
             round: index + 1,
             damageToEnemy: round.damage_to_enemy ?? 0,
@@ -132,20 +137,28 @@ export function LotdgForestScreen({
             enemyHitPoint: round.enemy_hit_point ?? 0,
           })}
           {round.critical_attack === true && (
-            <span className="colLtYellow"> {label('critical')}</span>
+            <LotdgInlineText colorClassName={LOTDG_TEXT_COLOR_CLASS_NAME.LIGHT_YELLOW}>
+              {' '}
+              {label('critical')}
+            </LotdgInlineText>
           )}
           {round.victory === true && (
-            <span className="colLtGreen">
+            <LotdgInlineText colorClassName={LOTDG_TEXT_COLOR_CLASS_NAME.LIGHT_GREEN}>
               {' '}
               {label('victory', {
                 gold: round.reward?.gold ?? 0,
                 experience: round.reward?.experience ?? 0,
               })}
-            </span>
+            </LotdgInlineText>
           )}
-          {round.defeat === true && <span className="colLtRed"> {label('defeat')}</span>}
-        </p>
+          {round.defeat === true && (
+            <LotdgInlineText colorClassName={LOTDG_TEXT_COLOR_CLASS_NAME.LIGHT_RED}>
+              {' '}
+              {label('defeat')}
+            </LotdgInlineText>
+          )}
+        </LotdgText>
       ))}
-    </section>
+    </LotdgScreen>
   )
 }

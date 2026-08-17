@@ -36,6 +36,8 @@ export interface LotdgTextFieldProps {
   readonly widthCode?: LotdgControlWidthCode
   readonly autocompleteToken?: LotdgAutocompleteToken
   readonly accessKey?: LotdgAccessKey
+  readonly placeholderText?: string
+  readonly isNumeric?: boolean
 }
 
 export interface LotdgTextAreaFieldProps {
@@ -66,6 +68,7 @@ export interface LotdgCheckboxFieldProps {
   readonly isChecked: boolean
   readonly onCheckedChange: (nextChecked: boolean) => void
   readonly isDisabled?: boolean
+  readonly isLabelHidden?: boolean
 }
 
 export interface LotdgFieldRowProps extends LotdgChildrenProps {
@@ -171,8 +174,26 @@ export interface LotdgStatEntry {
 
 export interface LotdgStatSection {
   readonly sectionKey: string
-  readonly headText: string
+  readonly headText?: string
   readonly entryList: ReadonlyArray<LotdgStatEntry>
+}
+
+export interface LotdgLinkProps {
+  readonly hashCode: string
+  readonly labelSlot: ReactNode
+  readonly onSelect: () => void
+}
+
+export interface LotdgStatBuffEntry {
+  readonly buffKey: string
+  readonly nameSlot: ReactNode
+  readonly roundsText: string
+}
+
+export interface LotdgStatBuffListProps {
+  readonly titleText: string
+  readonly buffList: ReadonlyArray<LotdgStatBuffEntry>
+  readonly emptyText: string
 }
 
 export interface LotdgStatTableProps {

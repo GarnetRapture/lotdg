@@ -8,10 +8,22 @@ import {
 import { resolveErrorLabel, resolveMessageKeyLabel } from '../../shared/lib/lotdg-error-label'
 import { useLotdgLocale } from '../../i18n/useLotdgLocale'
 import { LOTDG_LOCALE_NAMESPACE } from '../../shared/constant/lotdg-supported-locale'
-import { LotdgDataTable } from '../../shared/ui/LotdgDataTable'
-import { LotdgNoticeLine } from '../../shared/ui/LotdgNoticeLine'
+import { LOTDG_COMMENTARY_SECTION_CODE } from '../../shared/constant/lotdg-commentary-section-code'
 import type { LotdgMutableScreenProps } from '../../shared/type/lotdg-screen-contract'
+import {
+  LotdgActionRow,
+  LotdgButton,
+  LotdgDataTable,
+  LotdgNoticeLine,
+  LotdgScreen,
+  LotdgText,
+} from '../../shared/ui'
 import { LotdgCommentaryBoard } from '../social/LotdgCommentaryBoard'
+
+const LOTDG_STABLE_ACTION_CODE = {
+  BUY: 'buy',
+  SELL: 'sell',
+} as const
 
 export function LotdgMountStableScreen({ characterId, onStateChange }: LotdgMutableScreenProps) {
   const { translate } = useLotdgLocale()
@@ -69,24 +81,25 @@ export function LotdgMountStableScreen({ characterId, onStateChange }: LotdgMuta
   }
 
   return (
-    <section>
-      <h2>{label('stable.title')}</h2>
-
+    <LotdgScreen titleText={label('stable.title')}>
       {stable !== null && (
         <>
-          <p>{label('stable.status', { gold: stable.gold, gem: stable.gem })}</p>
+          <LotdgText>{label('stable.status', { gold: stable.gold, gem: stable.gem })}</LotdgText>
 
           {stable.current_mount !== null && (
-            <p>
-              {label('stable.current', {
-                mount: stable.current_mount.mount_name,
-                gold: stable.current_mount.resale_gold,
-                gem: stable.current_mount.resale_gem,
-              })}{' '}
-              <button type="button" className="lotdg-button" onClick={() => void act('sell')}>
-                {label('stable.action.sell')}
-              </button>
-            </p>
+            <LotdgActionRow>
+              <LotdgText>
+                {label('stable.current', {
+                  mount: stable.current_mount.mount_name,
+                  gold: stable.current_mount.resale_gold,
+                  gem: stable.current_mount.resale_gem,
+                })}
+              </LotdgText>
+              <LotdgButton
+                labelSlot={label('stable.action.sell')}
+                onSelect={() => void act(LOTDG_STABLE_ACTION_CODE.SELL)}
+              />
+            </LotdgActionRow>
           )}
 
           <LotdgDataTable
@@ -123,13 +136,12 @@ export function LotdgMountStableScreen({ characterId, onStateChange }: LotdgMuta
                 columnKey: 'action',
                 headText: label('stable.column.action'),
                 render: (mount) => (
-                  <button
-                    type="button"
-                    className="lotdg-button"
-                    onClick={() => void act('buy', { mount_id: mount.mount_id })}
-                  >
-                    {label('stable.action.buy')}
-                  </button>
+                  <LotdgButton
+                    labelSlot={label('stable.action.buy')}
+                    onSelect={() =>
+                      void act(LOTDG_STABLE_ACTION_CODE.BUY, { mount_id: mount.mount_id })
+                    }
+                  />
                 ),
               },
             ]}
@@ -139,7 +151,10 @@ export function LotdgMountStableScreen({ characterId, onStateChange }: LotdgMuta
 
       <LotdgNoticeLine messageText={message} />
 
-      <LotdgCommentaryBoard characterId={characterId} sectionCode="stables" />
-    </section>
+      <LotdgCommentaryBoard
+        characterId={characterId}
+        sectionCode={LOTDG_COMMENTARY_SECTION_CODE.MOUNT_STABLE}
+      />
+    </LotdgScreen>
   )
 }

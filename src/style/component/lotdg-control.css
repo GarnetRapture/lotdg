@@ -1,7 +1,3 @@
-/**
- * 6계층 — 입력 컨트롤. LotdgButton / LotdgTextField / LotdgTextAreaField /
- * LotdgSelectField / LotdgCheckboxField / LotdgFieldRow / LotdgActionRow 가 쓴다.
- */
 .lotdg-input,
 .lotdg-textarea,
 .lotdg-select {

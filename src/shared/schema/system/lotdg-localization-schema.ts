@@ -12,19 +12,10 @@ export const lotdgLocalizationNamespaceSchema = z.enum(
   LOTDG_LOCALE_NAMESPACE_LIST as unknown as [string, ...string[]],
 )
 
-/**
- * 라벨 키 문법. 마디는 점으로 잇고, 마디 안에는 레거시 식별자가 그대로 들어온다 —
- * game_setting 의 LOGINTIMEOUT 처럼 대문자가, hall_of_fame 구획 코드처럼 밑줄이
- * 섞인다. 한 키라도 어긋나면 z.record 가 파일 전체를 버려 네임스페이스가 통째로
- * 비므로, 실제로 쓰이는 문자 집합을 모두 허용한다.
- */
 export const lotdgLocaleResourceSchema = z.record(
   z
     .string()
-    .regex(
-      /^[A-Za-z0-9_]+(?:[-.][A-Za-z0-9_]+)*$/,
-      '라벨 키는 영숫자·밑줄·하이픈·점만 허용합니다',
-    ),
+    .regex(/^[A-Za-z0-9_]+(?:[-.][A-Za-z0-9_]+)*$/, '라벨 키는 영숫자·밑줄·하이픈·점만 허용합니다'),
   z.string(),
 )
 
