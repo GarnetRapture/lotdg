@@ -12,6 +12,7 @@ export const lotdgEquipmentEditorListSchema = z.object({
     z.object({
       item_id: lotdgIdentifierSchema,
       item_name: z.string(),
+      source_name: z.string(),
       power: z.int(),
       price: z.int(),
     }),

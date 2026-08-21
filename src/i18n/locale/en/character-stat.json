@@ -15,6 +15,8 @@
   "field.experience": "Experience",
   "field.weapon": "Weapon",
   "field.armor": "Armor",
+  "equipment.bare-hand": "Fists",
+  "equipment.plain-shirt": "T-Shirt",
   "field.buff": "Buffs",
   "spirit.dead": "Dead",
   "spirit.very-low": "Very Low",

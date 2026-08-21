@@ -7,6 +7,8 @@ namespace Lotdg\Http\Controller;
 use Lotdg\Domain\Social\BadWordFilter;
 use Lotdg\Domain\Social\BiographyService;
 use Lotdg\Http\ControllerInterface;
+use Lotdg\I18n\CatalogTranslator;
+use Lotdg\I18n\LocaleResolver;
 use Lotdg\Persistence\Repository\GameSettingRepository;
 use Lotdg\Support\LocalizedException;
 use PDO;
@@ -15,13 +17,17 @@ final class BiographyController implements ControllerInterface
 {
     private readonly BiographyService $biographyService;
 
+    private readonly LocaleResolver $localeResolver;
+
     public function __construct(PDO $connection)
     {
         $gameSettingRepository = new GameSettingRepository($connection);
 
+        $this->localeResolver = new LocaleResolver($connection);
         $this->biographyService = new BiographyService(
             $connection,
             new BadWordFilter($connection, $gameSettingRepository),
+            new CatalogTranslator($connection, $this->localeResolver),
         );
     }
 
@@ -38,6 +44,9 @@ final class BiographyController implements ControllerInterface
             throw new LocalizedException('system-message', 'error.invalid-character-id');
         }
 
-        return $this->biographyService->view($characterId);
+        return $this->biographyService->view(
+            $characterId,
+            $this->localeResolver->resolve($parameterMap['request_locale_code'] ?? null),
+        );
     }
 }

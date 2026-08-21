@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Lotdg\Domain\World;
 
+use Lotdg\I18n\CatalogTranslator;
 use Lotdg\Persistence\Repository\CreatureRepository;
 use Lotdg\Persistence\Repository\GameSettingRepository;
 use Lotdg\Support\LocalizedException;
@@ -41,6 +42,7 @@ final class ForestService
         private readonly PDO $connection,
         private readonly CreatureRepository $creatureRepository,
         private readonly GameSettingRepository $gameSettingRepository,
+        private readonly CatalogTranslator $catalogTranslator,
         private readonly BattleEngine $battleEngine = new BattleEngine(),
     ) {
     }
@@ -48,7 +50,7 @@ final class ForestService
     /**
      * @return array<string, mixed>
      */
-    public function beginEncounter(int $characterId, string $searchType): array
+    public function beginEncounter(int $characterId, string $searchType, string $localeCode): array
     {
         $characterRow = $this->fetchCharacterCombatRow($characterId);
 
@@ -95,19 +97,42 @@ final class ForestService
             $goldReward = (int) \round($goldReward * self::DWARF_GOLD_MULTIPLIER);
         }
 
+        $creatureId = (int) $creatureRow['creature_id'];
+
         $enemyState = [
-            'creature_id' => (int) $creatureRow['creature_id'],
-            'creature_name' => (string) $creatureRow['creature_name'],
+            'creature_id' => $creatureId,
+            'creature_name' => $this->translateCreatureField(
+                $creatureId,
+                'creature_name',
+                (string) $creatureRow['creature_name'],
+                $localeCode,
+            ),
+            'source_creature_name' => (string) $creatureRow['creature_name'],
             'creature_level' => (int) $creatureRow['creature_level'],
-            'weapon_name' => (string) $creatureRow['weapon_name'],
+            'weapon_name' => $this->translateCreatureField(
+                $creatureId,
+                'weapon_name',
+                (string) $creatureRow['weapon_name'],
+                $localeCode,
+            ),
             'health' => (int) $creatureRow['health'] + $healthFlux,
             'max_health' => (int) $creatureRow['health'] + $healthFlux,
             'attack_point' => (int) $creatureRow['attack_point'] + $attackFlux,
             'defense_point' => (int) $creatureRow['defense_point'] + $defenceFlux,
             'gold_reward' => $goldReward,
             'experience_reward' => $experienceReward,
-            'victory_message' => (string) $creatureRow['victory_message'],
-            'defeat_message' => (string) $creatureRow['defeat_message'],
+            'victory_message' => $this->translateCreatureField(
+                $creatureId,
+                'victory_message',
+                (string) $creatureRow['victory_message'],
+                $localeCode,
+            ),
+            'defeat_message' => $this->translateCreatureField(
+                $creatureId,
+                'defeat_message',
+                (string) $creatureRow['defeat_message'],
+                $localeCode,
+            ),
             'did_damage' => false,
             'player_start_hit_point' => (int) $characterRow['hit_point'],
         ];
@@ -120,6 +145,21 @@ final class ForestService
             'enemy_first_strike' => $this->battleEngine->rollsEnemyFirstStrike(),
             'enemy' => $enemyState,
         ];
+    }
+
+    private function translateCreatureField(
+        int $creatureId,
+        string $fieldCode,
+        string $originalText,
+        string $localeCode,
+    ): string {
+        return $this->catalogTranslator->translate(
+            CatalogTranslator::ENTITY_CREATURE,
+            $creatureId,
+            $fieldCode,
+            $originalText,
+            $localeCode,
+        );
     }
 
     private function rollTargetLevel(int $characterLevel, string $searchType): int
@@ -248,7 +288,7 @@ final class ForestService
         } elseif ($roundResult->isPlayerDefeated()) {
             $this->applyDefeatPenalty(
                 $characterId,
-                (string) $enemyState['creature_name'],
+                (string) ($enemyState['source_creature_name'] ?? $enemyState['creature_name']),
                 (int) $characterRow['experience'],
             );
             $this->storeEnemyState($characterId, []);

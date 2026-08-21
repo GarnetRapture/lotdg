@@ -105,6 +105,16 @@ export const LOTDG_FOREST_SEARCH_TYPE_CODE_LIST = Object.values(
   LOTDG_FOREST_SEARCH_TYPE_CODE,
 ) as readonly LotdgForestSearchTypeCode[]
 
+export const LOTDG_DEFAULT_EQUIPMENT_NAME = {
+  WEAPON: 'Fists',
+  ARMOR: 'T-Shirt',
+} as const
+
+export const LOTDG_DEFAULT_EQUIPMENT_LABEL_PATH: Record<string, string> = {
+  Fists: 'equipment.bare-hand',
+  'T-Shirt': 'equipment.plain-shirt',
+}
+
 export const LOTDG_SHOP_TYPE_CODE = { WEAPON: 'weapon', ARMOR: 'armor' } as const
 
 export type LotdgShopTypeCode = (typeof LOTDG_SHOP_TYPE_CODE)[keyof typeof LOTDG_SHOP_TYPE_CODE]

@@ -29,7 +29,7 @@
   "administration.action.unlock": "잠금 해제",
   "equipment-editor.title.weapon": "무기 편집기",
   "equipment-editor.title.armor": "방어구 편집기",
-  "equipment-editor.tier": "용 사냥 {tier}",
+  "equipment-editor.tier": "{tier}티어",
   "equipment-editor.empty": "이 단계에는 물건이 없다.",
   "equipment-editor.saved": "저장했다. 값은 {price} 금화다.",
   "equipment-editor.column.name": "이름",

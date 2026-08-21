@@ -15,6 +15,8 @@
   "field.experience": "经验值",
   "field.weapon": "武器",
   "field.armor": "护甲",
+  "equipment.bare-hand": "赤手空拳",
+  "equipment.plain-shirt": "T恤",
   "field.buff": "增益",
   "spirit.dead": "死亡",
   "spirit.very-low": "非常低",

@@ -8,6 +8,7 @@ import {
 } from '../../shared/schema/world/lotdg-special-event-schema'
 import { lotdgCommentaryPostSchema } from '../../shared/schema/social/lotdg-commentary-schema'
 import { resolveErrorLabel, resolveMessageKeyLabel } from '../../shared/lib/lotdg-error-label'
+import { resolveEquipmentName } from '../../shared/lib/lotdg-equipment-name-resolver'
 import { useLotdgLocale } from '../../i18n/useLotdgLocale'
 import { LOTDG_LOCALE_NAMESPACE } from '../../shared/constant/lotdg-supported-locale'
 import {
@@ -61,6 +62,9 @@ export function LotdgDarkHorseScreen({
 
   const label = (path: string, valueMap?: Record<string, string | number>) =>
     translate(LOTDG_LOCALE_NAMESPACE.FOREST, path, valueMap)
+
+  const characterStatLabel = (path: string, valueMap?: Record<string, string | number>) =>
+    translate(LOTDG_LOCALE_NAMESPACE.CHARACTER_STAT, path, valueMap)
 
   const start = useCallback(() => {
     getJson(`/special/darkhorse/${characterId}/start`, lotdgDarkHorseSchema)
@@ -324,8 +328,8 @@ export function LotdgDarkHorseScreen({
             level: tavern.level ?? 0,
             hitPoint: tavern.max_hit_point ?? 0,
             gold: tavern.gold ?? 0,
-            weapon: tavern.weapon_name ?? '',
-            armor: tavern.armor_name ?? '',
+            weapon: resolveEquipmentName(tavern.weapon_name ?? '', characterStatLabel),
+            armor: resolveEquipmentName(tavern.armor_name ?? '', characterStatLabel),
             attack: tavern.attack_point ?? 0,
             defence: tavern.defence_point ?? 0,
           })}

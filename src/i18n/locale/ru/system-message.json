@@ -49,6 +49,7 @@
   "error.unknown": "Произошла ошибка.",
   "error.unknown-action": "Неизвестное действие.",
   "error.unknown-shop": "Такой лавки не существует.",
+  "error.unknown-special-event": "Неизвестное особое событие.",
   "error.unsupported-locale": "Этот код языка не поддерживается.",
   "forest.error.no-turn-left": "На сегодня походов в лес не осталось.",
   "forest.special-event": "В лесу происходит нечто необычное.",

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Lotdg\Domain\World;
 
 use Lotdg\Domain\Account\LevelProgressionTable;
+use Lotdg\I18n\CatalogTranslator;
 use Lotdg\Persistence\Repository\CreatureRepository;
 use Lotdg\Support\LocalizedException;
 use PDO;
@@ -14,15 +15,33 @@ final class TrainingService
     public function __construct(
         private readonly PDO $connection,
         private readonly CreatureRepository $creatureRepository,
+        private readonly CatalogTranslator $catalogTranslator,
         private readonly BattleEngine $battleEngine = new BattleEngine(),
         private readonly LevelProgressionTable $levelProgressionTable = new LevelProgressionTable(),
     ) {
     }
 
     /**
+     * @param array<string, mixed> $masterRow
+     */
+    private function translateMasterField(
+        array $masterRow,
+        string $fieldCode,
+        string $localeCode,
+    ): string {
+        return $this->catalogTranslator->translate(
+            CatalogTranslator::ENTITY_TRAINING_MASTER,
+            (int) $masterRow['master_id'],
+            $fieldCode,
+            (string) $masterRow[$fieldCode],
+            $localeCode,
+        );
+    }
+
+    /**
      * @return array<string, mixed>
      */
-    public function inspect(int $characterId): array
+    public function inspect(int $characterId, string $localeCode): array
     {
         $characterRow = $this->fetchTrainingRow($characterId);
         $level = (int) $characterRow['level'];
@@ -44,8 +63,8 @@ final class TrainingService
         return [
             'has_master' => true,
             'level' => $level,
-            'master_name' => (string) $masterRow['master_name'],
-            'master_weapon_name' => (string) $masterRow['weapon_name'],
+            'master_name' => $this->translateMasterField($masterRow, 'master_name', $localeCode),
+            'master_weapon_name' => $this->translateMasterField($masterRow, 'weapon_name', $localeCode),
             'required_experience' => $requiredExperience,
             'current_experience' => $experience,
             'missing_experience' => \max(0, $requiredExperience - $experience),
@@ -58,7 +77,7 @@ final class TrainingService
     /**
      * @return array<string, mixed>
      */
-    public function challenge(int $characterId): array
+    public function challenge(int $characterId, string $localeCode): array
     {
         $characterRow = $this->fetchTrainingRow($characterId);
         $level = (int) $characterRow['level'];
@@ -91,7 +110,7 @@ final class TrainingService
             ];
         }
 
-        $master = $this->buildMasterCombatant($masterRow, $dragonKillCount);
+        $master = $this->buildMasterCombatant($masterRow, $dragonKillCount, $localeCode);
 
         $player = new BattleCombatant(
             (string) $characterRow['display_name'],
@@ -125,8 +144,12 @@ final class TrainingService
             return [
                 'challenged' => true,
                 'victory' => true,
-                'master_name' => (string) $masterRow['master_name'],
-                'master_message' => (string) $masterRow['victory_message'],
+                'master_name' => $this->translateMasterField($masterRow, 'master_name', $localeCode),
+                'master_message' => $this->translateMasterField(
+                    $masterRow,
+                    'victory_message',
+                    $localeCode,
+                ),
                 'round_log' => $roundLog,
                 'advancement' => $advancement,
             ];
@@ -137,8 +160,12 @@ final class TrainingService
         return [
             'challenged' => true,
             'victory' => false,
-            'master_name' => (string) $masterRow['master_name'],
-            'master_message' => (string) $masterRow['defeat_message'],
+            'master_name' => $this->translateMasterField($masterRow, 'master_name', $localeCode),
+            'master_message' => $this->translateMasterField(
+                $masterRow,
+                'defeat_message',
+                $localeCode,
+            ),
             'round_log' => $roundLog,
         ];
     }
@@ -146,8 +173,11 @@ final class TrainingService
     /**
      * @param array<string, mixed> $masterRow
      */
-    private function buildMasterCombatant(array $masterRow, int $dragonKillCount): BattleCombatant
-    {
+    private function buildMasterCombatant(
+        array $masterRow,
+        int $dragonKillCount,
+        string $localeCode,
+    ): BattleCombatant {
         $attackFlux = $dragonKillCount > 0 ? \random_int(0, $dragonKillCount) : 0;
         $defenceFlux = $dragonKillCount - $attackFlux > 0
             ? \random_int(0, $dragonKillCount - $attackFlux)
@@ -155,9 +185,9 @@ final class TrainingService
         $healthFlux = (int) \round(($dragonKillCount - ($attackFlux + $defenceFlux)) * 0.7);
 
         return new BattleCombatant(
-            (string) $masterRow['master_name'],
+            $this->translateMasterField($masterRow, 'master_name', $localeCode),
             (int) $masterRow['master_level'],
-            (string) $masterRow['weapon_name'],
+            $this->translateMasterField($masterRow, 'weapon_name', $localeCode),
             (int) $masterRow['health'] + $healthFlux,
             (int) $masterRow['attack_point'] + $attackFlux,
             (int) $masterRow['defense_point'] + $defenceFlux,

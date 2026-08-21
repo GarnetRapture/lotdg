@@ -29,7 +29,7 @@
   "administration.action.unlock": "Unlock",
   "equipment-editor.title.weapon": "Weapon Editor",
   "equipment-editor.title.armor": "Armor Editor",
-  "equipment-editor.tier": "{tier} dragon kills",
+  "equipment-editor.tier": "Tier {tier}",
   "equipment-editor.empty": "Nothing at this tier.",
   "equipment-editor.saved": "Saved. The price is {price} gold.",
   "equipment-editor.column.name": "Name",

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Lotdg\Domain\Catalog;
 
+use Lotdg\I18n\CatalogTranslator;
 use PDO;
 
 final class EquipmentEditorService
@@ -22,13 +23,14 @@ final class EquipmentEditorService
 
     public function __construct(
         private readonly PDO $connection,
+        private readonly CatalogTranslator $catalogTranslator,
     ) {
     }
 
     /**
      * @return array<string, mixed>
      */
-    public function listByTier(string $shopType, int $dragonKillTier): array
+    public function listByTier(string $shopType, int $dragonKillTier, string $localeCode): array
     {
         $isWeapon = $shopType === EquipmentShopService::SHOP_WEAPON;
         $tableName = $isWeapon ? 'weapon' : 'armor';
@@ -51,6 +53,10 @@ final class EquipmentEditorService
         );
         $statement->execute(['dragon_kill_tier' => $dragonKillTier]);
 
+        $entityType = $isWeapon
+            ? CatalogTranslator::ENTITY_WEAPON
+            : CatalogTranslator::ENTITY_ARMOR;
+
         return [
             'shop_type' => $shopType,
             'dragon_kill_tier' => $dragonKillTier,
@@ -59,9 +65,16 @@ final class EquipmentEditorService
             'maximum_power' => self::MAXIMUM_POWER,
             'price_by_power' => self::PRICE_BY_POWER,
             'item_list' => \array_map(
-                static fn (array $row): array => [
+                fn (array $row): array => [
                     'item_id' => (int) $row['item_id'],
-                    'item_name' => (string) $row['item_name'],
+                    'item_name' => $this->catalogTranslator->translate(
+                        $entityType,
+                        (int) $row['item_id'],
+                        $nameColumn,
+                        (string) $row['item_name'],
+                        $localeCode,
+                    ),
+                    'source_name' => (string) $row['item_name'],
                     'power' => (int) $row['power'],
                     'price' => (int) $row['price'],
                 ],

@@ -29,7 +29,7 @@
   "administration.action.unlock": "Разблокировать",
   "equipment-editor.title.weapon": "Редактор оружия",
   "equipment-editor.title.armor": "Редактор брони",
-  "equipment-editor.tier": "Убито драконов: {tier}",
+  "equipment-editor.tier": "Ступень {tier}",
   "equipment-editor.empty": "На этой ступени ничего нет.",
   "equipment-editor.saved": "Сохранено. Цена — {price} золота.",
   "equipment-editor.column.name": "Название",

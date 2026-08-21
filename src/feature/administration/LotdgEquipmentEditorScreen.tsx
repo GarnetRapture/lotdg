@@ -158,7 +158,7 @@ export function LotdgEquipmentEditorScreen({
                       labelSlot={label('equipment-editor.action.edit')}
                       onSelect={() => {
                         setItemId(item.item_id)
-                        setItemName(item.item_name)
+                        setItemName(item.source_name)
                         setPower(item.power)
                       }}
                     />

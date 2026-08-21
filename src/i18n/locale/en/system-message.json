@@ -49,6 +49,7 @@
   "error.unknown": "Something went wrong.",
   "error.unknown-action": "That action is not recognised.",
   "error.unknown-shop": "That shop does not exist.",
+  "error.unknown-special-event": "Unknown special event.",
   "error.unsupported-locale": "That locale code is not supported.",
   "forest.error.no-turn-left": "You have no forest fights left today.",
   "forest.special-event": "Something unusual happens in the forest.",

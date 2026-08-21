@@ -23,6 +23,8 @@ use Lotdg\Domain\World\Special\RiddleEvent;
 use Lotdg\Domain\World\Special\SkillMasterEvent;
 use Lotdg\Domain\World\Special\SpecialEventState;
 use Lotdg\Http\ControllerInterface;
+use Lotdg\I18n\CatalogTranslator;
+use Lotdg\I18n\LocaleResolver;
 use Lotdg\Persistence\Repository\GameSettingRepository;
 use Lotdg\Support\LocalizedException;
 use PDO;
@@ -55,6 +57,8 @@ final class SpecialEventController implements ControllerInterface
 
     private readonly DarkHorseTavernEvent $darkHorseTavernEvent;
 
+    private readonly LocaleResolver $localeResolver;
+
     public function __construct(PDO $connection)
     {
         $gameSettingRepository = new GameSettingRepository($connection);
@@ -75,7 +79,12 @@ final class SpecialEventController implements ControllerInterface
         $this->glowingStreamEvent = new GlowingStreamEvent($connection, $eventState, $newsService);
         $this->fairyEvent = new FairyEvent($connection, $eventState);
         $this->grassyFieldEvent = new GrassyFieldEvent($connection, $eventState, $commentaryService);
-        $this->riddleEvent = new RiddleEvent($connection, $eventState);
+        $this->localeResolver = new LocaleResolver($connection);
+        $this->riddleEvent = new RiddleEvent(
+            $connection,
+            $eventState,
+            new CatalogTranslator($connection, $this->localeResolver),
+        );
         $this->crazyAudreyEvent = new CrazyAudreyEvent($connection, $eventState);
         $this->goldMineEvent = new GoldMineEvent($connection, $eventState, $newsService);
         $this->skillMasterEvent = new SkillMasterEvent($connection, $eventState);
@@ -113,7 +122,11 @@ final class SpecialEventController implements ControllerInterface
             GlowingStreamEvent::EVENT_CODE => $this->handleGlowingStream($characterId, $action),
             FairyEvent::EVENT_CODE => $this->handleFairy($characterId, $action),
             GrassyFieldEvent::EVENT_CODE => $this->handleGrassyField($characterId, $action),
-            RiddleEvent::EVENT_CODE => $this->handleRiddle($characterId, $action),
+            RiddleEvent::EVENT_CODE => $this->handleRiddle(
+                $characterId,
+                $action,
+                $this->localeResolver->resolve($parameterMap['request_locale_code'] ?? null),
+            ),
             CrazyAudreyEvent::EVENT_CODE => $this->handleCrazyAudrey($characterId, $action),
             GoldMineEvent::EVENT_CODE => $this->handleGoldMine($characterId, $action),
             SkillMasterEvent::EVENT_CODE => $this->handleSkillMaster($characterId, $action),
@@ -184,15 +197,16 @@ final class SpecialEventController implements ControllerInterface
     /**
      * @return array<string, mixed>
      */
-    private function handleRiddle(int $characterId, string $action): array
+    private function handleRiddle(int $characterId, string $action, string $localeCode): array
     {
         return match ($action) {
             'start' => $this->riddleEvent->start($characterId),
-            'accept' => $this->riddleEvent->accept($characterId),
+            'accept' => $this->riddleEvent->accept($characterId, $localeCode),
             'decline' => $this->riddleEvent->decline($characterId),
             'answer' => $this->riddleEvent->answer(
                 $characterId,
                 \is_string($_POST['answer'] ?? null) ? $_POST['answer'] : '',
+                $localeCode,
             ),
             default => throw new LocalizedException('system-message', 'error.unknown-action'),
         };

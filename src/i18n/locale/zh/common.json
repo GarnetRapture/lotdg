@@ -29,7 +29,7 @@
   "administration.action.unlock": "解锁",
   "equipment-editor.title.weapon": "武器编辑器",
   "equipment-editor.title.armor": "护甲编辑器",
-  "equipment-editor.tier": "屠龙 {tier} 次",
+  "equipment-editor.tier": "第 {tier} 阶",
   "equipment-editor.empty": "此档位没有物品。",
   "equipment-editor.saved": "已保存，价格为 {price} 金币。",
   "equipment-editor.column.name": "名称",

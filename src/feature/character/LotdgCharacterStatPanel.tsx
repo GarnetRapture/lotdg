@@ -5,6 +5,7 @@ import {
   type LotdgCharacterPanel,
 } from '../../shared/schema/system/lotdg-api-response-schema'
 import { parseLegacyMarkup } from '../../shared/lib/lotdg-legacy-markup-parser'
+import { resolveEquipmentName } from '../../shared/lib/lotdg-equipment-name-resolver'
 import { useLotdgLocale } from '../../i18n/useLotdgLocale'
 import { LOTDG_LOCALE_NAMESPACE } from '../../shared/constant/lotdg-supported-locale'
 import type {
@@ -130,12 +131,12 @@ export function LotdgCharacterStatPanel({
         {
           entryKey: 'weapon',
           labelText: label('field.weapon'),
-          valueSlot: panel.equipment.weapon_name,
+          valueSlot: resolveEquipmentName(panel.equipment.weapon_name, label),
         },
         {
           entryKey: 'armor',
           labelText: label('field.armor'),
-          valueSlot: panel.equipment.armor_name,
+          valueSlot: resolveEquipmentName(panel.equipment.armor_name, label),
         },
       ],
     },

@@ -6,6 +6,8 @@ namespace Lotdg\Http\Controller;
 
 use Lotdg\Domain\World\ForestService;
 use Lotdg\Http\ControllerInterface;
+use Lotdg\I18n\CatalogTranslator;
+use Lotdg\I18n\LocaleResolver;
 use Lotdg\Persistence\Repository\CreatureRepository;
 use Lotdg\Persistence\Repository\GameSettingRepository;
 use Lotdg\Support\LocalizedException;
@@ -15,12 +17,16 @@ final class ForestController implements ControllerInterface
 {
     private readonly ForestService $forestService;
 
+    private readonly LocaleResolver $localeResolver;
+
     public function __construct(PDO $connection)
     {
+        $this->localeResolver = new LocaleResolver($connection);
         $this->forestService = new ForestService(
             $connection,
             new CreatureRepository($connection),
             new GameSettingRepository($connection),
+            new CatalogTranslator($connection, $this->localeResolver),
         );
     }
 
@@ -43,6 +49,7 @@ final class ForestController implements ControllerInterface
             'search' => $this->forestService->beginEncounter(
                 $characterId,
                 $this->readSearchType(),
+                $this->localeResolver->resolve($parameterMap['request_locale_code'] ?? null),
             ),
             'fight' => $this->forestService->fightRound($characterId),
             default => throw new LocalizedException('system-message', 'error.unknown-action'),

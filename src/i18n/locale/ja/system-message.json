@@ -49,6 +49,7 @@
   "error.unknown": "エラーが発生しました。",
   "error.unknown-action": "不明な行動です。",
   "error.unknown-shop": "存在しない商店です。",
+  "error.unknown-special-event": "不明な特別イベントだ。",
   "error.unsupported-locale": "対応していない言語コードです。",
   "forest.error.no-turn-left": "今日の森の探索回数が残っていません。",
   "forest.special-event": "森で何か特別なことが起こりました。",

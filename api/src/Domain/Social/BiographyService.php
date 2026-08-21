@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Lotdg\Domain\Social;
 
+use Lotdg\I18n\CatalogTranslator;
 use Lotdg\Support\LocalizedException;
 use PDO;
 
@@ -14,13 +15,32 @@ final class BiographyService
     public function __construct(
         private readonly PDO $connection,
         private readonly BadWordFilter $badWordFilter,
+        private readonly CatalogTranslator $catalogTranslator,
     ) {
+    }
+
+    /**
+     * @param array<string, mixed> $row
+     */
+    private function translateMountName(array $row, string $localeCode): ?string
+    {
+        if ($row['mount_id'] === null || $row['mount_name'] === null) {
+            return null;
+        }
+
+        return $this->catalogTranslator->translate(
+            CatalogTranslator::ENTITY_MOUNT,
+            (int) $row['mount_id'],
+            'mount_name',
+            (string) $row['mount_name'],
+            $localeCode,
+        );
     }
 
     /**
      * @return array<string, mixed>
      */
-    public function view(int $characterId): array
+    public function view(int $characterId, string $localeCode): array
     {
         $row = $this->fetchBiographyRow($characterId);
 
@@ -35,7 +55,7 @@ final class BiographyService
             'specialty_code' => (int) $row['specialty_code'],
             'resurrection_count' => (int) $row['resurrection_count'],
             'dragon_kill_count' => (int) $row['dragon_kill_count'],
-            'mount_name' => $row['mount_name'] === null ? null : (string) $row['mount_name'],
+            'mount_name' => $this->translateMountName($row, $localeCode),
             'biography' => $this->badWordFilter->clean((string) $row['biography']),
             'news_history' => $this->fetchNewsHistory((int) $row['account_id']),
         ];
@@ -85,6 +105,7 @@ final class BiographyService
                     character_vital.resurrection_count,
                     character_progression.dragon_kill_count,
                     character_social.biography,
+                    mount.mount_id,
                     mount.mount_name
                FROM game_character
                JOIN account               ON account.account_id = game_character.account_id

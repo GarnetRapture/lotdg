@@ -10,6 +10,8 @@ use Lotdg\Domain\Catalog\EquipmentShopService;
 use Lotdg\Domain\Social\BadWordFilter;
 use Lotdg\Domain\Social\MailService;
 use Lotdg\Http\ControllerInterface;
+use Lotdg\I18n\CatalogTranslator;
+use Lotdg\I18n\LocaleResolver;
 use Lotdg\Persistence\Repository\GameSettingRepository;
 use Lotdg\Support\LocalizedException;
 use PDO;
@@ -22,11 +24,17 @@ final class EquipmentEditorController implements ControllerInterface
 
     private readonly MailService $mailService;
 
+    private readonly LocaleResolver $localeResolver;
+
     public function __construct(PDO $connection)
     {
         $gameSettingRepository = new GameSettingRepository($connection);
 
-        $this->equipmentEditorService = new EquipmentEditorService($connection);
+        $this->localeResolver = new LocaleResolver($connection);
+        $this->equipmentEditorService = new EquipmentEditorService(
+            $connection,
+            new CatalogTranslator($connection, $this->localeResolver),
+        );
         $this->administrationService = new AdministrationService($connection, $gameSettingRepository);
         $this->mailService = new MailService(
             $connection,
@@ -60,6 +68,7 @@ final class EquipmentEditorController implements ControllerInterface
             'list' => $this->equipmentEditorService->listByTier(
                 $shopType,
                 (int) ($_GET['dragon_kill_tier'] ?? 0),
+                $this->localeResolver->resolve($parameterMap['request_locale_code'] ?? null),
             ),
             'next-power' => $this->equipmentEditorService->suggestNextPower(
                 $shopType,

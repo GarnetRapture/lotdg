@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Lotdg\Domain\World\Special;
 
+use Lotdg\I18n\CatalogTranslator;
 use Lotdg\Support\LocalizedException;
 use Lotdg\Support\RiddleAnswerNormalizer;
 use PDO;
@@ -33,8 +34,26 @@ final class RiddleEvent implements SpecialEventInterface
     public function __construct(
         private readonly PDO $connection,
         private readonly SpecialEventState $eventState,
+        private readonly CatalogTranslator $catalogTranslator,
         private readonly RiddleAnswerNormalizer $answerNormalizer = new RiddleAnswerNormalizer(),
     ) {
+    }
+
+    /**
+     * @param array<string, mixed> $riddleRow
+     */
+    private function translateRiddleField(
+        array $riddleRow,
+        string $fieldCode,
+        string $localeCode,
+    ): string {
+        return $this->catalogTranslator->translate(
+            CatalogTranslator::ENTITY_RIDDLE,
+            (int) $riddleRow['riddle_id'],
+            $fieldCode,
+            (string) $riddleRow[$fieldCode],
+            $localeCode,
+        );
     }
 
     public function eventCode(): string
@@ -65,7 +84,7 @@ final class RiddleEvent implements SpecialEventInterface
     /**
      * @return array<string, mixed>
      */
-    public function accept(int $characterId): array
+    public function accept(int $characterId, string $localeCode): array
     {
         $state = $this->eventState->load($characterId, self::EVENT_CODE);
 
@@ -89,14 +108,14 @@ final class RiddleEvent implements SpecialEventInterface
         return [
             'stage' => 'awaiting-answer',
             'riddle_id' => (int) $riddleRow['riddle_id'],
-            'riddle_text' => (string) $riddleRow['riddle_text'],
+            'riddle_text' => $this->translateRiddleField($riddleRow, 'riddle_text', $localeCode),
         ];
     }
 
     /**
      * @return array<string, mixed>
      */
-    public function answer(int $characterId, string $answerText): array
+    public function answer(int $characterId, string $answerText, string $localeCode): array
     {
         $state = $this->eventState->load($characterId, self::EVENT_CODE);
 
@@ -114,15 +133,21 @@ final class RiddleEvent implements SpecialEventInterface
 
         $this->eventState->clear($characterId);
 
+        $translatedAnswerText = $this->translateRiddleField($riddleRow, 'answer_text', $localeCode);
+
         $isCorrect = $this->answerNormalizer->matches(
             $answerText,
             (string) $riddleRow['answer_text'],
             self::LEVENSHTEIN_TOLERANCE,
+        ) || $this->answerNormalizer->matches(
+            $answerText,
+            $translatedAnswerText,
+            self::LEVENSHTEIN_TOLERANCE,
         );
 
         return $isCorrect
-            ? $this->applyReward($characterId, (string) $riddleRow['answer_text'])
-            : $this->applyPenalty($characterId, (string) $riddleRow['answer_text']);
+            ? $this->applyReward($characterId, $translatedAnswerText)
+            : $this->applyPenalty($characterId, $translatedAnswerText);
     }
 
     /**

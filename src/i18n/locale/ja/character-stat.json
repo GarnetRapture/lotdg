@@ -15,6 +15,8 @@
   "field.experience": "経験値",
   "field.weapon": "武器",
   "field.armor": "防具",
+  "equipment.bare-hand": "素手",
+  "equipment.plain-shirt": "Tシャツ",
   "field.buff": "状態",
   "spirit.dead": "死亡",
   "spirit.very-low": "非常に低い",

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Lotdg\Domain\World;
 
+use Lotdg\I18n\CatalogTranslator;
 use Lotdg\Persistence\Repository\CreatureRepository;
 use Lotdg\Support\LocalizedException;
 use PDO;
@@ -29,8 +30,26 @@ final class GraveyardService
     public function __construct(
         private readonly PDO $connection,
         private readonly CreatureRepository $creatureRepository,
+        private readonly CatalogTranslator $catalogTranslator,
         private readonly BattleEngine $battleEngine = new BattleEngine(),
     ) {
+    }
+
+    /**
+     * @param array<string, mixed> $creatureRow
+     */
+    private function translateCreatureField(
+        array $creatureRow,
+        string $fieldCode,
+        string $localeCode,
+    ): string {
+        return $this->catalogTranslator->translate(
+            CatalogTranslator::ENTITY_CREATURE,
+            (int) $creatureRow['creature_id'],
+            $fieldCode,
+            (string) $creatureRow[$fieldCode],
+            $localeCode,
+        );
     }
 
     /**
@@ -61,7 +80,7 @@ final class GraveyardService
     /**
      * @return array<string, mixed>
      */
-    public function searchUndead(int $characterId): array
+    public function searchUndead(int $characterId, string $localeCode): array
     {
         $row = $this->fetchGraveyardRow($characterId);
 
@@ -93,15 +112,23 @@ final class GraveyardService
         $enemyState = [
             'is_undead' => true,
             'creature_id' => (int) $creatureRow['creature_id'],
-            'creature_name' => (string) $creatureRow['creature_name'],
+            'creature_name' => $this->translateCreatureField(
+                $creatureRow,
+                'creature_name',
+                $localeCode,
+            ),
             'creature_level' => $level,
-            'weapon_name' => (string) $creatureRow['weapon_name'],
+            'weapon_name' => $this->translateCreatureField($creatureRow, 'weapon_name', $localeCode),
             'health' => $health,
             'max_health' => $health,
             'attack_point' => $attackPoint,
             'defense_point' => $defensePoint,
             'favor_reward' => $favorReward,
-            'victory_message' => (string) $creatureRow['victory_message'],
+            'victory_message' => $this->translateCreatureField(
+                $creatureRow,
+                'victory_message',
+                $localeCode,
+            ),
         ];
 
         $this->consumeGraveFight($characterId);

@@ -29,7 +29,7 @@
   "administration.action.unlock": "ロック解除",
   "equipment-editor.title.weapon": "武器エディタ",
   "equipment-editor.title.armor": "防具エディタ",
-  "equipment-editor.tier": "竜討伐 {tier}",
+  "equipment-editor.tier": "ティア{tier}",
   "equipment-editor.empty": "この段階には品がない。",
   "equipment-editor.saved": "保存した。値段は {price} ゴールドだ。",
   "equipment-editor.column.name": "名前",

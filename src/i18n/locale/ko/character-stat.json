@@ -15,6 +15,8 @@
   "field.experience": "경험치",
   "field.weapon": "무기",
   "field.armor": "방어구",
+  "equipment.bare-hand": "맨주먹",
+  "equipment.plain-shirt": "티셔츠",
   "field.buff": "상태",
   "spirit.dead": "죽음",
   "spirit.very-low": "매우 낮음",

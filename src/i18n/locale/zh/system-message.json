@@ -49,6 +49,7 @@
   "error.unknown": "发生错误。",
   "error.unknown-action": "未知的操作。",
   "error.unknown-shop": "不存在的商店。",
+  "error.unknown-special-event": "未知的特殊事件。",
   "error.unsupported-locale": "不支持的语言代码。",
   "forest.error.no-turn-left": "今天的森林探索次数已用完。",
   "forest.special-event": "森林中发生了不寻常的事。",
